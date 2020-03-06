@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div layout:fragment="navbar">
+        <navbar-channel th::channel="${channelJSON}"></navbar-channel>
+    </div>
+    <div layout:fragment="content" class="h-100">
+        <channel-scaffold th::channel="${channelJSON}">
+            <template #content>
+                <v-container>
+                    <h3>このチャンネルの動画</h3>
+                    <v-tabs v-model="tabs" color="success">
+                        <v-tab href="#tab-upload">アップロード動画</v-tab>
+                        <v-tab href="#tab-live">ライブ配信</v-tab>
+                    </v-tabs>
+                    <v-divider></v-divider>
+                    <v-icon class="my-3">mdi-filter-variant</v-icon>
+                    <input class="ml-5" placeholder="フィルタ">
+                    <v-divider></v-divider>
+                    <v-tabs-items v-model="tabs">
+                        <v-tab-item value="tab-upload">
+                            UPLOAD
+                        </v-tab-item>
+                        <v-tab-item value="tab-live">
+                            LIVE
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-container>
+            </template>
+        </channel-scaffold>
+    </div>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/channels/videos/upload.js}"></script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/main/resources/js/components/ChannelMenu.vue?5287"],"names":[],"mappings":"AAAA;AACA;AACA","file":"../css/channels/videos/upload.css","sourcesContent":[".scroll-menu-item:hover {\n  background: #f4f4f4;\n}\n"],"sourceRoot":""}

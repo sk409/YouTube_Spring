@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/main/resources/sass/app.scss"],"names":[],"mappings":"AAAA;AACA,gBAAgB;;AAEhB;AACA,cAAc;;AAEd;AACA,eAAe","file":"../css/app.css","sourcesContent":["[v-cloak] {\n  display: none; }\n\n.w-100 {\n  width: 100%; }\n\n.h-100 {\n  height: 100%; }\n"],"sourceRoot":""}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <v-container layout:fragment="content">
+        <v-card>
+            <v-card-title class="primary white--text">YouTubeに登録</v-card-title>
+            <v-card-text>
+                <v-form ref="form" th:action="@{~/register}" method="post">
+                    <v-text-field color="success" v-model="username" :rules="usernameRules" label="ユーザID"></v-text-field>
+                    <v-text-field color="success" v-model="nickname" :rules="nicknameRules" label="ユーザ名"></v-text-field>
+                    <v-text-field color="success" v-model="password" :rules="passwordRules" autocomplete="current-password" type="password" label="パスワード">
+                    </v-text-field>
+                    <v-text-field color="success" v-model="email" :rules="emailRules" type="email" label="メールアドレス"></v-text-field>
+                </v-form>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="success" text class="mx-auto" @click="register">登録</v-btn>
+            </v-card-actions>
+        </v-card>
+        <div class="text-center mt-3">
+            <v-btn color="success" :href="$routes.login.base" text>アカウントをお持ちの方</v-btn>
+        </div>
+    </v-container>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/register.js}"></script>
+    </div>
+</body>
+
+</html>
