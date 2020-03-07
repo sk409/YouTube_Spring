@@ -10,33 +10,51 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="videos")
+@Table(name = "videos")
 public class Video extends Model {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String title;
+	@Column(nullable = false)
+	private String title;
 
-    @Column(nullable = false)
-    private String overview;
+	@Column(nullable = false)
+	private String overview;
 
-    @Column(nullable = false, unique = true)
-    private String uniqueId;
+	@Column(nullable = false)
+	private Long views;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Channel channel;
+	@Column(nullable = false)
+	private Float duration;
 
-    public Video() {}
+	@Column(nullable = false, unique = true)
+	private String videoPath;
 
-    public Video(String title, String overview, String uniqueId, Channel channel) {
-        this.title = title;
-        this.overview = overview;
-        this.uniqueId = uniqueId;
-        this.channel = channel;
-    }
+	@Column(nullable = false, unique = true)
+	private String thumbnailPath;
+
+	@Column(nullable = false, unique = true)
+	private String uniqueId;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Channel channel;
+
+	public Video() {
+	}
+
+	public Video(String title, String overview, Long views, Float duration, String videoPath, String thumbnailPath,
+			String uniqueId, Channel channel) {
+		this.title = title;
+		this.overview = overview;
+		this.views = views;
+		this.duration = duration;
+		this.videoPath = videoPath;
+		this.thumbnailPath = thumbnailPath;
+		this.uniqueId = uniqueId;
+		this.channel = channel;
+	}
 
 	public Long getId() {
 		return id;
@@ -56,9 +74,25 @@ public class Video extends Model {
 
 	public void setOverview(String overview) {
 		this.overview = overview;
-    }
-    
-    public String getUniqueId() {
+	}
+
+	public String getVideoPath() {
+		return videoPath;
+	}
+
+	public void setVideoPath(String videoPath) {
+		this.videoPath = videoPath;
+	}
+
+	public String getThumbnailPath() {
+		return thumbnailPath;
+	}
+
+	public void setThumbnailPath(String thumbnailPath) {
+		this.thumbnailPath = thumbnailPath;
+	}
+
+	public String getUniqueId() {
 		return uniqueId;
 	}
 
@@ -73,7 +107,5 @@ public class Video extends Model {
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}
-
-    
 
 }

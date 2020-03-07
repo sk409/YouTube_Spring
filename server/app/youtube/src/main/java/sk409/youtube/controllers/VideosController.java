@@ -1,10 +1,8 @@
 package sk409.youtube.controllers;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.security.Principal;
-
-import com.google.gson.Gson;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import sk409.youtube.models.Channel;
@@ -26,25 +22,26 @@ import sk409.youtube.models.User;
 import sk409.youtube.models.Video;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.services.ChannelService;
-import sk409.youtube.services.FileService;
+import sk409.youtube.services.JSONService;
 import sk409.youtube.services.UserService;
+import sk409.youtube.services.VideoCommentService;
 import sk409.youtube.services.VideoService;
 
 @Controller
 @RequestMapping("/channels/{channelId}/videos")
 public class VideosController {
 
-    private static final String videoPath = "src/main/resources/static/videos";
-
     private final ChannelService channelService;
-    private final FileService fileService;
+    private final JSONService jsonService;
     private final UserService userService;
+    private final VideoCommentService videoCommentService;
     private final VideoService videoService;
 
-    public VideosController(ChannelService channelService, FileService fileService, UserService userService, VideoService videoService) {
+    public VideosController(ChannelService channelService, JSONService jsonService, UserService userService, VideoCommentService videoCommentService, VideoService videoService) {
         this.channelService = channelService;
-        this.fileService = fileService;
+        this.jsonService = jsonService;
         this.userService = userService;
+        this.videoCommentService = videoCommentService;
         this.videoService = videoService;
     }
 
@@ -55,19 +52,12 @@ public class VideosController {
             System.out.println(bindingResult);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        final Channel channel = channelService.findById(channelId);
-        if (channel == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        final Video video = videoService.save(request.getTitle(), request.getOverview(), request.getUniqueId(), channel);
-        final MultipartFile videoFile = request.getVideo();
-        final String path = Paths.get(videoPath, String.valueOf(channelId),String.valueOf(video.getId()), videoFile.getOriginalFilename()).toString();
         try {
-            fileService.write(path, videoFile.getBytes());
-        } catch(IOException exception) {
+            final Video video = videoService.save(request.getTitle(), request.getOverview(), request.getDuration(), request.getUniqueId(), channelId, request.getVideo(), request.getThumbnail());
+            return new ResponseEntity<>(video, HttpStatus.OK);
+        } catch (IOException exception) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(video, HttpStatus.OK);
     }
 
     @GetMapping("/upload")
@@ -88,9 +78,11 @@ public class VideosController {
             mav.setViewName("errors/permission");
             return mav;
         }
-        final Gson gson = new Gson();
-        final String channelJSON = gson.toJson(channel);
+        final List<Video> videos = videoService.findByChannelId(channelId);
+        final String channelJSON = jsonService.toJSON(channel);
+        final String videosJSON = videos == null ? "[]" : jsonService.toJSON(videos);
         mav.addObject("channelJSON", channelJSON);
+        mav.addObject("videosJSON", videosJSON);
         mav.setViewName("channels/videos/upload");
         return mav;
     }

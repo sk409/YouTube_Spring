@@ -9,21 +9,27 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class VideoStoreRequest implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @NotNull
-    @Size(min=1, max=100)
-    private String title;
+	@NotNull
+	@Size(min = 1, max = 100)
+	private String title;
 
-    @Size(max=5000)
-    private String overview;
+	@Size(max = 5000)
+	private String overview;
 
-    @NotNull
-    @Size(min=1, max=255)
-    private String uniqueId;
+	@NotNull
+	private Float duration;
 
-    @NotNull
-    private MultipartFile video;
+	@NotNull
+	@Size(min = 1, max = 255)
+	private String uniqueId;
+
+	@NotNull
+	private MultipartFile thumbnail;
+
+	@NotNull
+	private MultipartFile video;
 
 	public String getTitle() {
 		return title;
@@ -41,12 +47,28 @@ public class VideoStoreRequest implements Serializable {
 		this.overview = overview;
 	}
 
+	public Float getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Float duration) {
+		this.duration = duration;
+	}
+
 	public String getUniqueId() {
 		return uniqueId;
 	}
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+
+	public MultipartFile getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(MultipartFile thumbnail) {
+		this.thumbnail = thumbnail;
 	}
 
 	public MultipartFile getVideo() {
@@ -56,7 +78,5 @@ public class VideoStoreRequest implements Serializable {
 	public void setVideo(MultipartFile video) {
 		this.video = video;
 	}
-
-    
 
 }

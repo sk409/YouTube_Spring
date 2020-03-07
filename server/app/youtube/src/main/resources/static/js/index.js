@@ -57004,6 +57004,26 @@ vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$routes = _utils_js__WEBPA
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$serverUrl = _utils_js__WEBPACK_IMPORTED_MODULE_1__["serverUrl"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$transition = _utils_js__WEBPACK_IMPORTED_MODULE_1__["transition"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$uuid = _utils_js__WEBPACK_IMPORTED_MODULE_1__["uuid"];
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("date", function (str, format) {
+  var date = new Date(str);
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var d = date.getDate();
+  return "".concat(year, "/").concat(month, "/").concat(d);
+});
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("default", function (str, d) {
+  return !str || str.length === 0 ? d : str;
+});
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("truncate", function (str, maxLength) {
+  var suffix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "...";
+
+  if (str.length <= maxLength) {
+    return str;
+  }
+
+  var sub = str.substring(0, maxLength);
+  return sub + suffix;
+});
 
 /***/ }),
 

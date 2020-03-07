@@ -2,7 +2,9 @@
 <div class="h-100">
     <div class="d-flex h-100">
         <ChannelMenu :channel="channel" class="h-100"></ChannelMenu>
-        <slot name="content"></slot>
+        <div class="flex-fill">
+            <slot name="content"></slot>
+        </div>
     </div>
 </div>
 </template>

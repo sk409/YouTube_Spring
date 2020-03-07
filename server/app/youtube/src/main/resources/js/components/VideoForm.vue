@@ -25,43 +25,56 @@
             <v-stepper-items>
               <v-stepper-content step="1">
                 <div class="step-title">詳細</div>
-                <v-tooltip :value="titleError" bottom>
-                  <template #activator="{}">
-                    <div
-                      :class="metadataInputContainerClass(titleError)"
-                      class="mt-3 pa-2 metadata-input-container"
-                    >
-                      <span class="input-caption">タイトル(必須)</span>
-                      <div class="metadata-input" contenteditable tabindex="0" @input="inputTitle"></div>
-                      <div class="d-flex">
-                        <span class="input-length ml-auto mr-1">{{title.length}}/{{titleMaxLength}}</span>
-                      </div>
-                    </div>
-                  </template>
-                  <span>{{titleError}}</span>
-                </v-tooltip>
-                <v-tooltip :value="overviewError" bottom>
-                  <template #activator="{}">
-                    <div
-                      :class="metadataInputContainerClass(overviewError)"
-                      class="mt-3 pa-2 metadata-input-container"
-                    >
-                      <span class="input-caption">説明</span>
-                      <div
-                        class="metadata-input"
-                        contenteditable
-                        tabindex="1"
-                        @input="inputOverview"
-                      ></div>
-                      <div class="d-flex">
-                        <span
-                          class="input-length ml-auto mr-1"
-                        >{{overview.length}}/{{overviewMaxLength}}</span>
-                      </div>
-                    </div>
-                  </template>
-                  <span>{{overviewError}}</span>
-                </v-tooltip>
+                <div class="d-flex">
+                  <div class="video-details">
+                    <v-tooltip :value="titleError" bottom>
+                      <template #activator="{}">
+                        <div
+                          :class="metadataInputContainerClass(titleError)"
+                          class="mt-3 pa-2 metadata-input-container"
+                        >
+                          <span class="input-caption">タイトル(必須)</span>
+                          <div
+                            class="metadata-input"
+                            contenteditable
+                            tabindex="0"
+                            @input="inputTitle"
+                          ></div>
+                          <div class="d-flex">
+                            <span
+                              class="input-length ml-auto mr-1"
+                            >{{title.length}}/{{titleMaxLength}}</span>
+                          </div>
+                        </div>
+                      </template>
+                      <span>{{titleError}}</span>
+                    </v-tooltip>
+                    <v-tooltip :value="overviewError" bottom>
+                      <template #activator="{}">
+                        <div
+                          :class="metadataInputContainerClass(overviewError)"
+                          class="mt-3 pa-2 metadata-input-container"
+                        >
+                          <span class="input-caption">説明</span>
+                          <div
+                            class="metadata-input"
+                            contenteditable
+                            tabindex="1"
+                            @input="inputOverview"
+                          ></div>
+                          <div class="d-flex">
+                            <span
+                              class="input-length ml-auto mr-1"
+                            >{{overview.length}}/{{overviewMaxLength}}</span>
+                          </div>
+                        </div>
+                      </template>
+                      <span>{{overviewError}}</span>
+                    </v-tooltip>
+                    <VideoThumbnailForm :file="video" @selected="selectedThumbnail"></VideoThumbnailForm>
+                  </div>
+                  <VideoPreview :file="video" class="ml-auto video-preview"></VideoPreview>
+                </div>
               </v-stepper-content>
               <v-stepper-content step="2">
                 <div class="step-title">動画の要素</div>
@@ -96,7 +109,7 @@
           :disabled="hasErrors"
           @click="goNextStep"
         >次へ</v-btn>
-        <v-btn color="success" v-show="step===3" @click="createVideo">公開</v-btn>
+        <v-btn v-show="step===3" color="success" :loading="loading" @click="createVideo">公開</v-btn>
       </v-card-actions>
     </v-card>
     <SnackbarView :message="notification" :visible.sync="snackbar"></SnackbarView>
@@ -106,6 +119,8 @@
 <script>
 import ajax from "../ajax.js";
 import SnackbarView from "./SnackbarView.vue";
+import VideoPreview from "./VideoPreview.vue";
+import VideoThumbnailForm from "./VideoThumbnailForm.vue";
 export default {
   props: {
     channel: {
@@ -114,19 +129,25 @@ export default {
     }
   },
   components: {
-    SnackbarView
+    SnackbarView,
+    VideoPreview,
+    VideoThumbnailForm
   },
   data() {
     return {
+      duration: 0,
+      loading: false,
       notification: "",
       overview: "",
       overviewError: null,
       overviewMaxLength: 5000,
       snackbar: false,
       step: 1,
+      thumbnail: null,
       title: "",
       titleError: null,
       titleMaxLength: 100,
+      uniqueId: "",
       video: null
     };
   },
@@ -144,10 +165,13 @@ export default {
         this.snackbar = true;
         return;
       }
-      this.video = {};
-      this.video.file = file;
-      this.video.title = file.name;
-      this.video.uniqueId = this.$uuid();
+      const video = document.createElement("video");
+      video.src = URL.createObjectURL(file);
+      video.load();
+      video.onloadedmetadata = () => this.duration = video.duration;
+      this.video = file;
+      this.title = file.name;
+      this.uniqueId = this.$uuid();
     },
     checkErrors() {
       this.checkOverviewError();
@@ -169,25 +193,40 @@ export default {
         this.titleError = null;
       }
     },
+    clear() {
+      this.duration = 0;
+      this.overview = "";
+      this.step = 1;
+      this.thumbnail = null;
+      this.title = "";
+      this.uniqueId = "";
+      this.video = null;
+    },
     clickFileSelectionButton() {
       this.$refs.fileInput.click();
     },
     createVideo() {
       const data = {
+        duration: this.duration,
+        thumbnail: this.thumbnail,
         title: this.title,
         overview: this.overview,
-        uniqueId: this.video.uniqueId,
-        video: this.video.file
+        uniqueId: this.uniqueId,
+        video: this.video
       };
       const config = {
-          headers: {
-              "Content-Type": "multipart/form-data"
-          }
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
       };
-      console.log(data);
-      ajax.post(this.$routes.channels.videos.base(this.channel.id), data, config).then(response => {
-          console.log(response);
-      });
+      this.loading = true;
+      ajax
+        .post(this.$routes.channels.videos.base(this.channel.id), data, config)
+        .then(response => {
+          this.loading = false;
+          this.clear();
+          this.$emit("created", response.data);
+        });
     },
     goNextStep() {
       this.checkErrors();
@@ -206,6 +245,9 @@ export default {
     },
     metadataInputContainerClass(error) {
       return error ? ["metadata-input-container-error"] : [];
+    },
+    selectedThumbnail(file) {
+      this.thumbnail = file;
     }
   }
 };
@@ -262,5 +304,13 @@ export default {
 
 .metadata-input-container-error:focus-within .input-caption {
   color: $error;
+}
+
+.video-details {
+  width: 60%;
+}
+
+.video-preview {
+  width: 30%;
 }
 </style>

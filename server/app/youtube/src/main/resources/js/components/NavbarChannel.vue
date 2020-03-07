@@ -8,13 +8,15 @@
             <v-icon class="primary--text">mdi-video-plus</v-icon>
             <span class="black--text ml-1">作成</span>
         </v-btn>
-        <v-dialog width="60%" v-model="dialogVideo">
-            <VideoForm :channel="channel"></VideoForm>
+        <v-dialog width="70%" v-model="dialogVideo">
+            <VideoForm :channel="channel" @created="createdVideo"></VideoForm>
         </v-dialog>
+        <SnackbarView :message="notification" :visible.sync="snackbar"></SnackbarView>
     </v-app-bar>
 </template>
 
 <script>
+import SnackbarView from "./SnackbarView.vue";
 import VideoForm from "./VideoForm.vue";
 export default {
     props: {
@@ -24,11 +26,22 @@ export default {
         }
     },
     components: {
+        SnackbarView,
         VideoForm
     },
     data() {
         return {
             dialogVideo: false,
+            notification: "",
+            snackbar: false,
+        }
+    },
+    methods: {
+        createdVideo(video) {
+            this.dialogVideo = false;
+            this.notification = `動画「${video.title}」を投稿しました`;
+            this.snackbar = true;
+            this.$emit("created:video", video);
         }
     }
 }

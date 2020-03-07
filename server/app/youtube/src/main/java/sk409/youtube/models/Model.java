@@ -3,11 +3,13 @@ package sk409.youtube.models;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+@MappedSuperclass
 public class Model {
 
     @Column
@@ -28,5 +30,13 @@ public class Model {
     private void onPostUpdate() {
         this.updatedAt = new Date();
     }
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
 
 }
