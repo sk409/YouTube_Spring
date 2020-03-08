@@ -11,4 +11,6 @@ import sk409.youtube.models.Video;
 @Repository
 public interface VideoRepository extends CrudRepository<Video, Long> {
     Optional<List<Video>> findByChannelId(Long channelId);
+
+    Optional<Video> findByUniqueId(String uniqueId);
 }

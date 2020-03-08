@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -30,14 +27,15 @@ public class ChannelsController {
     private final ChannelService channelService;
     private final UserService userService;
 
-    public ChannelsController(ChannelService channelService, UserService userService) {
+    public ChannelsController(final ChannelService channelService, final UserService userService) {
         this.channelService = channelService;
         this.userService = userService;
     }
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<Channel> store(@Validated @RequestBody ChannelStoreRequest request, BindingResult bindingResult, Principal principal) {
+    public ResponseEntity<Channel> store(@Validated @RequestBody final ChannelStoreRequest request,
+            final BindingResult bindingResult, final Principal principal) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -64,6 +62,5 @@ public class ChannelsController {
         }
         return new ResponseEntity<>(channels.get(0), HttpStatus.OK);
     }
-
 
 }

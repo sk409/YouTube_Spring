@@ -2,8 +2,8 @@
 <html lang="en" layout:decorate="~{layouts/app}">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
 </head>
 
@@ -13,6 +13,8 @@
     </div>
     <div layout:fragment="content" class="h-100">
         <div ref="videos" hidden th:text="${videosJSON}"></div>
+        <div ref="videoCommentCounts" hidden th:text="${videoCommentCountsJSON}"></div>
+        <div ref="videoRatingCounts" hidden th:text="${videoRatingCountsJSON}"></div>
         <channel-scaffold th::channel="${channelJSON}">
             <template #content>
                 <h3 class="ml-4 mt-4">このチャンネルの動画</h3>
@@ -22,7 +24,7 @@
                 </v-tabs>
                 <v-divider></v-divider>
                 <v-icon class="my-3">mdi-filter-variant</v-icon>
-                <input class="ml-5" placeholder="フィルタ">
+                <input class="ml-5" placeholder="フィルタ" />
                 <v-divider></v-divider>
                 <v-tabs-items v-model="tabs">
                     <v-tab-item value="tab-upload">
@@ -43,21 +45,46 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="video in videos">
+                                    <tr v-for="video in videos" class="video-table-row">
                                         <td class="video-checkbox">
                                             <div class="d-flex align-start h-100">
                                                 <v-checkbox></v-checkbox>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="video-data">
                                             <div class="d-flex py-2">
                                                 <div>
                                                     <v-img :src="video.thumbnailPath" width="140"></v-img>
                                                 </div>
-                                                <div class="ml-3 pt-2">
-                                                    <div class="subtitle-1">{{video.title | truncate(15)}}</div>
-                                                    <div class="caption mt-1">
-                                                        {{video.overview | default("説明を追加") | truncate(40)}}</div>
+                                                <div class="flex-fill ml-3 pt-2">
+                                                    <div class="video-details">
+                                                        <div class="subtitle-1">
+                                                            {{video.title | truncate(15)}}
+                                                        </div>
+                                                        <div class="caption mt-1">
+                                                            {{video.overview | default("説明を追加") |
+                                truncate(40)}}
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        class="align-center justify-space-between w-100 h-100 video-tools">
+                                                        <v-btn icon>
+                                                            <v-icon>mdi-pencil</v-icon>
+                                                        </v-btn>
+                                                        <v-btn icon>
+                                                            <v-icon>mdi-poll-box</v-icon>
+                                                        </v-btn>
+                                                        <v-btn icon>
+                                                            <v-icon>mdi-message-reply-text</v-icon>
+                                                        </v-btn>
+                                                        <v-btn icon
+                                                            @click="$transition($routes.watch.base(video.uniqueId))">
+                                                            <v-icon>mdi-youtube</v-icon>
+                                                        </v-btn>
+                                                        <v-btn icon>
+                                                            <v-icon>mdi-dots-vertical</v-icon>
+                                                        </v-btn>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -68,6 +95,10 @@
                                             <div class="caption mt-1">公開日</div>
                                         </td>
                                         <td class="text-right">{{video.views}}</td>
+                                        <td class="text-right">{{video.commentCount}}</td>
+                                        <td class="text-right">
+                                            {{video.highRatingRate | percentage | default("ー")}}
+                                        </td>
                                     </tr>
                                 </tbody>
                             </template>

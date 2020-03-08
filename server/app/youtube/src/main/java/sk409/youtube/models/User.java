@@ -16,6 +16,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import sk409.youtube.Authority;
 
 @Entity
@@ -26,21 +29,26 @@ public class User extends Model implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
-    @Column(name="name", nullable = false, unique = true)
+    @Column(name="name", length = 256, nullable = false, unique = true)
     private String username;
 
-    @Column(nullable=false)
+    @Column(length = 256, nullable = false)
+    @Getter
+    @Setter
     private String nickname;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, unique = true)
+    @Getter
+    @Setter
     private String email;
 
-    public User(String username, String nickname, String password, String email) {
+    public User(final String username, final String nickname, final String password, final String email) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
@@ -87,26 +95,6 @@ public class User extends Model implements UserDetails {
             authorities.add(new SimpleGrantedAuthority(authority.toString()));
         }
         return authorities;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
 }

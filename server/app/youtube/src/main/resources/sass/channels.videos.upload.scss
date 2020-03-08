@@ -1,3 +1,19 @@
 .video-checkbox {
     width: 32px;
 }
+
+.video-data {
+    width: 400px;
+}
+
+.video-tools {
+    display: none;
+}
+
+.video-table-row:hover .video-details {
+    display: none;
+}
+
+.video-table-row:hover .video-tools {
+    display: flex;
+}

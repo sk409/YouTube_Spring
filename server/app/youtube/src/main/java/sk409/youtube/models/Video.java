@@ -6,8 +6,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "videos")
@@ -15,37 +19,60 @@ public class Video extends Model {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(length = 100, nullable = false)
+	@Getter
+	@Setter
 	private String title;
 
-	@Column(nullable = false)
+	@Column(length = 5000, nullable = false)
+	@Getter
+	@Setter
 	private String overview;
 
 	@Column(nullable = false)
+	@Getter
+	@Setter
 	private Long views;
 
 	@Column(nullable = false)
+	@Getter
+	@Setter
 	private Float duration;
 
-	@Column(nullable = false, unique = true)
+	@Column(length = 256, nullable = false, unique = true)
+	@Getter
+	@Setter
 	private String videoPath;
 
-	@Column(nullable = false, unique = true)
+	@Column(length = 256, nullable = false, unique = true)
+	@Getter
+	@Setter
 	private String thumbnailPath;
 
-	@Column(nullable = false, unique = true)
+	@Column(length = 256, nullable = false, unique = true)
+	@Getter
+	@Setter
 	private String uniqueId;
 
+	@Column(name = "channel_id", nullable = false)
+	@Getter
+	@Setter
+	private Long channelId;
+
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(insertable = false, updatable = false)
+	@Getter
+	@Setter
 	private Channel channel;
 
 	public Video() {
 	}
 
-	public Video(String title, String overview, Long views, Float duration, String videoPath, String thumbnailPath,
-			String uniqueId, Channel channel) {
+	public Video(final String title, final String overview, final Long views, final Float duration,
+			final String videoPath, final String thumbnailPath, final String uniqueId, final Long channelId) {
 		this.title = title;
 		this.overview = overview;
 		this.views = views;
@@ -53,59 +80,6 @@ public class Video extends Model {
 		this.videoPath = videoPath;
 		this.thumbnailPath = thumbnailPath;
 		this.uniqueId = uniqueId;
-		this.channel = channel;
+		this.channelId = channelId;
 	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getOverview() {
-		return overview;
-	}
-
-	public void setOverview(String overview) {
-		this.overview = overview;
-	}
-
-	public String getVideoPath() {
-		return videoPath;
-	}
-
-	public void setVideoPath(String videoPath) {
-		this.videoPath = videoPath;
-	}
-
-	public String getThumbnailPath() {
-		return thumbnailPath;
-	}
-
-	public void setThumbnailPath(String thumbnailPath) {
-		this.thumbnailPath = thumbnailPath;
-	}
-
-	public String getUniqueId() {
-		return uniqueId;
-	}
-
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public void setChannel(Channel channel) {
-		this.channel = channel;
-	}
-
 }

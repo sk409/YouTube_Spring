@@ -10,6 +10,5 @@ import sk409.youtube.models.VideoComment;
 
 @Repository
 public interface VideoCommentRepository extends CrudRepository<VideoComment, Long> {
-    public Optional<Long> countByVideoId(Long videoId);
     public Optional<List<VideoComment>> findByVideoId(Long videoId);
 }

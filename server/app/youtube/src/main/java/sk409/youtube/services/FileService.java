@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileService {
 
-    public void write(String path, byte[] bytes) throws IOException {
+    public void write(final String path, final byte[] bytes) throws IOException {
         final File directory = new File(Paths.get(path).getParent().toString());
         directory.mkdirs();
         final File file = new File(path);

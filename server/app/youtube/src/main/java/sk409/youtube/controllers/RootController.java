@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class RootController {
 
     @GetMapping
-    public ModelAndView root(ModelAndView mav) {
+    public ModelAndView root(final ModelAndView mav) {
         mav.setViewName("index");
         return mav;
     }

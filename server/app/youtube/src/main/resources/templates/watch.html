@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youtube</title>
+    <title>Watch</title>
 </head>
 
 <body>
@@ -12,12 +12,19 @@
         <navbar-search></navbar-search>
     </div>
     <div layout:fragment="content">
-        <div class="red">
-            INDEX
+        <div class="content-root mx-auto">
+            <div class="d-flex">
+                <div class="left">
+                    <video th:src="@{${video.videoPath}}" controls class="w-100"></video>
+                </div>
+                <div class="ml-auto right">
+
+                </div>
+            </div>
         </div>
     </div>
     <div layout:fragment="scripts">
-        <script th:src="@{/js/index.js}"></script>
+        <script th:src="@{/js/watch.js}"></script>
     </div>
 </body>
 

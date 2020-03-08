@@ -9,7 +9,7 @@ public class JSONService {
 
     private Gson gson = new Gson();
 
-    public String toJSON(Object src) {
+    public String toJSON(final Object src) {
         return gson.toJson(src);
     }
 

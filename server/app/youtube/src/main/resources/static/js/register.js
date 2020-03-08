@@ -56509,6 +56509,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./src/main/resources/js/utils.js");
 
 
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$constans = _utils_js__WEBPACK_IMPORTED_MODULE_1__["constans"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$routes = _utils_js__WEBPACK_IMPORTED_MODULE_1__["routes"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$serverUrl = _utils_js__WEBPACK_IMPORTED_MODULE_1__["serverUrl"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$transition = _utils_js__WEBPACK_IMPORTED_MODULE_1__["transition"];
@@ -56522,6 +56523,13 @@ vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("date", function (str, format
 });
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("default", function (str, d) {
   return !str || str.length === 0 ? d : str;
+});
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("percentage", function (str) {
+  if (!str || str.length === 0 || typeof str !== "number") {
+    return str;
+  }
+
+  return Math.round(str * 100) + "%";
 });
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("truncate", function (str, maxLength) {
   var suffix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "...";
@@ -56617,15 +56625,20 @@ new vue__WEBPACK_IMPORTED_MODULE_1__["default"]({
 /*!****************************************!*\
   !*** ./src/main/resources/js/utils.js ***!
   \****************************************/
-/*! exports provided: routes, serverUrl, transition, uuid */
+/*! exports provided: constans, routes, serverUrl, transition, uuid */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "constans", function() { return constans; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "routes", function() { return routes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "serverUrl", function() { return serverUrl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transition", function() { return transition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uuid", function() { return uuid; });
+var constans = {
+  highRatingId: 1,
+  lowRatingId: 2
+};
 var routes = {
   channels: {
     base: "/channels",
@@ -56647,6 +56660,11 @@ var routes = {
   },
   root: {
     base: "/"
+  },
+  watch: {
+    base: function base(videoUniqueId) {
+      return "/watch?v=".concat(videoUniqueId);
+    }
   }
 };
 var serverUrl = function serverUrl(path) {

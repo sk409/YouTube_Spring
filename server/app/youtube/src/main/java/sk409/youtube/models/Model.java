@@ -9,15 +9,19 @@ import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.Getter;
+
 @MappedSuperclass
 public class Model {
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
+    @Getter
     private Date createdAt;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
+    @Getter
     private Date updatedAt;
 
     @PrePersist
@@ -30,13 +34,5 @@ public class Model {
     private void onPostUpdate() {
         this.updatedAt = new Date();
     }
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
 
 }

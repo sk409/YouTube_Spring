@@ -38,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseBody
-    public User register(@Validated @RequestBody RegisterRequest registerRequest, BindingResult bindingResult) {
+    public User register(@Validated @RequestBody final RegisterRequest registerRequest, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return null;
         }

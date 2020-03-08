@@ -13,7 +13,8 @@ module.exports = (env, args) => {
             "channels/videos/upload": jsSrcDir + "channels.videos.upload.js",
             index: jsSrcDir + "index.js",
             login: jsSrcDir + "login.js",
-            register: jsSrcDir + "register.js"
+            register: jsSrcDir + "register.js",
+            watch: jsSrcDir + "watch.js"
         },
         module: {
             rules: [{

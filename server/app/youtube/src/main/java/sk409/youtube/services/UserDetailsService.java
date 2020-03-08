@@ -13,11 +13,11 @@ public class UserDetailsService implements org.springframework.security.core.use
 
     private final UserRepository userRepository;
 
-    public UserDetailsService(UserRepository userRepository) {
+    public UserDetailsService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+    public User loadUserByUsername(final String username) throws UsernameNotFoundException {
         if (username == null || "".equals(username)) {
             throw new UsernameNotFoundException("username is empty");
         }
