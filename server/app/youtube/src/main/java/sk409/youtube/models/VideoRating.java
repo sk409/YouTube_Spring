@@ -53,6 +53,9 @@ public class VideoRating extends Model {
     @Setter
     private Rating rating;
 
+    public VideoRating() {
+    }
+
     public VideoRating(final Long userId, final Long videoId, final Long ratingId) {
         this.userId = userId;
         this.videoId = videoId;

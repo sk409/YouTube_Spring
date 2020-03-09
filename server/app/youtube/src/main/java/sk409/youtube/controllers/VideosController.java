@@ -2,7 +2,9 @@ package sk409.youtube.controllers;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import sk409.youtube.models.Channel;
+import sk409.youtube.models.Rating;
 import sk409.youtube.models.User;
 import sk409.youtube.models.Video;
 import sk409.youtube.requests.VideoStoreRequest;
@@ -51,14 +54,40 @@ public class VideosController {
     }
 
     @GetMapping("/watch")
-    public ModelAndView watch(@RequestParam("v") final String videoUniqueId, ModelAndView mav) {
-        final Video video = videoService.findByUniqueId(videoUniqueId);
-        if (video == null) {
-            mav.setStatus(HttpStatus.BAD_REQUEST);
-            mav.setViewName("errors/bad_request");
+    public ModelAndView watch(@RequestParam("v") final String videoUniqueId, final ModelAndView mav,
+            final Principal principal) {
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return mav;
         }
+        final User user = _user.get();
+        final Optional<Video> _video = videoService.findByUniqueId(videoUniqueId);
+        if (!_video.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return mav;
+        }
+        final Video video = _video.get();
+        video.setViews(video.getViews() + 1);
+        videoService.save(video);
+        final String videoJSON = jsonService.toJSON(video);
+        final List<VideoRatingService.SummaryCount> videoRatingCounts = videoRatingService
+                .countByVideoIdAndNotUserIdGroupByVideoIdAndRatingId(video.getId(), user.getId());
+        final Optional<String> _highRatingJSON = videoRatingCounts.stream()
+                .filter(videoRatingCount -> videoRatingCount.getRatingId() == Rating.highId).findFirst()
+                .map(highRatingCount -> jsonService.toJSON(highRatingCount));
+        final Optional<String> _lowRatingJSON = videoRatingCounts.stream()
+                .filter(videoRatingCount -> videoRatingCount.getRatingId() == Rating.lowId).findFirst()
+                .map(lowRatingCount -> jsonService.toJSON(lowRatingCount));
+        final Optional<String> _userRatingJSON = videoRatingService
+                .findFirstByUserIdAndVideoId(user.getId(), video.getId())
+                .map(videoRating -> jsonService.toJSON(videoRating));
         mav.addObject("video", video);
+        mav.addObject("videoJSON", videoJSON);
+        mav.addObject("highRatingJSON", _highRatingJSON.orElse(null));
+        mav.addObject("lowRatingJSON", _lowRatingJSON.orElse(null));
+        mav.addObject("userRatingJSON", _userRatingJSON.orElse(null));
         mav.setViewName("watch");
         return mav;
     }
@@ -83,26 +112,28 @@ public class VideosController {
     @GetMapping("/channels/{channelId}/videos/upload")
     public ModelAndView showUploadForm(@PathVariable("channelId") final Long channelId, final ModelAndView mav,
             final Principal principal) {
-        final Channel channel = channelService.findById(channelId);
-        if (channel == null) {
+        final Optional<Channel> _channel = channelService.findById(channelId);
+        if (!_channel.isPresent()) {
             mav.setStatus(HttpStatus.BAD_REQUEST);
             return mav;
         }
+        final Channel channel = _channel.get();
         final String username = principal.getName();
-        final User user = userService.findByUsername(username);
-        if (user == null) {
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
             mav.setStatus(HttpStatus.BAD_REQUEST);
             return mav;
         }
+        final User user = _user.get();
         if (channel.getUser().getId() != user.getId()) {
             mav.setViewName("errors/permission");
             return mav;
         }
-        final List<Video> videos = videoService.findByChannelId(channelId);
+        final List<Video> videos = videoService.findByChannelId(channelId).orElse(new ArrayList<>());
         final List<Long> videoIds = videos.stream().map(video -> video.getId()).collect(Collectors.toList());
-        final List<VideoCommentService.SummaryCountByVideoIdGroupByVideoId> videoCommentCounts = videoCommentService
+        final List<VideoCommentService.SummaryCount> videoCommentCounts = videoCommentService
                 .countByVideoIdInGroupByVideoId(videoIds.toArray(new Long[videoIds.size()]));
-        final List<VideoRatingService.SummaryCountByVideoIdGroupByVideoIdAndRatingId> videoRatingCounts = videoRatingService
+        final List<VideoRatingService.SummaryCount> videoRatingCounts = videoRatingService
                 .countByVideoIdInGroupByVideoIdAndRatingId(videoIds.toArray(new Long[videoIds.size()]));
         final String channelJSON = jsonService.toJSON(channel);
         final String videosJSON = videos == null ? "[]" : jsonService.toJSON(videos);

@@ -14,6 +14,9 @@ import lombok.Setter;
 @Table(name = "rating")
 public class Rating {
 
+    public static Long highId = 1L;
+    public static Long lowId = 2L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter

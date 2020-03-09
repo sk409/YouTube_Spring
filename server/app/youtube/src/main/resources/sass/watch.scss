@@ -1,3 +1,16 @@
+.bar-high-rating {
+    background: rgb(144, 144, 144);
+}
+
+.bar-low-rating {
+    background: rgb(204, 204, 204);
+}
+
+.bar-high-rating,
+.bar-low-rating {
+    height: 3px;
+}
+
 .content-root {
     width: 90%;
 }

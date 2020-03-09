@@ -18,31 +18,23 @@ import org.springframework.stereotype.Service;
 import sk409.youtube.models.VideoComment;
 import sk409.youtube.models.VideoComment_;
 import sk409.youtube.repositories.VideoCommentRepository;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Service
 public class VideoCommentService {
 
-    public class SummaryCountByVideoIdGroupByVideoId {
+    @AllArgsConstructor
+    @Data
+    public class SummaryCount {
 
-        @Getter
-        @Setter
         private Long videoId;
 
-        @Getter
-        @Setter
         private Long count;
-
-        public SummaryCountByVideoIdGroupByVideoId(Long videoId, Long count) {
-            this.videoId = videoId;
-            this.count = count;
-        }
 
     }
 
     private final EntityManager entityManager;
-
     private final VideoCommentRepository videoCommentRepository;
 
     public VideoCommentService(final EntityManager entityManager, final VideoCommentRepository videoCommentRepository) {
@@ -50,7 +42,7 @@ public class VideoCommentService {
         this.videoCommentRepository = videoCommentRepository;
     }
 
-    public List<SummaryCountByVideoIdGroupByVideoId> countByVideoIdInGroupByVideoId(final Long... videoIds) {
+    public List<SummaryCount> countByVideoIdInGroupByVideoId(final Long... videoIds) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Tuple> query = builder.createTupleQuery();
         final Root<VideoComment> root = query.from(VideoComment.class);
@@ -59,15 +51,38 @@ public class VideoCommentService {
         query.select(builder.tuple(videoId, count)).where(root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIds))
                 .groupBy(videoId);
         final TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
-        final List<SummaryCountByVideoIdGroupByVideoId> counts = typedQuery.getResultList().stream()
-                .map(tuple -> new SummaryCountByVideoIdGroupByVideoId(tuple.get(videoId), tuple.get(count)))
-                .collect(Collectors.toList());
+        final List<SummaryCount> counts = typedQuery.getResultList().stream()
+                .map(tuple -> new SummaryCount(tuple.get(videoId), tuple.get(count))).collect(Collectors.toList());
         return counts;
     }
 
-    public List<VideoComment> findByVideoId(final Long videoId) {
-        final Optional<List<VideoComment>> videoComments = videoCommentRepository.findByVideoId(videoId);
-        return videoComments.isPresent() ? videoComments.get() : null;
+    public Optional<List<VideoComment>> findByVideoId(final Long videoId) {
+        return videoCommentRepository.findByVideoId(videoId);
+    }
+
+    public List<VideoComment> findByVideoIdOrderByIdDescLimit(Long videoId, Long limit) {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
+        final Root<VideoComment> root = query.from(VideoComment.class);
+        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+        final Path<Long> idPath = root.get(VideoComment_.ID);
+        query.select(root).where(builder.equal(videoIdPath, videoId)).orderBy(builder.desc(idPath));
+        final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+        final List<VideoComment> videoComments = typedQuery.getResultList();
+        return videoComments;
+    }
+
+    public List<VideoComment> findByVideoIdLessThanIdOrderByIdDescLimit(Long videoId, Long id, Long limit) {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
+        final Root<VideoComment> root = query.from(VideoComment.class);
+        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+        final Path<Long> idPath = root.get(VideoComment_.ID);
+        query.select(root).where(builder.and(builder.equal(videoIdPath, videoId), builder.lessThan(idPath, id)))
+                .orderBy(builder.desc(idPath));
+        final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+        final List<VideoComment> videoComments = typedQuery.getResultList();
+        return videoComments;
     }
 
 }

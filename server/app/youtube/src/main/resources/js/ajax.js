@@ -1,6 +1,25 @@
 import axios from "axios";
 
 class Ajax {
+
+    makeUrlWithQuery(url, query) {
+        url += "?";
+        for (let key in query) {
+            const value = query[key];
+            if (Array.isArray(value)) {
+                if (!key.endsWith("[]")) {
+                    key += "[]";
+                }
+                for (const item of value) {
+                    url += `${key}=${item}&`;
+                }
+            } else {
+                url += `${key}=${value}&`;
+            }
+        }
+        return url;
+    }
+
     makeBody(data, config) {
         if (
             !config ||
@@ -22,21 +41,7 @@ class Ajax {
     }
 
     get(url, data, config) {
-        url += "?";
-        for (let key in data) {
-            const value = data[key];
-            if (Array.isArray(value)) {
-                if (!key.endsWith("[]")) {
-                    key += "[]";
-                }
-                for (const item of value) {
-                    url += `${key}=${item}&`;
-                }
-            } else {
-                url += `${key}=${value}&`;
-            }
-        }
-        return axios.get(url, config);
+        return axios.get(this.makeUrlWithQuery(url, data), config);
     }
 
     post(url, data, config) {
@@ -44,7 +49,7 @@ class Ajax {
     }
 
     delete(url, data, config) {
-        return axios.delete(url, this.makeBody(data, config), config);
+        return axios.delete(this.makeUrlWithQuery(url, data), config);
     }
 }
 

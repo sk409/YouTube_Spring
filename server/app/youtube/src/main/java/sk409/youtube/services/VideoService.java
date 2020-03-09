@@ -25,14 +25,12 @@ public class VideoService {
         this.videoRepository = videoRepository;
     }
 
-    public List<Video> findByChannelId(final Long channelId) {
-        final Optional<List<Video>> _videos = videoRepository.findByChannelId(channelId);
-        return _videos.isPresent() ? _videos.get() : null;
+    public Optional<List<Video>> findByChannelId(final Long channelId) {
+        return videoRepository.findByChannelId(channelId);
     }
 
-    public Video findByUniqueId(final String uniqueId) {
-        final Optional<Video> _video = videoRepository.findByUniqueId(uniqueId);
-        return _video.isPresent() ? _video.get() : null;
+    public Optional<Video> findByUniqueId(final String uniqueId) {
+        return videoRepository.findByUniqueId(uniqueId);
     }
 
     public Video save(final String title, final String overview, final Float duration, final String uniqueId,
@@ -56,8 +54,9 @@ public class VideoService {
         return video;
     }
 
-    public void save(final Video video) {
+    public Video save(final Video video) {
         videoRepository.save(video);
+        return video;
     }
 
 }

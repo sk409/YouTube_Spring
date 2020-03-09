@@ -2,6 +2,7 @@ package sk409.youtube.controllers;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +41,11 @@ public class ChannelsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final User user = userService.findByUsername(username);
-        if (user == null) {
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        final User user = _user.get();
         final Channel channel = channelService.save(request.getName(), user.getId());
         return new ResponseEntity<Channel>(channel, HttpStatus.OK);
     }
@@ -52,15 +54,16 @@ public class ChannelsController {
     @ResponseBody
     public ResponseEntity<Channel> lastSelected(Principal principal) {
         final String username = principal.getName();
-        final User user = userService.findByUsername(username);
-        if (user == null) {
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        final List<Channel> channels = channelService.findByUserId(user.getId());
-        if (channels == null || channels.size() == 0) {
+        final User user = _user.get();
+        final Optional<List<Channel>> _channels = channelService.findByUserId(user.getId());
+        if (!_channels.isPresent()) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(channels.get(0), HttpStatus.OK);
+        return new ResponseEntity<>(_channels.get().get(0), HttpStatus.OK);
     }
 
 }

@@ -56412,34 +56412,12 @@ var Ajax = /*#__PURE__*/function () {
   }
 
   _createClass(Ajax, [{
-    key: "makeBody",
-    value: function makeBody(data, config) {
-      if (!config || !config.headers) {
-        return data;
-      }
-
-      var contentType = config.headers["Content-Type"];
-      var d = null;
-
-      if (contentType === "multipart/form-data") {
-        d = new FormData();
-      } else if (contentType === "application/x-www-form-urlencoded") {
-        d = new URLSearchParams();
-      }
-
-      for (var key in data) {
-        d.append(key, data[key]);
-      }
-
-      return d;
-    }
-  }, {
-    key: "get",
-    value: function get(url, data, config) {
+    key: "makeUrlWithQuery",
+    value: function makeUrlWithQuery(url, query) {
       url += "?";
 
-      for (var key in data) {
-        var value = data[key];
+      for (var key in query) {
+        var value = query[key];
 
         if (Array.isArray(value)) {
           if (!key.endsWith("[]")) {
@@ -56474,7 +56452,34 @@ var Ajax = /*#__PURE__*/function () {
         }
       }
 
-      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(url, config);
+      return url;
+    }
+  }, {
+    key: "makeBody",
+    value: function makeBody(data, config) {
+      if (!config || !config.headers) {
+        return data;
+      }
+
+      var contentType = config.headers["Content-Type"];
+      var d = null;
+
+      if (contentType === "multipart/form-data") {
+        d = new FormData();
+      } else if (contentType === "application/x-www-form-urlencoded") {
+        d = new URLSearchParams();
+      }
+
+      for (var key in data) {
+        d.append(key, data[key]);
+      }
+
+      return d;
+    }
+  }, {
+    key: "get",
+    value: function get(url, data, config) {
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.makeUrlWithQuery(url, data), config);
     }
   }, {
     key: "post",
@@ -56484,7 +56489,7 @@ var Ajax = /*#__PURE__*/function () {
   }, {
     key: "delete",
     value: function _delete(url, data, config) {
-      return axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"](url, this.makeBody(data, config), config);
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"](this.makeUrlWithQuery(url, data), config);
     }
   }]);
 
@@ -56509,7 +56514,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./src/main/resources/js/utils.js");
 
 
-vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$constans = _utils_js__WEBPACK_IMPORTED_MODULE_1__["constans"];
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$constants = _utils_js__WEBPACK_IMPORTED_MODULE_1__["constants"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$routes = _utils_js__WEBPACK_IMPORTED_MODULE_1__["routes"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$serverUrl = _utils_js__WEBPACK_IMPORTED_MODULE_1__["serverUrl"];
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$transition = _utils_js__WEBPACK_IMPORTED_MODULE_1__["transition"];
@@ -56625,17 +56630,17 @@ new vue__WEBPACK_IMPORTED_MODULE_1__["default"]({
 /*!****************************************!*\
   !*** ./src/main/resources/js/utils.js ***!
   \****************************************/
-/*! exports provided: constans, routes, serverUrl, transition, uuid */
+/*! exports provided: constants, routes, serverUrl, transition, uuid */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "constans", function() { return constans; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "constants", function() { return constants; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "routes", function() { return routes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "serverUrl", function() { return serverUrl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transition", function() { return transition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uuid", function() { return uuid; });
-var constans = {
+var constants = {
   highRatingId: 1,
   lowRatingId: 2
 };
@@ -56660,6 +56665,12 @@ var routes = {
   },
   root: {
     base: "/"
+  },
+  videoComments: {
+    nextComments: "/video_comments/next_comments"
+  },
+  videoRating: {
+    base: "video_rating"
   },
   watch: {
     base: function base(videoUniqueId) {

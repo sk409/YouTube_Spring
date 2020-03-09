@@ -17,14 +17,12 @@ public class ChannelService {
         this.channelRepository = channelRepository;
     }
 
-    public Channel findById(final Long id) {
-        final Optional<Channel> _channel = channelRepository.findById(id);
-        return _channel.isPresent() ? _channel.get() : null;
+    public Optional<Channel> findById(final Long id) {
+        return channelRepository.findById(id);
     }
 
-    public List<Channel> findByUserId(final Long userId) {
-        final Optional<List<Channel>> _channels = channelRepository.findByUserId(userId);
-        return _channels.isPresent() ? _channels.get() : null;
+    public Optional<List<Channel>> findByUserId(final Long userId) {
+        return channelRepository.findByUserId(userId);
     }
 
     public Channel save(final String name, final Long userId) {

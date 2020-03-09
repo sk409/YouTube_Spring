@@ -27,14 +27,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findById(final Long id) {
-        final Optional<User> _user = userRepository.findById(id);
-        return _user.isPresent() ? _user.get() : null;
+    public Optional<User> findById(final Long id) {
+        return userRepository.findById(id);
     }
 
-    public User findByUsername(final String username) {
-        final Optional<User> _user = userRepository.findByUsername(username);
-        return _user.isPresent() ? _user.get() : null;
+    public Optional<User> findByUsername(final String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Transactional
