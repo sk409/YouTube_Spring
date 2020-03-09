@@ -42,25 +42,38 @@ public class VideoCommentService {
         this.videoCommentRepository = videoCommentRepository;
     }
 
+    public SummaryCount countByVideoIdGroupByVideoId(final Long videoId) {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Tuple> query = builder.createTupleQuery();
+        final Root<VideoComment> root = query.from(VideoComment.class);
+        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+        final Expression<Long> count = builder.count(root.get(VideoComment_.VIDEO_ID));
+        query.select(builder.tuple(videoIdPath, count)).where(builder.equal(videoIdPath, videoId)).groupBy(videoIdPath);
+        final TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
+        final Tuple tuple = typedQuery.getSingleResult();
+        final SummaryCount summaryCount = new SummaryCount(tuple.get(videoIdPath), tuple.get(count));
+        return summaryCount;
+    }
+
     public List<SummaryCount> countByVideoIdInGroupByVideoId(final Long... videoIds) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Tuple> query = builder.createTupleQuery();
         final Root<VideoComment> root = query.from(VideoComment.class);
-        final Path<Long> videoId = root.get(VideoComment_.VIDEO_ID);
+        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
         final Expression<Long> count = builder.count(root.get(VideoComment_.VIDEO_ID));
-        query.select(builder.tuple(videoId, count)).where(root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIds))
-                .groupBy(videoId);
+        query.select(builder.tuple(videoIdPath, count)).where(root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIds))
+                .groupBy(videoIdPath);
         final TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
-        final List<SummaryCount> counts = typedQuery.getResultList().stream()
-                .map(tuple -> new SummaryCount(tuple.get(videoId), tuple.get(count))).collect(Collectors.toList());
-        return counts;
+        final List<SummaryCount> summaryCounts = typedQuery.getResultList().stream()
+                .map(tuple -> new SummaryCount(tuple.get(videoIdPath), tuple.get(count))).collect(Collectors.toList());
+        return summaryCounts;
     }
 
     public Optional<List<VideoComment>> findByVideoId(final Long videoId) {
         return videoCommentRepository.findByVideoId(videoId);
     }
 
-    public List<VideoComment> findByVideoIdOrderByIdDescLimit(Long videoId, Long limit) {
+    public List<VideoComment> findByVideoIdOrderByIdDescLimit(final Long videoId, final Long limit) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
         final Root<VideoComment> root = query.from(VideoComment.class);
@@ -72,7 +85,8 @@ public class VideoCommentService {
         return videoComments;
     }
 
-    public List<VideoComment> findByVideoIdLessThanIdOrderByIdDescLimit(Long videoId, Long id, Long limit) {
+    public List<VideoComment> findByVideoIdLessThanIdOrderByIdDescLimit(final Long videoId, final Long id,
+            final Long limit) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
         final Root<VideoComment> root = query.from(VideoComment.class);
@@ -83,6 +97,12 @@ public class VideoCommentService {
         final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
         final List<VideoComment> videoComments = typedQuery.getResultList();
         return videoComments;
+    }
+
+    public VideoComment save(final String text, final Long parentId, final Long userId, final Long videoId) {
+        final VideoComment videoComment = new VideoComment(text, parentId, userId, videoId);
+        videoCommentRepository.save(videoComment);
+        return videoComment;
     }
 
 }

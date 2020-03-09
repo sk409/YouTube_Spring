@@ -1,6 +1,8 @@
 import ajax from "./ajax.js";
 import NavbarSearch from "./components/NavbarSearch.vue";
+import SnackbarView from "./components/SnackbarView.vue";
 import VideoComment from "./components/VideoComment.vue";
+import VideoCommentForm from "./components/VideoCommentForm.vue";
 import Vue from "vue";
 import vuetify from "./vuetify.js";
 import "./common.js";
@@ -11,11 +13,15 @@ new Vue({
     vuetify,
     components: {
         NavbarSearch,
-        VideoComment
+        SnackbarView,
+        VideoComment,
+        VideoCommentForm
     },
     data: {
         highRating: null,
         lowRating: null,
+        notification: "",
+        snackbar: false,
         userRating: null,
         video: null
     },
@@ -87,6 +93,10 @@ new Vue({
         },
         clickLowRating() {
             this.clickRating(this.$constants.lowRatingId);
+        },
+        createdVideoComment() {
+            this.notification = "コメントを公開しました。";
+            this.snackbar = true;
         },
         fetchNextComments() {
             const data = {

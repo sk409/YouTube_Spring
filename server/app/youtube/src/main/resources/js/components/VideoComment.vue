@@ -33,3 +33,9 @@ export default {
   }
 };
 </script>
+
+<style>
+pre {
+  font-family: "Roboto", sans-serif;
+}
+</style>

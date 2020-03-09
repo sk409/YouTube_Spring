@@ -72,6 +72,8 @@ public class VideosController {
         video.setViews(video.getViews() + 1);
         videoService.save(video);
         final String videoJSON = jsonService.toJSON(video);
+        final VideoCommentService.SummaryCount videoCommentCount = videoCommentService
+                .countByVideoIdGroupByVideoId(video.getId());
         final List<VideoRatingService.SummaryCount> videoRatingCounts = videoRatingService
                 .countByVideoIdAndNotUserIdGroupByVideoIdAndRatingId(video.getId(), user.getId());
         final Optional<String> _highRatingJSON = videoRatingCounts.stream()
@@ -85,6 +87,7 @@ public class VideosController {
                 .map(videoRating -> jsonService.toJSON(videoRating));
         mav.addObject("video", video);
         mav.addObject("videoJSON", videoJSON);
+        mav.addObject("videoCommentCount", videoCommentCount.getCount());
         mav.addObject("highRatingJSON", _highRatingJSON.orElse(null));
         mav.addObject("lowRatingJSON", _lowRatingJSON.orElse(null));
         mav.addObject("userRatingJSON", _userRatingJSON.orElse(null));

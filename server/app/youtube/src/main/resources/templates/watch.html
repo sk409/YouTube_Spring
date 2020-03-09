@@ -76,6 +76,14 @@
                         </div>
                     </div>
                     <v-divider class="mt-3"></v-divider>
+                    <div class="mt-3">
+                        <span th:text="${videoCommentCount}"></span>
+                        <span class="ml-1">件のコメント</span>
+                        <v-icon class="ml-4">mdi-sort-variant</v-icon>
+                        <span class="ml-1">並べ替え</span>
+                    </div>
+                    <video-comment-form :video-id="video.id" class="mt-3" @created="createdVideoComment">
+                    </video-comment-form>
                     <video-comment v-for="comment in video.comments" :key="comment.id" :comment="comment" class="mt-3">
                     </video-comment>
                 </div>
@@ -84,6 +92,7 @@
                 </div>
             </div>
         </div>
+        <snackbar-view :message="notification" :visible.sync="snackbar"></snackbar-view>
     </div>
     <div layout:fragment="scripts">
         <script th:src="@{/js/watch.js}"></script>

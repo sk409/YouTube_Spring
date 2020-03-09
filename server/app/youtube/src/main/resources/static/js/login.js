@@ -56650,6 +56650,7 @@ var routes = {
     base: "/"
   },
   videoComments: {
+    base: "/video_comments",
     nextComments: "/video_comments/next_comments"
   },
   videoRating: {

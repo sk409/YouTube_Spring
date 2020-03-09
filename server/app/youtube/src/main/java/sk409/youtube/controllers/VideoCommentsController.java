@@ -1,6 +1,8 @@
 package sk409.youtube.controllers;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,22 +11,46 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import sk409.youtube.models.User;
 import sk409.youtube.models.VideoComment;
 import sk409.youtube.requests.VideoCommentFetchNextCommentsRequest;
+import sk409.youtube.requests.VideoCommentStoreRequest;
+import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentService;
 
 @Controller
 @RequestMapping("/video_comments")
 public class VideoCommentsController {
 
+    private final UserService userService;
     private final VideoCommentService videoCommentService;
 
-    public VideoCommentsController(final VideoCommentService videoCommentService) {
+    public VideoCommentsController(final UserService userService, final VideoCommentService videoCommentService) {
+        this.userService = userService;
         this.videoCommentService = videoCommentService;
+    }
+
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<VideoComment> store(@Validated @RequestBody final VideoCommentStoreRequest request,
+            final BindingResult bindingResult, final Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        final User user = _user.get();
+        final VideoComment videoComment = videoCommentService.save(request.getText(), request.getParentId(),
+                user.getId(), request.getVideoId());
+        return new ResponseEntity<>(videoComment, HttpStatus.OK);
     }
 
     @GetMapping("/next_comments")
@@ -33,7 +59,6 @@ public class VideoCommentsController {
             @Validated @ModelAttribute VideoCommentFetchNextCommentsRequest request,
             final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final Long oldBefore = request.getOldBefore();
