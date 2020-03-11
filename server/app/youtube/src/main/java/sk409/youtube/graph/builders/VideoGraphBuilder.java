@@ -9,7 +9,7 @@ public class VideoGraphBuilder {
 
     public static final EntityGraphBuilder<Video> reaction = EntityGraphBuilder.load(entityManager -> {
         final EntityGraph<Video> entityGraph = entityManager.createEntityGraph(Video.class);
-        entityGraph.addAttributeNodes(Video_.COMMENTS, Video_.RATING);
+        entityGraph.addAttributeNodes(Video_.RATING);
         return entityGraph;
     });
 

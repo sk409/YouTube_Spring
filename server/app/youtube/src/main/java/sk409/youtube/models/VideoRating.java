@@ -28,6 +28,8 @@ public class VideoRating extends Model {
     private Long userId;
 
     @Column(name = "video_id", nullable = false)
+    @Getter
+    @Setter
     private Long videoId;
 
     @Column(name = "rating_id", nullable = false)

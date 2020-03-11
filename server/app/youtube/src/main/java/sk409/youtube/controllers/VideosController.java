@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,9 +28,12 @@ import sk409.youtube.models.Channel;
 import sk409.youtube.models.Rating;
 import sk409.youtube.models.User;
 import sk409.youtube.models.Video;
+import sk409.youtube.models.VideoComment;
+import sk409.youtube.models.VideoRating;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.responses.VideoCommentResponse;
+import sk409.youtube.responses.VideoRatingResponse;
 import sk409.youtube.responses.VideoResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.JSONService;
@@ -38,6 +42,7 @@ import sk409.youtube.services.VideoCommentService;
 import sk409.youtube.services.VideoRatingService;
 import sk409.youtube.services.VideoService;
 import sk409.youtube.specifications.ChannelSpecifications;
+import sk409.youtube.specifications.VideoCommentSpecifications;
 import sk409.youtube.specifications.VideoSpecifications;
 
 @Controller
@@ -123,7 +128,6 @@ public class VideosController {
     @GetMapping("/channels/{channelId}/videos/upload")
     public ModelAndView showUploadForm(@PathVariable("channelId") final Long channelId, final ModelAndView mav,
             final Principal principal) {
-        System.out.println("**************************************************");
         final ChannelSpecifications specifications = new ChannelSpecifications();
         specifications.setIdEqual(channelId);
         final EntityGraphBuilder<Channel> graphBuilder = ChannelGraphBuilder.owner;
@@ -149,36 +153,32 @@ public class VideosController {
         videoSpecifications.setChannelIdEqual(channelId);
         final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.reaction;
         final List<Video> videos = videoService.findAll(videoSpecifications, videoGraphBuilder);
+        final Long[] videoIds = videos.stream().map(video -> video.getId()).collect(Collectors.toList())
+                .toArray(new Long[] {});
+        final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
+        videoCommentSpecifications.setVideoIdIn(videoIds);
+        final Map<Long, List<VideoComment>> videoCommentsMap = videoCommentService.findAll(videoCommentSpecifications)
+                .stream().collect(Collectors.groupingBy(VideoComment::getVideoId));
         final List<VideoResponse> videoResponses = videos.stream().map(video -> {
             final VideoResponse videoResponse = new VideoResponse(video);
-            final List<VideoCommentResponse> videoCommentResponses = video.getComments().stream()
-                    .map(videoComment -> new VideoCommentResponse(videoComment)).collect(Collectors.toList());
-            videoResponse.setComments(videoCommentResponses);
+            final List<VideoComment> videoComments = videoCommentsMap.get(video.getId());
+            videoResponse.setCommentCount(videoComments == null ? 0 : videoComments.size());
+            final Long highRatingCount = video.getRating().stream()
+                    .filter(videoRating -> videoRating.getRatingId() == Rating.highId).count();
+            final Long lowRatingCount = video.getRating().stream()
+                    .filter(videoRating -> videoRating.getRatingId() == Rating.lowId).count();
+            final Long ratingCount = highRatingCount + lowRatingCount;
+            if (ratingCount == 0L) {
+                videoResponse.setHighRatingRate(0f);
+            } else {
+                videoResponse.setHighRatingRate(highRatingCount.floatValue() / ratingCount.floatValue());
+            }
             return videoResponse;
         }).collect(Collectors.toList());
         channelResponse.setVideos(videoResponses);
-
-        // final List<Video> videos = videoService.findByChannelId(channelId).orElse(new
-        // ArrayList<>());
-        // final List<Long> videoIds = videos.stream().map(video ->
-        // video.getId()).collect(Collectors.toList());
-        // final List<VideoCommentService.SummaryCount> videoCommentCounts =
-        // videoCommentService
-        // .countByVideoIdInGroupByVideoId(videoIds.toArray(new Long[videoIds.size()]));
-        // final List<VideoRatingService.SummaryCount> videoRatingCounts =
-        // videoRatingService
-        // .countByVideoIdInGroupByVideoIdAndRatingId(videoIds.toArray(new
-        // Long[videoIds.size()]));
         final String channelJSON = jsonService.toJSON(channelResponse);
-        // final String videosJSON = videos == null ? "[]" : jsonService.toJSON(videos);
-        // final String videoCommentCountsJSON = jsonService.toJSON(videoCommentCounts);
-        // final String videoRatingCountsJSON = jsonService.toJSON(videoRatingCounts);
         mav.addObject("channelJSON", channelJSON);
-        // mav.addObject("videosJSON", videosJSON);
-        // mav.addObject("videoCommentCountsJSON", videoCommentCountsJSON);
-        // mav.addObject("videoRatingCountsJSON", videoRatingCountsJSON);
         mav.setViewName("channels/videos/upload");
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         return mav;
     }
 

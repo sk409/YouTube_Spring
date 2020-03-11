@@ -24,11 +24,17 @@ public class VideoResponse {
     private Date createdAt;
     private Date updatedAt;
 
+    private Integer commentCount;
+    private Float highRatingRate;
+
     @JsonBackReference("ChannelResponse")
     private ChannelResponse channel;
 
     @JsonManagedReference("video")
     private List<VideoCommentResponse> comments;
+
+    @JsonManagedReference("video")
+    private List<VideoRatingResponse> rating;
 
     public VideoResponse(final Video video) {
         id = video.getId();
