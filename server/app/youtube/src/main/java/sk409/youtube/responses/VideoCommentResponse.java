@@ -17,10 +17,11 @@ public class VideoCommentResponse {
     private Long userId;
     private Long videoId;
 
+    @JsonBackReference("UserResponse")
+    private UserResponse user;
+
     @JsonBackReference("VideoCommentResponse")
     private VideoCommentResponse parent;
-
-    private UserResponse user;
 
     @JsonManagedReference("parent")
     private List<VideoCommentResponse> children;
