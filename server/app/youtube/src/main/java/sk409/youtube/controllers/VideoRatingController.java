@@ -88,7 +88,7 @@ public class VideoRatingController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         final VideoRating videoRating = _videoRating.get();
-        videoRatingService.destroy(videoRating);
+        videoRatingService.delete(videoRating);
         return new ResponseEntity<>(videoRating, HttpStatus.OK);
     }
 
