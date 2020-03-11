@@ -18,8 +18,6 @@ new Vue({
         VideoCommentForm
     },
     data: {
-        highRating: null,
-        lowRating: null,
         notification: "",
         snackbar: false,
         userRating: null,
@@ -41,8 +39,7 @@ new Vue({
         },
         highRatingCount() {
             const userRating = this.userRating && this.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
-            const highRatingCount = this.highRating ? this.highRating.count : 0;
-            return userRating + highRatingCount;
+            return userRating + this.video.highRatingCount;
         },
         highRatingStyle() {
             if (!this.userRating) {
@@ -54,8 +51,7 @@ new Vue({
         },
         lowRatingCount() {
             const userRating = this.userRating && this.userRating.ratingId === this.$constants.lowRatingId ? 1 : 0;
-            const lowRatingCount = this.lowRating ? this.lowRating.count : 0;
-            return userRating + lowRatingCount;
+            return userRating + this.video.lowRatingCount;
         },
         lowRatingStyle() {
             if (!this.userRating) {
@@ -70,8 +66,6 @@ new Vue({
         const video = JSON.parse(this.$refs.video.textContent);
         video.comments = [];
         this.video = video;
-        this.highRating = this.$refs.highRating.textContent ? JSON.parse(this.$refs.highRating.textContent) : null;
-        this.lowRating = this.$refs.lowRating.textContent ? JSON.parse(this.$refs.lowRating.textContent) : null;
         this.userRating = this.$refs.userRating.textContent ? JSON.parse(this.$refs.userRating.textContent) : null;
         this.fetchNextComments();
     },

@@ -29,8 +29,11 @@ import sk409.youtube.models.Rating;
 import sk409.youtube.models.User;
 import sk409.youtube.models.Video;
 import sk409.youtube.models.VideoComment;
+import sk409.youtube.models.VideoRating;
+import sk409.youtube.models.Video_;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
+import sk409.youtube.responses.VideoRatingResponse;
 import sk409.youtube.responses.VideoResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.JSONService;
@@ -42,6 +45,7 @@ import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.ChannelSpecifications;
 import sk409.youtube.query.specifications.UserSpecifications;
 import sk409.youtube.query.specifications.VideoCommentSpecifications;
+import sk409.youtube.query.specifications.VideoRatingSpecifications;
 import sk409.youtube.query.specifications.VideoSpecifications;
 
 @Controller
@@ -81,38 +85,45 @@ public class VideosController {
         final User user = _user.get();
         final VideoSpecifications videoSpecifications = new VideoSpecifications();
         videoSpecifications.setUniqueIdEqual(videoUniqueId);
+        final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.make(Video_.CHANNEL, Video_.RATING);
         final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
         videoQueryComponents.setSpecifications(videoSpecifications);
+        videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
         final Optional<Video> _video = videoService.findOne(videoQueryComponents);
         if (!_video.isPresent()) {
             mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return mav;
         }
         final Video video = _video.get();
-        video.setViews(video.getViews() + 1);
-        videoService.save(video);
-        final String videoJSON = jsonService.toJSON(video);
-        final VideoCommentService.SummaryCount videoCommentCount = videoCommentService
-                .countByVideoIdGroupByVideoId(video.getId());
-        final List<VideoRatingService.SummaryCount> videoRatingCounts = videoRatingService
-                .countByVideoIdAndNotUserIdGroupByVideoIdAndRatingId(video.getId(), user.getId());
-        final Optional<String> _highRatingJSON = videoRatingCounts.stream()
-                .filter(videoRatingCount -> videoRatingCount.getRatingId() == Rating.highId).findFirst()
-                .map(highRatingCount -> jsonService.toJSON(highRatingCount));
-        final Optional<String> _lowRatingJSON = videoRatingCounts.stream()
-                .filter(videoRatingCount -> videoRatingCount.getRatingId() == Rating.lowId).findFirst()
-                .map(lowRatingCount -> jsonService.toJSON(lowRatingCount));
-        // final Optional<String> _userRatingJSON = videoRatingService
-        // .findFirstByUserIdAndVideoId(user.getId(), video.getId())
-        // .map(videoRating -> jsonService.toJSON(videoRating));
-        final Optional<String> _userRatingJSON = Optional.ofNullable(null);
-        mav.addObject("video", video);
+        final VideoResponse videoResponse = new VideoResponse(video);
+        final ChannelResponse channelResponse = new ChannelResponse(video.getChannel());
+        videoResponse.setChannel(channelResponse);
+        final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
+        videoCommentSpecifications.setVideoIdEqual(video.getId());
+        final QueryComponents<VideoComment> videoCommentQuery = new QueryComponents<>();
+        videoCommentQuery.setSpecifications(videoCommentSpecifications);
+        final Optional<Long> commentCount = videoCommentService.findAll(videoCommentQuery)
+                .map(videoComments -> Long.valueOf(videoComments.size()));
+        videoResponse.setCommentCount(commentCount.orElse(0L));
+        final Long highRatingCount = video.getRating().stream()
+                .filter(videoRating -> videoRating.getRatingId() == Rating.highId).count();
+        videoResponse.setHighRatingCount(highRatingCount);
+        final Long lowRatingCount = video.getRating().stream()
+                .filter(videoRating -> videoRating.getRatingId() == Rating.lowId).count();
+        videoResponse.setLowRatingCount(lowRatingCount);
+        final String videoJSON = jsonService.toJSON(videoResponse);
+        final VideoRatingSpecifications videoRatingSpecifications = new VideoRatingSpecifications();
+        videoRatingSpecifications.setUserIdEqual(user.getId());
+        videoRatingSpecifications.setVideoIdEqual(video.getId());
+        final QueryComponents<VideoRating> videoRatingQueryComponents = new QueryComponents<>();
+        videoRatingQueryComponents.setSpecifications(videoRatingSpecifications);
+        final Optional<String> _userRatingJSON = videoRatingService.findOne(videoRatingQueryComponents)
+                .map(videoRating -> jsonService.toJSON(new VideoRatingResponse(videoRating)));
         mav.addObject("videoJSON", videoJSON);
-        mav.addObject("videoCommentCount", videoCommentCount.getCount());
-        mav.addObject("highRatingJSON", _highRatingJSON.orElse(null));
-        mav.addObject("lowRatingJSON", _lowRatingJSON.orElse(null));
         mav.addObject("userRatingJSON", _userRatingJSON.orElse(null));
         mav.setViewName("watch");
+        video.setViews(video.getViews() + 1);
+        videoService.save(video);
         return mav;
     }
 
@@ -166,7 +177,7 @@ public class VideosController {
         final ChannelResponse channelResponse = new ChannelResponse(channel);
         final VideoSpecifications videoSpecifications = new VideoSpecifications();
         videoSpecifications.setChannelIdEqual(channelId);
-        final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.reaction;
+        final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.rating;
         final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
         videoQueryComponents.setSpecifications(videoSpecifications);
         videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
@@ -185,7 +196,7 @@ public class VideosController {
         final List<VideoResponse> videoResponses = videos.stream().map(video -> {
             final VideoResponse videoResponse = new VideoResponse(video);
             final List<VideoComment> vc = videoCommentsMap.get(video.getId());
-            videoResponse.setCommentCount(vc == null ? 0 : vc.size());
+            videoResponse.setCommentCount(vc == null ? 0L : Long.valueOf(vc.size()));
             final Long highRatingCount = video.getRating().stream()
                     .filter(videoRating -> videoRating.getRatingId() == Rating.highId).count();
             final Long lowRatingCount = video.getRating().stream()

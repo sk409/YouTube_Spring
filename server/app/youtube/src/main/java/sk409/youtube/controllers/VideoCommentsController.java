@@ -29,7 +29,6 @@ import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentService;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.UserSpecifications;
-import sk409.youtube.query.specifications.VideoCommentSpecifications;
 
 @Controller
 @RequestMapping("/video_comments")

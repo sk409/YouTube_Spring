@@ -57962,8 +57962,6 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
     VideoCommentForm: _components_VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: {
-    highRating: null,
-    lowRating: null,
     notification: "",
     snackbar: false,
     userRating: null,
@@ -57987,8 +57985,7 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
     },
     highRatingCount: function highRatingCount() {
       var userRating = this.userRating && this.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
-      var highRatingCount = this.highRating ? this.highRating.count : 0;
-      return userRating + highRatingCount;
+      return userRating + this.video.highRatingCount;
     },
     highRatingStyle: function highRatingStyle() {
       if (!this.userRating) {
@@ -58001,8 +57998,7 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
     },
     lowRatingCount: function lowRatingCount() {
       var userRating = this.userRating && this.userRating.ratingId === this.$constants.lowRatingId ? 1 : 0;
-      var lowRatingCount = this.lowRating ? this.lowRating.count : 0;
-      return userRating + lowRatingCount;
+      return userRating + this.video.lowRatingCount;
     },
     lowRatingStyle: function lowRatingStyle() {
       if (!this.userRating) {
@@ -58018,8 +58014,6 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
     var video = JSON.parse(this.$refs.video.textContent);
     video.comments = [];
     this.video = video;
-    this.highRating = this.$refs.highRating.textContent ? JSON.parse(this.$refs.highRating.textContent) : null;
-    this.lowRating = this.$refs.lowRating.textContent ? JSON.parse(this.$refs.lowRating.textContent) : null;
     this.userRating = this.$refs.userRating.textContent ? JSON.parse(this.$refs.userRating.textContent) : null;
     this.fetchNextComments();
   },

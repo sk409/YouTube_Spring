@@ -24,8 +24,10 @@ public class VideoResponse {
     private Date createdAt;
     private Date updatedAt;
 
-    private Integer commentCount;
+    private Long commentCount;
+    private Long highRatingCount;
     private Float highRatingRate;
+    private Long lowRatingCount;
 
     @JsonBackReference("ChannelResponse")
     private ChannelResponse channel;
