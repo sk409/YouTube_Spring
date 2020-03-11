@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,17 +14,23 @@ import sk409.youtube.models.Video;
 import sk409.youtube.repositories.VideoRepository;
 
 @Service
-public class VideoService {
+public class VideoService extends QueryService<Video> {
 
     private final FileService fileService;
     private final PathService pathService;
     private final VideoRepository videoRepository;
 
-    public VideoService(final FileService fileService, final PathService pathService,
+    public VideoService(final EntityManager entityManager, final FileService fileService, final PathService pathService,
             final VideoRepository videoRepository) {
+        super(entityManager);
         this.fileService = fileService;
         this.pathService = pathService;
         this.videoRepository = videoRepository;
+    }
+
+    @Override
+    public Class<Video> classLiteral() {
+        return Video.class;
     }
 
     public Optional<List<Video>> findByChannelId(final Long channelId) {

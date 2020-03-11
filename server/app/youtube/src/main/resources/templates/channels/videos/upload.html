@@ -9,13 +9,15 @@
 
 <body>
     <div layout:fragment="navbar">
-        <navbar-channel th::channel="${channelJSON}" @created:video="createdVideo"></navbar-channel>
+        <navbar-channel :channel="channel" @created:video="createdVideo"></navbar-channel>
     </div>
     <div layout:fragment="content" class="h-100">
-        <div ref="videos" hidden th:text="${videosJSON}"></div>
+        <div ref="channel" hidden th:text="${channelJSON}"></div>
+        <!-- <div th:text="${channelJSON}"></div> -->
+        <!-- <div ref="videos" hidden th:text="${videosJSON}"></div>
         <div ref="videoCommentCounts" hidden th:text="${videoCommentCountsJSON}"></div>
-        <div ref="videoRatingCounts" hidden th:text="${videoRatingCountsJSON}"></div>
-        <channel-scaffold th::channel="${channelJSON}">
+        <div ref="videoRatingCounts" hidden th:text="${videoRatingCountsJSON}"></div> -->
+        <channel-scaffold :channel="channel">
             <template #content>
                 <h3 class="ml-4 mt-4">このチャンネルの動画</h3>
                 <v-tabs v-model="tabs" color="success">
@@ -45,7 +47,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="video in videos" class="video-table-row">
+                                    <tr v-for="video in channel.videos" class="video-table-row">
                                         <td class="video-checkbox">
                                             <div class="d-flex align-start h-100">
                                                 <v-checkbox></v-checkbox>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
@@ -22,7 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Service
-public class VideoCommentService {
+public class VideoCommentService extends QueryService<VideoComment> {
 
     @AllArgsConstructor
     @Data
@@ -38,8 +39,14 @@ public class VideoCommentService {
     private final VideoCommentRepository videoCommentRepository;
 
     public VideoCommentService(final EntityManager entityManager, final VideoCommentRepository videoCommentRepository) {
+        super(entityManager);
         this.entityManager = entityManager;
         this.videoCommentRepository = videoCommentRepository;
+    }
+
+    @Override
+    public Class<VideoComment> classLiteral() {
+        return VideoComment.class;
     }
 
     public SummaryCount countByVideoIdGroupByVideoId(final Long videoId) {
@@ -69,35 +76,102 @@ public class VideoCommentService {
         return summaryCounts;
     }
 
-    public Optional<List<VideoComment>> findByVideoId(final Long videoId) {
-        return videoCommentRepository.findByVideoId(videoId);
-    }
+    // public Optional<List<VideoComment>> findByVideoId(final Long videoId) {
+    // return videoCommentRepository.findByVideoId(videoId);
+    // }
 
-    public List<VideoComment> findByVideoIdOrderByIdDescLimit(final Long videoId, final Long limit) {
-        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
-        final Root<VideoComment> root = query.from(VideoComment.class);
-        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
-        final Path<Long> idPath = root.get(VideoComment_.ID);
-        query.select(root).where(builder.equal(videoIdPath, videoId)).orderBy(builder.desc(idPath));
-        final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
-        final List<VideoComment> videoComments = typedQuery.getResultList();
-        return videoComments;
-    }
+    ///
 
-    public List<VideoComment> findByVideoIdLessThanIdOrderByIdDescLimit(final Long videoId, final Long id,
-            final Long limit) {
-        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<VideoComment> query = builder.createQuery(VideoComment.class);
-        final Root<VideoComment> root = query.from(VideoComment.class);
-        final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
-        final Path<Long> idPath = root.get(VideoComment_.ID);
-        query.select(root).where(builder.and(builder.equal(videoIdPath, videoId), builder.lessThan(idPath, id)))
-                .orderBy(builder.desc(idPath));
-        final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
-        final List<VideoComment> videoComments = typedQuery.getResultList();
-        return videoComments;
-    }
+    // public List<VideoComment> findAll(final Specifications<VideoComment>
+    // specifications,
+    // final EntityGraphBuilder<VideoComment> entityGraphBuilder) {
+    // final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    // final CriteriaQuery<VideoComment> query =
+    // builder.createQuery(VideoComment.class);
+    // final Root<VideoComment> root = query.from(VideoComment.class);
+    // query.select(root);
+    // final Specification<VideoComment> specification = specifications.where();
+    // final Predicate predicate = specification.toPredicate(root, query, builder);
+    // if (predicate != null) {
+    // query.where(predicate);
+    // }
+    // final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+    // final EntityGraph<VideoComment> entityGraph =
+    // entityGraphBuilder.build(entityManager);
+    // typedQuery.setHint(entityGraphBuilder.getType(), entityGraph);
+    // final List<VideoComment> videoComments = typedQuery.getResultList();
+    // return videoComments;
+    // }
+    ///
+
+    // public List<VideoComment> findByVideoIdOrderByIdDescLimit(final Long videoId,
+    // final Long limit) {
+    // final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    // final CriteriaQuery<VideoComment> query =
+    // builder.createQuery(VideoComment.class);
+    // final Root<VideoComment> root = query.from(VideoComment.class);
+    // final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+    // final Path<Long> idPath = root.get(VideoComment_.ID);
+    // query.select(root).where(builder.equal(videoIdPath,
+    // videoId)).orderBy(builder.desc(idPath));
+    // final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+    // final List<VideoComment> videoComments = typedQuery.getResultList();
+    // return videoComments;
+    // }
+
+    // public List<VideoComment>
+    // findByVideoIdAndParentIdIsNullOrderByIdDescLimit(final Long videoId, final
+    // Long limit) {
+    // final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    // final CriteriaQuery<VideoComment> query =
+    // builder.createQuery(VideoComment.class);
+    // final Root<VideoComment> root = query.from(VideoComment.class);
+    // final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+    // final Path<Long> idPath = root.get(VideoComment_.ID);
+    // final Path<Long> parentIdPath = root.get(VideoComment_.PARENT_ID);
+    // query.select(root).where(builder.and(builder.equal(videoIdPath, videoId),
+    // builder.isNull(parentIdPath)))
+    // .orderBy(builder.desc(idPath));
+    // final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+    // final List<VideoComment> videoComments = typedQuery.getResultList();
+    // return videoComments;
+    // }
+
+    // public List<VideoComment> findByVideoIdLessThanIdOrderByIdDescLimit(final
+    // Long videoId, final Long id,
+    // final Long limit) {
+    // final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    // final CriteriaQuery<VideoComment> query =
+    // builder.createQuery(VideoComment.class);
+    // final Root<VideoComment> root = query.from(VideoComment.class);
+    // final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+    // final Path<Long> idPath = root.get(VideoComment_.ID);
+    // query.select(root).where(builder.and(builder.equal(videoIdPath, videoId),
+    // builder.lessThan(idPath, id)))
+    // .orderBy(builder.desc(idPath));
+    // final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+    // final List<VideoComment> videoComments = typedQuery.getResultList();
+    // return videoComments;
+    // }
+
+    // public List<VideoComment>
+    // findByVideoIdLessThanIdAndParentIdIsNullOrderByIdDescLimit(final Long
+    // videoId,
+    // final Long id, final Long limit) {
+    // final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    // final CriteriaQuery<VideoComment> query =
+    // builder.createQuery(VideoComment.class);
+    // final Root<VideoComment> root = query.from(VideoComment.class);
+    // final Path<Long> videoIdPath = root.get(VideoComment_.VIDEO_ID);
+    // final Path<Long> idPath = root.get(VideoComment_.ID);
+    // final Path<Long> parentIdPath = root.get(VideoComment_.PARENT_ID);
+    // query.select(root).where(builder.and(builder.equal(videoIdPath, videoId),
+    // builder.lessThan(idPath, id),
+    // builder.isNull(parentIdPath))).orderBy(builder.desc(idPath));
+    // final TypedQuery<VideoComment> typedQuery = entityManager.createQuery(query);
+    // final List<VideoComment> videoComments = typedQuery.getResultList();
+    // return videoComments;
+    // }
 
     public VideoComment save(final String text, final Long parentId, final Long userId, final Long videoId) {
         final VideoComment videoComment = new VideoComment(text, parentId, userId, videoId);

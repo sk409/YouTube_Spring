@@ -1974,6 +1974,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ChannelMenu_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ChannelMenu.vue */ "./src/main/resources/js/components/ChannelMenu.vue");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 //
 //
 //
@@ -1989,8 +1991,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
-      type: Object,
-      required: true
+      required: true,
+      validator: function validator(v) {
+        return _typeof(v) === "object" || v === null;
+      }
     }
   },
   components: {
@@ -2011,6 +2015,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SnackbarView_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SnackbarView.vue */ "./src/main/resources/js/components/SnackbarView.vue");
 /* harmony import */ var _VideoForm_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VideoForm.vue */ "./src/main/resources/js/components/VideoForm.vue");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 //
 //
 //
@@ -2033,8 +2039,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
-      type: Object,
-      required: true
+      required: true,
+      validator: function validator(v) {
+        return _typeof(v) === "object" || v === null;
+      }
     }
   },
   components: {
@@ -2626,7 +2634,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.channel-menu {\r\n    width: 240px;\r\n    border-right: 1px solid lightgray;\n}\r\n", ""]);
+exports.push([module.i, "\n.channel-menu {\r\n  width: 240px;\r\n  border-right: 1px solid lightgray;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -20774,21 +20782,23 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "h-100" }, [
-    _c(
-      "div",
-      { staticClass: "d-flex h-100" },
-      [
-        _c("ChannelMenu", {
-          staticClass: "h-100",
-          attrs: { channel: _vm.channel }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "flex-fill" }, [_vm._t("content")], 2)
-      ],
-      1
-    )
-  ])
+  return _vm.channel
+    ? _c("div", { staticClass: "h-100" }, [
+        _c(
+          "div",
+          { staticClass: "d-flex h-100" },
+          [
+            _c("ChannelMenu", {
+              staticClass: "h-100",
+              attrs: { channel: _vm.channel }
+            }),
+            _vm._v(" "),
+            _c("div", { staticClass: "flex-fill" }, [_vm._t("content")], 2)
+          ],
+          1
+        )
+      ])
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -20812,71 +20822,73 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "v-app-bar",
-    [
-      _c("v-app-bar-nav-icon"),
-      _vm._v(" "),
-      _c("v-spacer"),
-      _vm._v(" "),
-      _c("input", {
-        attrs: { type: "text", placeholder: "チャンネル内で検索" }
-      }),
-      _vm._v(" "),
-      _c("v-spacer"),
-      _vm._v(" "),
-      _c(
-        "v-btn",
-        {
-          attrs: { color: "grey", depressed: "", outlined: "" },
-          on: {
-            click: function($event) {
-              _vm.dialogVideo = true
-            }
-          }
-        },
+  return _vm.channel
+    ? _c(
+        "v-app-bar",
         [
-          _c("v-icon", { staticClass: "primary--text" }, [
-            _vm._v("mdi-video-plus")
-          ]),
+          _c("v-app-bar-nav-icon"),
           _vm._v(" "),
-          _c("span", { staticClass: "black--text ml-1" }, [_vm._v("作成")])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "v-dialog",
-        {
-          attrs: { width: "70%" },
-          model: {
-            value: _vm.dialogVideo,
-            callback: function($$v) {
-              _vm.dialogVideo = $$v
+          _c("v-spacer"),
+          _vm._v(" "),
+          _c("input", {
+            attrs: { type: "text", placeholder: "チャンネル内で検索" }
+          }),
+          _vm._v(" "),
+          _c("v-spacer"),
+          _vm._v(" "),
+          _c(
+            "v-btn",
+            {
+              attrs: { color: "grey", depressed: "", outlined: "" },
+              on: {
+                click: function($event) {
+                  _vm.dialogVideo = true
+                }
+              }
             },
-            expression: "dialogVideo"
-          }
-        },
-        [
-          _c("VideoForm", {
-            attrs: { channel: _vm.channel },
-            on: { created: _vm.createdVideo }
+            [
+              _c("v-icon", { staticClass: "primary--text" }, [
+                _vm._v("mdi-video-plus")
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "black--text ml-1" }, [_vm._v("作成")])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-dialog",
+            {
+              attrs: { width: "70%" },
+              model: {
+                value: _vm.dialogVideo,
+                callback: function($$v) {
+                  _vm.dialogVideo = $$v
+                },
+                expression: "dialogVideo"
+              }
+            },
+            [
+              _c("VideoForm", {
+                attrs: { channel: _vm.channel },
+                on: { created: _vm.createdVideo }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("SnackbarView", {
+            attrs: { message: _vm.notification, visible: _vm.snackbar },
+            on: {
+              "update:visible": function($event) {
+                _vm.snackbar = $event
+              }
+            }
           })
         ],
         1
-      ),
-      _vm._v(" "),
-      _c("SnackbarView", {
-        attrs: { message: _vm.notification, visible: _vm.snackbar },
-        on: {
-          "update:visible": function($event) {
-            _vm.snackbar = $event
-          }
-        }
-      })
-    ],
-    1
-  )
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -75514,45 +75526,40 @@ new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
     NavbarChannel: _components_NavbarChannel_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: {
-    tabs: "tab-upload",
-    videos: []
+    channel: null,
+    tabs: "tab-upload"
   },
   mounted: function mounted() {
-    var _this = this;
-
-    var videos = JSON.parse(this.$refs.videos.textContent);
-
-    var videoCommentCounts = lodash__WEBPACK_IMPORTED_MODULE_0___default.a.groupBy(JSON.parse(this.$refs.videoCommentCounts.textContent), "videoId");
-
-    var videoRatingCounts = lodash__WEBPACK_IMPORTED_MODULE_0___default.a.groupBy(JSON.parse(this.$refs.videoRatingCounts.textContent), "videoId");
-
-    videos.forEach(function (video) {
-      var videoCommentCount = videoCommentCounts[video.id];
-      video.commentCount = videoCommentCount ? videoCommentCount[0].count : 0;
-      var videoRatingCount = videoRatingCounts[video.id];
-
-      if (!videoRatingCount) {
-        return;
-      }
-
-      var sum = 0;
-      var highRatingCount = videoRatingCount[_this.$constants.highRatingId];
-
-      if (highRatingCount) {
-        sum += highRatingCount.count;
-      }
-
-      var lowRatingCount = videoRatingCount[_this.$constants.lowRatingId];
-
-      if (lowRatingCount) {
-        sum += lowRatingCount.count;
-      }
-
-      if (sum !== 0) {
-        video.highRatingRate = highRatingCount.count / sum;
-      }
-    });
-    this.videos = videos;
+    this.channel = JSON.parse(this.$refs.channel.textContent); // const videos = JSON.parse(this.$refs.videos.textContent);
+    // const videoCommentCounts = _.groupBy(
+    //     JSON.parse(this.$refs.videoCommentCounts.textContent),
+    //     "videoId"
+    // );
+    // const videoRatingCounts = _.groupBy(
+    //     JSON.parse(this.$refs.videoRatingCounts.textContent),
+    //     "videoId"
+    // );
+    // videos.forEach(video => {
+    //     const videoCommentCount = videoCommentCounts[video.id];
+    //     video.commentCount = videoCommentCount ? videoCommentCount[0].count : 0;
+    //     const videoRatingCount = videoRatingCounts[video.id];
+    //     if (!videoRatingCount) {
+    //         return;
+    //     }
+    //     let sum = 0;
+    //     const highRatingCount = videoRatingCount[this.$constants.highRatingId];
+    //     if (highRatingCount) {
+    //         sum += highRatingCount.count;
+    //     }
+    //     const lowRatingCount = videoRatingCount[this.$constants.lowRatingId];
+    //     if (lowRatingCount) {
+    //         sum += lowRatingCount.count;
+    //     }
+    //     if (sum !== 0) {
+    //         video.highRatingRate = highRatingCount.count / sum;
+    //     }
+    // });
+    // this.videos = videos;
   },
   methods: {
     createdVideo: function createdVideo() {

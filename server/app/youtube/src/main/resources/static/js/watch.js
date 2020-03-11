@@ -2077,41 +2077,54 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+/* harmony import */ var _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VideoCommentForm.vue */ "./src/main/resources/js/components/VideoCommentForm.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     comment: {
-      validator: function validator(v) {
-        return _typeof(v) === "object" || v === null;
-      },
+      type: Object,
       required: true
     }
+  },
+  components: {
+    VideoCommentForm: _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      videoCommentForm: false
+    };
   }
 });
 
@@ -2145,6 +2158,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
+    parentId: {
+      type: Number
+    },
     videoId: {
       type: Number,
       required: true
@@ -2164,6 +2180,11 @@ __webpack_require__.r(__webpack_exports__);
         text: this.comment,
         videoId: this.videoId
       };
+
+      if (this.parentId) {
+        data.parentId = this.parentId;
+      }
+
       this.loading = true;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.videoComments.base, data).then(function (response) {
         _this.comment = "";
@@ -3349,53 +3370,89 @@ var render = function() {
   return _c("div", { staticClass: "d-flex" }, [
     _c("div"),
     _vm._v(" "),
-    _c("div", [
-      _c("div", [_vm._v(_vm._s(_vm.comment.user.nickname))]),
-      _vm._v(" "),
-      _c("pre", [_vm._v(_vm._s(_vm.comment.text))]),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "d-flex justify-space-between mt-3" },
-        [
-          _c(
-            "div",
-            [
-              _c(
-                "v-btn",
-                { attrs: { icon: "" } },
-                [_c("v-icon", [_vm._v("mdi-thumb-up")])],
-                1
-              ),
-              _vm._v(" "),
-              _c("span", [_vm._v("426")])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "ml-2" },
-            [
-              _c(
-                "v-btn",
-                { attrs: { icon: "" } },
-                [_c("v-icon", [_vm._v("mdi-thumb-down")])],
-                1
-              ),
-              _vm._v(" "),
-              _c("span", [_vm._v("32")])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("v-btn", { staticClass: "ml-2", attrs: { text: "" } }, [
-            _vm._v("返信")
-          ])
-        ],
-        1
-      )
-    ])
+    _c(
+      "div",
+      { staticClass: "flex-fill" },
+      [
+        _c("div", [_vm._v(_vm._s(_vm.comment.user.nickname))]),
+        _vm._v(" "),
+        _c("pre", [_vm._v(_vm._s(_vm.comment.text))]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "d-flex mt-3" },
+          [
+            _c(
+              "div",
+              [
+                _c(
+                  "v-btn",
+                  { attrs: { icon: "" } },
+                  [_c("v-icon", [_vm._v("mdi-thumb-up")])],
+                  1
+                ),
+                _vm._v(" "),
+                _c("span", [_vm._v("426")])
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "ml-2" },
+              [
+                _c(
+                  "v-btn",
+                  { attrs: { icon: "" } },
+                  [_c("v-icon", [_vm._v("mdi-thumb-down")])],
+                  1
+                ),
+                _vm._v(" "),
+                _c("span", [_vm._v("32")])
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "v-btn",
+              {
+                staticClass: "ml-2",
+                attrs: { text: "" },
+                on: {
+                  click: function($event) {
+                    _vm.videoCommentForm = true
+                  }
+                }
+              },
+              [_vm._v("返信")]
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c("VideoCommentForm", {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.videoCommentForm,
+              expression: "videoCommentForm"
+            }
+          ],
+          staticClass: "w-100",
+          attrs: {
+            "parent-id": _vm.comment.id,
+            "video-id": _vm.comment.videoId
+          },
+          on: {
+            cancel: function($event) {
+              _vm.videoCommentForm = false
+            }
+          }
+        })
+      ],
+      1
+    )
   ])
 }
 var staticRenderFns = []
@@ -3442,9 +3499,19 @@ var render = function() {
         "div",
         { staticClass: "d-flex" },
         [
-          _c("v-btn", { staticClass: "ml-auto", attrs: { text: "" } }, [
-            _vm._v("キャンセル")
-          ]),
+          _c(
+            "v-btn",
+            {
+              staticClass: "ml-auto",
+              attrs: { text: "" },
+              on: {
+                click: function($event) {
+                  return _vm.$emit("cancel")
+                }
+              }
+            },
+            [_vm._v("キャンセル")]
+          ),
           _vm._v(" "),
           _c(
             "v-btn",

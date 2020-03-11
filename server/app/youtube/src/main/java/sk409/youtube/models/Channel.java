@@ -1,5 +1,7 @@
 package sk409.youtube.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,13 +10,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="channels")
+@Table(name = "channels")
 public class Channel extends Model {
 
     @Id
@@ -32,13 +35,19 @@ public class Channel extends Model {
     @Setter
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     @Getter
     @Setter
     private User user;
 
-    public Channel() {}
+    @OneToMany(mappedBy = "channel")
+    @Getter
+    @Setter
+    private List<Video> videos;
+
+    public Channel() {
+    }
 
     public Channel(final String name, final Long userId) {
         this.name = name;

@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import sk409.youtube.models.Channel;
 import sk409.youtube.models.User;
 import sk409.youtube.requests.ChannelStoreRequest;
+import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.UserService;
+import sk409.youtube.specifications.ChannelSpecifications;
 
 @Controller
 @RequestMapping("/channels")
@@ -52,18 +54,27 @@ public class ChannelsController {
 
     @GetMapping("/last_selected")
     @ResponseBody
-    public ResponseEntity<Channel> lastSelected(Principal principal) {
+    public ResponseEntity<ChannelResponse> lastSelected(Principal principal) {
         final String username = principal.getName();
         final Optional<User> _user = userService.findByUsername(username);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final User user = _user.get();
-        final Optional<List<Channel>> _channels = channelService.findByUserId(user.getId());
-        if (!_channels.isPresent()) {
+        // final Optional<List<Channel>> _channels =
+        // channelService.findByUserId(user.getId());
+        final ChannelSpecifications specifications = new ChannelSpecifications();
+        specifications.setUserIdEqual(user.getId());
+        final Optional<Channel> _channel = channelService.findOne(specifications);
+        // if (!_channels.isPresent()) {
+        // return new ResponseEntity<>(HttpStatus.OK);
+        // }
+        if (!_channel.isPresent()) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(_channels.get().get(0), HttpStatus.OK);
+        final Channel channel = _channel.get();
+        final ChannelResponse response = new ChannelResponse(channel);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

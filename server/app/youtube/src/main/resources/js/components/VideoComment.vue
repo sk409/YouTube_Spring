@@ -1,10 +1,10 @@
 <template>
   <div class="d-flex">
     <div></div>
-    <div>
+    <div class="flex-fill">
       <div>{{comment.user.nickname}}</div>
       <pre>{{comment.text}}</pre>
-      <div class="d-flex justify-space-between mt-3">
+      <div class="d-flex mt-3">
         <div>
           <v-btn icon>
             <v-icon>mdi-thumb-up</v-icon>
@@ -17,19 +17,35 @@
           </v-btn>
           <span>32</span>
         </div>
-        <v-btn text class="ml-2">返信</v-btn>
+        <v-btn text class="ml-2" @click="videoCommentForm=true">返信</v-btn>
       </div>
+      <VideoCommentForm
+        v-show="videoCommentForm"
+        :parent-id="comment.id"
+        :video-id="comment.videoId"
+        class="w-100"
+        @cancel="videoCommentForm=false"
+      ></VideoCommentForm>
     </div>
   </div>
 </template>
 
 <script>
+import VideoCommentForm from "./VideoCommentForm.vue";
 export default {
   props: {
     comment: {
-      validator: v => typeof v === "object" || v === null,
+      type: Object,
       required: true
     }
+  },
+  components: {
+    VideoCommentForm
+  },
+  data() {
+    return {
+      videoCommentForm: false
+    };
   }
 };
 </script>

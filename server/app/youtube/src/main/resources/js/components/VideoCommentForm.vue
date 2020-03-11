@@ -2,7 +2,7 @@
   <div>
     <v-text-field v-model="comment" color="grey" type="text" placeholder="公開のコメントを入力"></v-text-field>
     <div class="d-flex">
-      <v-btn text class="ml-auto">キャンセル</v-btn>
+      <v-btn text class="ml-auto" @click="$emit('cancel')">キャンセル</v-btn>
       <v-btn
         color="success"
         :disabled="comment.length === 0"
@@ -17,6 +17,9 @@
 import ajax from "../ajax.js";
 export default {
   props: {
+    parentId: {
+      type: Number
+    },
     videoId: {
       type: Number,
       required: true
@@ -34,6 +37,9 @@ export default {
         text: this.comment,
         videoId: this.videoId
       };
+      if (this.parentId) {
+        data.parentId = this.parentId;
+      }
       this.loading = true;
       ajax.post(this.$routes.videoComments.base, data).then(response => {
         this.comment = "";

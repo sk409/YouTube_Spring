@@ -1,5 +1,8 @@
 package sk409.youtube.models;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,14 +11,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="video_comments")
-public class VideoComment extends Model {
+@Table(name = "video_comments")
+public class VideoComment extends Model implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,36 +45,43 @@ public class VideoComment extends Model {
     @Setter
     private Long userId;
 
-    @Column(name="video_id", nullable = false)
+    @Column(name = "video_id", nullable = false)
     @Getter
     @Setter
     private Long videoId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     @Getter
     @Setter
     private VideoComment parent;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     @Getter
     @Setter
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     @Getter
     @Setter
     private Video video;
 
-    public VideoComment() {}
+    @OneToMany(mappedBy = "parent")
+    @JsonIgnore
+    @Getter
+    @Setter
+    private List<VideoComment> children;
+
+    public VideoComment() {
+    }
 
     public VideoComment(final String text, final Long parentId, final Long userId, final Long videoId) {
         this.text = text;
         this.parentId = parentId;
         this.userId = userId;
         this.videoId = videoId;
-    }    
+    }
 
 }
