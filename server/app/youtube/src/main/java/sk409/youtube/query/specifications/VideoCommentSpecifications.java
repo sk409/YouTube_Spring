@@ -1,4 +1,4 @@
-package sk409.youtube.specifications;
+package sk409.youtube.query.specifications;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -11,19 +11,19 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Long parentIdEqual;
     private Long[] videoIdIn;
 
-    public Specification<VideoComment> equalToParentId() {
+    public Specification<VideoComment> where() {
+        return Specification.where(equalToParentId()).and(inVideoId());
+    }
+
+    private Specification<VideoComment> equalToParentId() {
         return parentIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(VideoComment_.PARENT_ID), parentIdEqual);
         };
     }
 
-    public Specification<VideoComment> inVideoId() {
+    private Specification<VideoComment> inVideoId() {
         return videoIdIn == null ? null : (root, query, builder) -> {
             return root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIdIn);
         };
-    }
-
-    public Specification<VideoComment> where() {
-        return Specification.where(equalToParentId()).and(inVideoId());
     }
 }

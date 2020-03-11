@@ -1,4 +1,4 @@
-package sk409.youtube.specifications;
+package sk409.youtube.query.specifications;
 
 import org.springframework.data.jpa.domain.Specification;
 

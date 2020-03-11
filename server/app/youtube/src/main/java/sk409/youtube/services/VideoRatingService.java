@@ -23,7 +23,7 @@ import sk409.youtube.models.VideoRating_;
 import sk409.youtube.repositories.VideoRatingRepository;
 
 @Service
-public class VideoRatingService {
+public class VideoRatingService extends QueryService<VideoRating> {
 
     @AllArgsConstructor
     @Data
@@ -41,8 +41,14 @@ public class VideoRatingService {
     private final VideoRatingRepository videoRatingRepository;
 
     public VideoRatingService(final EntityManager entityManager, final VideoRatingRepository videoRatingRepository) {
+        super(entityManager);
         this.entityManager = entityManager;
         this.videoRatingRepository = videoRatingRepository;
+    }
+
+    @Override
+    public Class<VideoRating> classLiteral() {
+        return VideoRating.class;
     }
 
     public List<SummaryCount> countByVideoIdAndNotUserIdGroupByVideoIdAndRatingId(final Long videoId,
@@ -55,8 +61,7 @@ public class VideoRatingService {
         final Path<Long> ratingIdPath = root.get(VideoRating_.RATING_ID);
         final Expression<Long> count = builder.count(root.get(VideoRating_.VIDEO_ID));
         query.select(builder.tuple(videoIdPath, ratingIdPath, count))
-                .where(builder.and(builder.equal(videoIdPath, videoId), builder.notEqual(
-                        userIdPath, userId)))
+                .where(builder.and(builder.equal(videoIdPath, videoId), builder.notEqual(userIdPath, userId)))
                 .groupBy(videoIdPath, ratingIdPath);
         final TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
         final List<SummaryCount> counts = typedQuery.getResultList().stream()
@@ -100,10 +105,6 @@ public class VideoRatingService {
     public VideoRating destroy(VideoRating videoRating) {
         videoRatingRepository.delete(videoRating);
         return videoRating;
-    }
-
-    public Optional<VideoRating> findFirstByUserIdAndVideoId(Long userId, Long videoId) {
-        return videoRatingRepository.findFirstByUserIdAndVideoId(userId, videoId);
     }
 
     public VideoRating save(Long userId, Long videoId, Long ratingId) {

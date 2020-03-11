@@ -22,14 +22,6 @@ public class ChannelService extends QueryService<Channel> {
         return Channel.class;
     }
 
-    // public Optional<Channel> findById(final Long id) {
-    // return channelRepository.findById(id);
-    // }
-
-    // public Optional<List<Channel>> findByUserId(final Long userId) {
-    // return channelRepository.findByUserId(userId);
-    // }
-
     public Channel save(final String name, final Long userId) {
         final Channel channel = new Channel(name, userId);
         channelRepository.save(channel);

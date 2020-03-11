@@ -21,7 +21,9 @@ import sk409.youtube.requests.ChannelStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.UserService;
-import sk409.youtube.specifications.ChannelSpecifications;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.ChannelSpecifications;
+import sk409.youtube.query.specifications.UserSpecifications;
 
 @Controller
 @RequestMapping("/channels")
@@ -43,7 +45,11 @@ public class ChannelsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -56,19 +62,20 @@ public class ChannelsController {
     @ResponseBody
     public ResponseEntity<ChannelResponse> lastSelected(Principal principal) {
         final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final User user = _user.get();
-        // final Optional<List<Channel>> _channels =
-        // channelService.findByUserId(user.getId());
-        final ChannelSpecifications specifications = new ChannelSpecifications();
-        specifications.setUserIdEqual(user.getId());
-        final Optional<Channel> _channel = channelService.findOne(specifications);
-        // if (!_channels.isPresent()) {
-        // return new ResponseEntity<>(HttpStatus.OK);
-        // }
+        final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
+        channelSpecifications.setUserIdEqual(user.getId());
+        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
+        channelQueryComponents.setSpecifications(channelSpecifications);
+        final Optional<Channel> _channel = channelService.findOne(channelQueryComponents);
         if (!_channel.isPresent()) {
             return new ResponseEntity<>(HttpStatus.OK);
         }

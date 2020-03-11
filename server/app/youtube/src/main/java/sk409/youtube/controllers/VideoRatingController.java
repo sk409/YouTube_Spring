@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import sk409.youtube.models.User;
 import sk409.youtube.models.VideoRating;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.UserSpecifications;
+import sk409.youtube.query.specifications.VideoRatingSpecifications;
 import sk409.youtube.requests.VideoRatingDestroyRequest;
 import sk409.youtube.requests.VideoRatingStoreRequest;
 import sk409.youtube.services.UserService;
@@ -43,7 +46,11 @@ public class VideoRatingController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,13 +69,21 @@ public class VideoRatingController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         final User user = _user.get();
-        final Optional<VideoRating> _videoRating = videoRatingService.findFirstByUserIdAndVideoId(user.getId(),
-                request.getVideoId());
+        final VideoRatingSpecifications videoRatingSpecifications = new VideoRatingSpecifications();
+        videoRatingSpecifications.setUserIdEqual(user.getId());
+        videoRatingSpecifications.setVideoIdEqual(request.getVideoId());
+        final QueryComponents<VideoRating> videoRatingQueryComponents = new QueryComponents<>();
+        videoRatingQueryComponents.setSpecifications(videoRatingSpecifications);
+        final Optional<VideoRating> _videoRating = videoRatingService.findOne(videoRatingQueryComponents);
         if (!_videoRating.isPresent()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

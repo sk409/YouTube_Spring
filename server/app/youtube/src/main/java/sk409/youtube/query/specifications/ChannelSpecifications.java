@@ -1,4 +1,4 @@
-package sk409.youtube.specifications;
+package sk409.youtube.query.specifications;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -11,19 +11,19 @@ public class ChannelSpecifications implements Specifications<Channel> {
     private Long idEqual;
     private Long userIdEqual;
 
-    public Specification<Channel> equalToId() {
+    public Specification<Channel> where() {
+        return Specification.where(equalToId()).and(equalToUserId());
+    }
+
+    private Specification<Channel> equalToId() {
         return idEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Channel_.ID), idEqual);
         };
     }
 
-    public Specification<Channel> equalToUserId() {
+    private Specification<Channel> equalToUserId() {
         return userIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Channel_.USER_ID), userIdEqual);
         };
-    }
-
-    public Specification<Channel> where() {
-        return Specification.where(equalToId()).and(equalToUserId());
     }
 }

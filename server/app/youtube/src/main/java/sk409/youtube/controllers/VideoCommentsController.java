@@ -1,6 +1,7 @@
 package sk409.youtube.controllers;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,9 @@ import sk409.youtube.responses.UserResponse;
 import sk409.youtube.responses.VideoCommentResponse;
 import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentService;
-import sk409.youtube.specifications.VideoCommentSpecifications;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.UserSpecifications;
+import sk409.youtube.query.specifications.VideoCommentSpecifications;
 
 @Controller
 @RequestMapping("/video_comments")
@@ -48,7 +51,11 @@ public class VideoCommentsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -66,10 +73,14 @@ public class VideoCommentsController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        final VideoCommentSpecifications specifications = new VideoCommentSpecifications();
-        specifications.setParentIdEqual(5L);
-        final List<VideoComment> videoComments = videoCommentService.findAll(specifications,
-                VideoCommentGraphBuilder.watch);
+        final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
+        videoCommentQueryComponents.setEntityGraphBuilder(VideoCommentGraphBuilder.watch);
+        final Optional<List<VideoComment>> _videoComments = videoCommentService.findAll(videoCommentQueryComponents);
+        if (!_videoComments.isPresent()) {
+            final List<VideoCommentResponse> empty = new ArrayList<VideoCommentResponse>();
+            return new ResponseEntity<>(empty, HttpStatus.OK);
+        }
+        final List<VideoComment> videoComments = _videoComments.get();
         final List<VideoCommentResponse> responses = videoComments.stream().map(videoComment -> {
             final VideoCommentResponse response = new VideoCommentResponse(videoComment);
             final UserResponse userResponse = new UserResponse(videoComment.getUser());

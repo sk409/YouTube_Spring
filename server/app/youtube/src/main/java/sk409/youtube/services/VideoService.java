@@ -2,8 +2,6 @@ package sk409.youtube.services;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -31,14 +29,6 @@ public class VideoService extends QueryService<Video> {
     @Override
     public Class<Video> classLiteral() {
         return Video.class;
-    }
-
-    public Optional<List<Video>> findByChannelId(final Long channelId) {
-        return videoRepository.findByChannelId(channelId);
-    }
-
-    public Optional<Video> findByUniqueId(final String uniqueId) {
-        return videoRepository.findByUniqueId(uniqueId);
     }
 
     public Video save(final String title, final String overview, final Float duration, final String uniqueId,
