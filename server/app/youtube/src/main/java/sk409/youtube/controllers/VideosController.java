@@ -105,11 +105,13 @@ public class VideosController {
         final Optional<Long> commentCount = videoCommentService.findAll(videoCommentQuery)
                 .map(videoComments -> Long.valueOf(videoComments.size()));
         videoResponse.setCommentCount(commentCount.orElse(0L));
-        final Long highRatingCount = video.getRating().stream()
-                .filter(videoRating -> videoRating.getRatingId() == Rating.highId).count();
+        final Long highRatingCount = video.getRating().stream().filter(
+                videoRating -> videoRating.getRatingId() == Rating.highId && videoRating.getUserId() != user.getId())
+                .count();
         videoResponse.setHighRatingCount(highRatingCount);
-        final Long lowRatingCount = video.getRating().stream()
-                .filter(videoRating -> videoRating.getRatingId() == Rating.lowId).count();
+        final Long lowRatingCount = video.getRating().stream().filter(
+                videoRating -> videoRating.getRatingId() == Rating.lowId && videoRating.getUserId() != user.getId())
+                .count();
         videoResponse.setLowRatingCount(lowRatingCount);
         final String videoJSON = jsonService.toJSON(videoResponse);
         final VideoRatingSpecifications videoRatingSpecifications = new VideoRatingSpecifications();

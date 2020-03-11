@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,7 +33,12 @@ public abstract class QueryService<T> {
     }
 
     public Optional<T> findOne(final QueryComponents<T> queryComponents) {
-        return Optional.ofNullable(makeTypedQuery(queryComponents).setMaxResults(1).getSingleResult());
+        final TypedQuery<T> typedQuery = makeTypedQuery(queryComponents).setMaxResults(1);
+        try {
+            return Optional.of(typedQuery.getSingleResult());
+        } catch (NoResultException noResultException) {
+            return Optional.ofNullable(null);
+        }
     }
 
     private TypedQuery<T> makeTypedQuery(final QueryComponents<T> queryComponents) {
