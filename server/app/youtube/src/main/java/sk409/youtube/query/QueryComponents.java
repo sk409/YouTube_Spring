@@ -8,5 +8,5 @@ import sk409.youtube.query.specifications.Specifications;
 public class QueryComponents<T> {
     private EntityGraphBuilder<T> entityGraphBuilder;
     private Specifications<T> specifications;
-    private Long limit;
+    private Integer limit;
 }

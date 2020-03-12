@@ -58110,6 +58110,9 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
         width: percentage + "%"
       };
     },
+    fetchedAllComments: function fetchedAllComments() {
+      return this.video.commentCount === this.video.comments.length;
+    },
     highRatingCount: function highRatingCount() {
       var userRating = this.userRating && this.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
       return userRating + this.video.highRatingCount;
@@ -58172,6 +58175,10 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
     fetchNextComments: function fetchNextComments() {
       var _this2 = this;
 
+      if (this.fetchedAllComments) {
+        return;
+      }
+
       var data = {
         videoId: this.video.id,
         exclude: this.video.comments.map(function (videoComment) {
@@ -58179,14 +58186,9 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
         }),
         limit: 10
       };
-
-      if (this.video.comments.length !== 0) {
-        data.oldBefore = this.video.comments[this.video.comments.length - 1];
-      }
-
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.nextComments, data).then(function (response) {
         console.log(response);
-        _this2.video.comments = _this2.video.comments.concat(_this2.video.comments.concat(response.data));
+        _this2.video.comments = _this2.video.comments.concat(response.data);
       });
     },
     giveRating: function giveRating(ratingId) {

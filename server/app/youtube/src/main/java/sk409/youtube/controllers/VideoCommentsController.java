@@ -78,8 +78,6 @@ public class VideoCommentsController {
     public ResponseEntity<List<VideoCommentResponse>> fetchNextComments(
             @Validated @ModelAttribute VideoCommentFetchNextCommentsRequest request, final BindingResult bindingResult,
             final Principal principal) {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println(request.getExclude());
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -94,7 +92,7 @@ public class VideoCommentsController {
         }
         final User user = _user.get();
         final Optional<List<VideoComment>> _videoComments = videoCommentService
-                .findPopularComments(request.getVideoId(), request.getLimit(), VideoCommentGraphBuilder.watch);
+                .findPopularComments(request.getVideoId(), request.getLimit(), request.getExclude(), VideoCommentGraphBuilder.watch);
         if (!_videoComments.isPresent()) {
             final List<VideoCommentResponse> empty = new ArrayList<>();
             return new ResponseEntity<>(empty, HttpStatus.OK);

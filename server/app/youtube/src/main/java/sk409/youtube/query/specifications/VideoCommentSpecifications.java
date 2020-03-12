@@ -9,12 +9,13 @@ import sk409.youtube.models.VideoComment_;
 @Data
 public class VideoCommentSpecifications implements Specifications<VideoComment> {
     private Long[] idIn;
+    private Long[] idNotIn;
     private Long parentIdEqual;
     private Long videoIdEqual;
     private Long[] videoIdIn;
 
     public Specification<VideoComment> where() {
-        return Specification.where(equalToParentId()).and(equalToVideoId()).and(idIn()).and(inVideoId());
+        return Specification.where(equalToParentId()).and(equalToVideoId()).and(inId()).and(inVideoId()).and(notInId());
     }
 
     private Specification<VideoComment> equalToParentId() {
@@ -29,7 +30,7 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
         };
     }
 
-    private Specification<VideoComment> idIn() {
+    private Specification<VideoComment> inId() {
         return idIn == null ? null : (root, query, builder) -> {
             return root.get(VideoComment_.ID).in((Object[]) idIn);
         };
@@ -38,6 +39,12 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Specification<VideoComment> inVideoId() {
         return videoIdIn == null ? null : (root, query, builder) -> {
             return root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIdIn);
+        };
+    }
+
+    private Specification<VideoComment> notInId() {
+        return idNotIn == null ? null : (root, query, builder) -> {
+            return root.get(VideoComment_.ID).in((Object[]) idNotIn).not();
         };
     }
 }

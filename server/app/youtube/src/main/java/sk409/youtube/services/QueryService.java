@@ -28,7 +28,11 @@ public abstract class QueryService<T> {
     protected abstract Class<T> classLiteral();
 
     public Optional<List<T>> findAll(final QueryComponents<T> queryComponents) {
-        final List<T> list = makeTypedQuery(queryComponents).getResultList();
+        final TypedQuery<T> typedQuery = makeTypedQuery(queryComponents);
+        if (queryComponents.getLimit() != null) {
+            typedQuery.setMaxResults(queryComponents.getLimit());
+        }
+        final List<T> list = typedQuery.getResultList();
         return Optional.ofNullable(list.size() == 0 ? null : list);
     }
 

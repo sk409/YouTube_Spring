@@ -39,6 +39,9 @@ new Vue({
                 width: percentage + "%"
             };
         },
+        fetchedAllComments() {
+            return this.video.commentCount === this.video.comments.length;
+        },
         highRatingCount() {
             const userRating = this.userRating && this.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
             return userRating + this.video.highRatingCount;
@@ -95,17 +98,17 @@ new Vue({
             this.snackbar = true;
         },
         fetchNextComments() {
+            if (this.fetchedAllComments) {
+                return;
+            }
             const data = {
                 videoId: this.video.id,
                 exclude: this.video.comments.map(videoComment => videoComment.id),
                 limit: 10
             };
-            if (this.video.comments.length !== 0) {
-                data.oldBefore = this.video.comments[this.video.comments.length - 1];
-            }
             ajax.get(this.$routes.videoComments.nextComments, data).then(response => {
                 console.log(response);
-                this.video.comments = this.video.comments.concat(this.video.comments.concat(response.data));
+                this.video.comments = this.video.comments.concat(response.data);
             });
         },
         giveRating(ratingId) {

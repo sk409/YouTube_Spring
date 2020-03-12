@@ -73,11 +73,16 @@ public class VideoCommentService extends QueryService<VideoComment> {
     }
 
     public Optional<List<VideoComment>> findPopularComments(final Long videoId, final Integer limit,
-            final EntityGraphBuilder<VideoComment> videoCommentGraphBuilder) {
+            final List<Long> exclude, final EntityGraphBuilder<VideoComment> videoCommentGraphBuilder) {
+        System.out.println("================================================");
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
         videoCommentSpecifications.setVideoIdEqual(videoId);
+        if (exclude.size() != 0) {
+            videoCommentSpecifications.setIdNotIn(exclude.toArray(new Long[] {}));
+        }
         final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
         videoCommentQueryComponents.setSpecifications(videoCommentSpecifications);
+        videoCommentQueryComponents.setLimit(limit);
         final Optional<List<VideoComment>> _videoComments = findAll(videoCommentQueryComponents);
         if (!_videoComments.isPresent()) {
             return Optional.ofNullable(null);
@@ -121,6 +126,7 @@ public class VideoCommentService extends QueryService<VideoComment> {
             return videoComments.stream().filter(videoComment -> videoComment.getId() == scoreEntry.getKey())
                     .findFirst().get();
         }).collect(Collectors.toList());
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         return Optional.of(resultList);
     }
 
