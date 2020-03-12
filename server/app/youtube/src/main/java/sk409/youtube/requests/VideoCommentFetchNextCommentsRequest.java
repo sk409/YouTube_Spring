@@ -1,5 +1,8 @@
 package sk409.youtube.requests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -10,9 +13,9 @@ public class VideoCommentFetchNextCommentsRequest {
     @NotNull
     private Integer limit;
 
-    private Long oldBefore;
-
     @NotNull
     private Long videoId;
 
+    @NotNull
+    private List<Long> exclude = new ArrayList<>();
 }

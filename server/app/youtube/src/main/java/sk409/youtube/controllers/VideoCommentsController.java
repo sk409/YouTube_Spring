@@ -78,6 +78,8 @@ public class VideoCommentsController {
     public ResponseEntity<List<VideoCommentResponse>> fetchNextComments(
             @Validated @ModelAttribute VideoCommentFetchNextCommentsRequest request, final BindingResult bindingResult,
             final Principal principal) {
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println(request.getExclude());
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

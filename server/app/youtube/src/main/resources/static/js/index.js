@@ -56910,38 +56910,7 @@ var Ajax = /*#__PURE__*/function () {
 
       for (var key in query) {
         var value = query[key];
-
-        if (Array.isArray(value)) {
-          if (!key.endsWith("[]")) {
-            key += "[]";
-          }
-
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = value[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var item = _step.value;
-              url += "".concat(key, "=").concat(item, "&");
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                _iterator["return"]();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-        } else {
-          url += "".concat(key, "=").concat(value, "&");
-        }
+        url += "".concat(key, "=").concat(value, "&");
       }
 
       return url;

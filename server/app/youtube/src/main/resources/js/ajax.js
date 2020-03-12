@@ -6,16 +6,7 @@ class Ajax {
         url += "?";
         for (let key in query) {
             const value = query[key];
-            if (Array.isArray(value)) {
-                if (!key.endsWith("[]")) {
-                    key += "[]";
-                }
-                for (const item of value) {
-                    url += `${key}=${item}&`;
-                }
-            } else {
-                url += `${key}=${value}&`;
-            }
+            url += `${key}=${value}&`;
         }
         return url;
     }

@@ -1,5 +1,6 @@
 import ajax from "./ajax.js";
 import NavbarSearch from "./components/NavbarSearch.vue";
+import ScrollView from "./components/ScrollView.vue";
 import SnackbarView from "./components/SnackbarView.vue";
 import VideoComment from "./components/VideoComment.vue";
 import VideoCommentForm from "./components/VideoCommentForm.vue";
@@ -13,6 +14,7 @@ new Vue({
     vuetify,
     components: {
         NavbarSearch,
+        ScrollView,
         SnackbarView,
         VideoComment,
         VideoCommentForm
@@ -95,14 +97,15 @@ new Vue({
         fetchNextComments() {
             const data = {
                 videoId: this.video.id,
-                limit: 20
+                exclude: this.video.comments.map(videoComment => videoComment.id),
+                limit: 10
             };
             if (this.video.comments.length !== 0) {
                 data.oldBefore = this.video.comments[this.video.comments.length - 1];
             }
             ajax.get(this.$routes.videoComments.nextComments, data).then(response => {
                 console.log(response);
-                this.video.comments = this.video.comments.concat(response.data);
+                this.video.comments = this.video.comments.concat(this.video.comments.concat(response.data));
             });
         },
         giveRating(ratingId) {
