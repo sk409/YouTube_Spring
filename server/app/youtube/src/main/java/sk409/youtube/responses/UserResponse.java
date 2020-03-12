@@ -20,6 +20,9 @@ public class UserResponse {
     @JsonManagedReference("user")
     private List<ChannelResponse> channels;
 
+    // @JsonManagedReference("user")
+    // private List<VideoCommentResponse> videoComments;
+
     public UserResponse(final User user) {
         id = user.getId();
         username = user.getUsername();

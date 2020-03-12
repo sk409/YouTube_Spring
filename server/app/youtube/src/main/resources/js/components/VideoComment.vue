@@ -9,13 +9,13 @@
           <v-btn icon>
             <v-icon>mdi-thumb-up</v-icon>
           </v-btn>
-          <span>426</span>
+          <span>{{highRatingCount}}</span>
         </div>
         <div class="ml-2">
           <v-btn icon>
             <v-icon>mdi-thumb-down</v-icon>
           </v-btn>
-          <span>32</span>
+          <span>{{lowRatingCount}}</span>
         </div>
         <v-btn text class="ml-2" @click="videoCommentForm=true">返信</v-btn>
       </div>
@@ -46,6 +46,36 @@ export default {
     return {
       videoCommentForm: false
     };
+  },
+  computed: {
+    highRatingCount() {
+      if (!this.comment) {
+        return 0;
+      }
+      const highRatingCount = this.comment.highRatingCount;
+      if (!this.comment.userRating) {
+        return highRatingCount;
+      }
+      const add =
+        this.comment.userRating.ratingId === this.$constants.highRatingId
+          ? 1
+          : 0;
+      return highRatingCount + add;
+    },
+    lowRatingCount() {
+      if (!this.comment) {
+        return 0;
+      }
+      const lowRatingCount = this.comment.lowRatingCount;
+      if (!this.comment.userRating) {
+        return lowRatingCount;
+      }
+      const add =
+        this.comment.userRating.ratingId === this.$constants.lowRatingId
+          ? 1
+          : 0;
+      return lowRatingCount + add;
+    }
   }
 };
 </script>

@@ -2125,6 +2125,36 @@ __webpack_require__.r(__webpack_exports__);
     return {
       videoCommentForm: false
     };
+  },
+  computed: {
+    highRatingCount: function highRatingCount() {
+      if (!this.comment) {
+        return 0;
+      }
+
+      var highRatingCount = this.comment.highRatingCount;
+
+      if (!this.comment.userRating) {
+        return highRatingCount;
+      }
+
+      var add = this.comment.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
+      return highRatingCount + add;
+    },
+    lowRatingCount: function lowRatingCount() {
+      if (!this.comment) {
+        return 0;
+      }
+
+      var lowRatingCount = this.comment.lowRatingCount;
+
+      if (!this.comment.userRating) {
+        return lowRatingCount;
+      }
+
+      var add = this.comment.userRating.ratingId === this.$constants.lowRatingId ? 1 : 0;
+      return lowRatingCount + add;
+    }
   }
 });
 
@@ -3392,7 +3422,7 @@ var render = function() {
                   1
                 ),
                 _vm._v(" "),
-                _c("span", [_vm._v("426")])
+                _c("span", [_vm._v(_vm._s(_vm.highRatingCount))])
               ],
               1
             ),
@@ -3408,7 +3438,7 @@ var render = function() {
                   1
                 ),
                 _vm._v(" "),
-                _c("span", [_vm._v("32")])
+                _c("span", [_vm._v(_vm._s(_vm.lowRatingCount))])
               ],
               1
             ),
@@ -58047,7 +58077,7 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
 
       var data = {
         videoId: this.video.id,
-        limit: 10
+        limit: 20
       };
 
       if (this.video.comments.length !== 0) {
@@ -58055,6 +58085,7 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
       }
 
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.nextComments, data).then(function (response) {
+        console.log(response);
         _this2.video.comments = _this2.video.comments.concat(response.data);
       });
     },

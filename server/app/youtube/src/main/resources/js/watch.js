@@ -95,12 +95,13 @@ new Vue({
         fetchNextComments() {
             const data = {
                 videoId: this.video.id,
-                limit: 10
+                limit: 20
             };
             if (this.video.comments.length !== 0) {
                 data.oldBefore = this.video.comments[this.video.comments.length - 1];
             }
             ajax.get(this.$routes.videoComments.nextComments, data).then(response => {
+                console.log(response);
                 this.video.comments = this.video.comments.concat(response.data);
             });
         },

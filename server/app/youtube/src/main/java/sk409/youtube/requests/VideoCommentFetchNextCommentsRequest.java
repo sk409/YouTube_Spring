@@ -8,7 +8,7 @@ import lombok.Data;
 public class VideoCommentFetchNextCommentsRequest {
 
     @NotNull
-    private Long limit;
+    private Integer limit;
 
     private Long oldBefore;
 

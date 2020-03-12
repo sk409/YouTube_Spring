@@ -74,6 +74,11 @@ public class VideoComment extends Model implements Serializable {
     @Setter
     private List<VideoComment> children;
 
+    @OneToMany(mappedBy = "videoComment")
+    @Getter
+    @Setter
+    private List<VideoCommentRating> rating;
+
     public VideoComment() {
     }
 

@@ -22,17 +22,17 @@ public class VideoCommentRating extends Model {
     @Getter
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "user_id", nullable = false)
     @Getter
     @Setter
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "video_comment_id", nullable = false)
     @Getter
     @Setter
     private Long videoCommentId;
 
-    @Column(nullable = false)
+    @Column(name = "rating_id", nullable = false)
     @Getter
     @Setter
     private Long ratingId;
