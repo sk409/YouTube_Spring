@@ -8,34 +8,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Service;
 
 import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.models.Rating;
-import sk409.youtube.models.Video;
-import sk409.youtube.models.Video_;
+import sk409.youtube.models.User;
 import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.sorting.VideoCommentSorting;
+import sk409.youtube.query.specifications.UserSpecifications;
 import sk409.youtube.query.specifications.VideoCommentRatingSpecifications;
 import sk409.youtube.query.specifications.VideoCommentSpecifications;
 import sk409.youtube.models.VideoComment;
-import sk409.youtube.models.VideoComment_;
 import sk409.youtube.models.VideoCommentRating;
-import sk409.youtube.models.VideoCommentRating_;
 import sk409.youtube.repositories.VideoCommentRepository;
+import sk409.youtube.responses.UserResponse;
+import sk409.youtube.responses.VideoCommentRatingResponse;
+import sk409.youtube.responses.VideoCommentResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,15 +46,15 @@ public class VideoCommentService extends QueryService<VideoComment> {
 
     }
 
-    private final EntityManager entityManager;
+    private final UserService userService;
     private final VideoCommentRatingService videoCommentRatingService;
     private final VideoCommentRepository videoCommentRepository;
 
-    public VideoCommentService(final EntityManager entityManager,
+    public VideoCommentService(final EntityManager entityManager, final UserService userService,
             final VideoCommentRatingService videoCommentRatingService,
             final VideoCommentRepository videoCommentRepository) {
         super(entityManager);
-        this.entityManager = entityManager;
+        this.userService = userService;
         this.videoCommentRatingService = videoCommentRatingService;
         this.videoCommentRepository = videoCommentRepository;
     }
@@ -72,10 +64,10 @@ public class VideoCommentService extends QueryService<VideoComment> {
         return VideoComment.class;
     }
 
-    public Optional<List<VideoComment>> findPopularComments(final Long videoId, final Integer limit,
+    public Optional<List<VideoComment>> findNextComments(final Long videoId, final Integer limit,
             final List<Long> exclude, final EntityGraphBuilder<VideoComment> videoCommentGraphBuilder) {
-        System.out.println("================================================");
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
+        videoCommentSpecifications.setParentIdIsNull(true);
         videoCommentSpecifications.setVideoIdEqual(videoId);
         if (exclude.size() != 0) {
             videoCommentSpecifications.setIdNotIn(exclude.toArray(new Long[] {}));
@@ -97,7 +89,7 @@ public class VideoCommentService extends QueryService<VideoComment> {
         final Optional<List<VideoCommentRating>> _videoCommentRatingList = videoCommentRatingService
                 .findAll(videoCommentRatingQueryComponents);
         if (!_videoCommentRatingList.isPresent()) {
-            return Optional.of(videoComments.subList(0, limit));
+            return Optional.of(videoComments.subList(0, Math.min(videoComments.size(), limit)));
         }
         final List<VideoCommentRating> videoCommentRatingList = _videoCommentRatingList.get();
         final Map<Long, List<VideoCommentRating>> videoCommentRatingMap = videoCommentRatingList.stream()
@@ -126,13 +118,98 @@ public class VideoCommentService extends QueryService<VideoComment> {
             return videoComments.stream().filter(videoComment -> videoComment.getId() == scoreEntry.getKey())
                     .findFirst().get();
         }).collect(Collectors.toList());
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         return Optional.of(resultList);
+    }
+
+    public Optional<List<VideoComment>> findReplies(final Long videoCommentId, final Long newAfterVideoCommentId,
+            final Integer limit) {
+        final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
+        videoCommentSpecifications.setParentIdEqual(videoCommentId);
+        final VideoCommentSorting videoCommentSorting = new VideoCommentSorting();
+        videoCommentSorting.setIdAsc(true);
+        final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
+        videoCommentQueryComponents.setSpecifications(videoCommentSpecifications);
+        videoCommentQueryComponents.setSorting(videoCommentSorting);
+        videoCommentQueryComponents.setLimit(limit);
+        return findAll(videoCommentQueryComponents);
     }
 
     public VideoComment save(final String text, final Long parentId, final Long userId, final Long videoId) {
         final VideoComment videoComment = new VideoComment(text, parentId, userId, videoId);
         videoCommentRepository.save(videoComment);
         return videoComment;
+    }
+
+    public Optional<List<VideoCommentResponse>> publicWatch(final List<VideoComment> videoComments,
+            final String username) {
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = userService.findOne(userQueryComponents);
+        if (!_user.isPresent()) {
+            return Optional.ofNullable(null);
+        }
+        final User user = _user.get();
+        final Long[] videoCommentIds = videoComments.stream().map(videoComment -> videoComment.getId())
+                .collect(Collectors.toList()).toArray(new Long[] {});
+        final VideoCommentRatingSpecifications videoCommentRatingSpecifications = new VideoCommentRatingSpecifications();
+        videoCommentRatingSpecifications.setUserIdNotEqual(user.getId());
+        videoCommentRatingSpecifications.setVideoCommentIdIn(videoCommentIds);
+        final QueryComponents<VideoCommentRating> videoCommentRatingQueryComponents = new QueryComponents<>();
+        videoCommentRatingQueryComponents.setSpecifications(videoCommentRatingSpecifications);
+        final Optional<Map<Long, List<VideoCommentRating>>> _videoCommentRatingMap = videoCommentRatingService
+                .findAll(videoCommentRatingQueryComponents).map(videoCommentRatingList -> videoCommentRatingList
+                        .stream().collect(Collectors.groupingBy(VideoCommentRating::getVideoCommentId)));
+        final VideoCommentRatingSpecifications videoCommentUserRatingSpecifications = new VideoCommentRatingSpecifications();
+        videoCommentUserRatingSpecifications.setUserIdEqual(user.getId());
+        videoCommentUserRatingSpecifications.setVideoCommentIdIn(videoCommentIds);
+        final QueryComponents<VideoCommentRating> videoCommentUserRatingQueryComponents = new QueryComponents<>();
+        videoCommentUserRatingQueryComponents.setSpecifications(videoCommentUserRatingSpecifications);
+        final Optional<Map<Long, List<VideoCommentRating>>> _videoCommentUserRatingMap = videoCommentRatingService
+                .findAll(videoCommentUserRatingQueryComponents)
+                .map(userVideoCommentRatingList -> userVideoCommentRatingList.stream()
+                        .collect(Collectors.groupingBy(VideoCommentRating::getVideoCommentId)));
+        final List<VideoCommentResponse> videoCommentResponses = videoComments.stream().map(videoComment -> {
+            final VideoCommentResponse videoCommentResponse = new VideoCommentResponse(videoComment);
+            final UserResponse userResponse = new UserResponse(videoComment.getUser());
+            videoCommentResponse.setUser(userResponse);
+            final int childCount = videoComment.getChildren().size();
+            videoCommentResponse.setChildCount((long) childCount);
+            final Optional<List<VideoCommentRating>> _videoCommentHighRatingList = _videoCommentRatingMap
+                    .map(videoCommentRatingMap -> videoCommentRatingMap.get(videoComment.getId()))
+                    .map(videoCommentRatingList -> videoCommentRatingList == null ? null
+                            : videoCommentRatingList.stream()
+                                    .filter(videoCommentRating -> videoCommentRating.getRatingId() == Rating.highId)
+                                    .collect(Collectors.toList()));
+            final Long highRatingCount = _videoCommentHighRatingList
+                    .map(videoCOmmentHighRatingList -> videoCOmmentHighRatingList == null ? 0L
+                            : videoCOmmentHighRatingList.size())
+                    .orElse(0L);
+            videoCommentResponse.setHighRatingCount(highRatingCount);
+            final Optional<List<VideoCommentRating>> _videoCommentLowRatingList = _videoCommentRatingMap
+                    .map(videoCommentRatingMap -> videoCommentRatingMap.get(videoComment.getId()))
+                    .map(videoCommentRatingList -> videoCommentRatingList == null ? null
+                            : videoCommentRatingList.stream()
+                                    .filter(videoCommentRating -> videoCommentRating.getRatingId() == Rating.lowId)
+                                    .collect(Collectors.toList()));
+            final Long lowRatingCount = _videoCommentLowRatingList.map(
+                    videoCOmmenLowRatingList -> videoCOmmenLowRatingList == null ? 0L : videoCOmmenLowRatingList.size())
+                    .orElse(0L);
+            videoCommentResponse.setLowRatingCount(lowRatingCount);
+            _videoCommentUserRatingMap.ifPresent(userVideoCommentRatingMap -> {
+                final List<VideoCommentRating> userVideoCommentRatingList = userVideoCommentRatingMap
+                        .get(videoComment.getId());
+                if (userVideoCommentRatingList == null) {
+                    return;
+                }
+                final VideoCommentRating userVideoCommentRating = userVideoCommentRatingList.get(0);
+                final VideoCommentRatingResponse userVideoCommentRatingResponse = new VideoCommentRatingResponse(
+                        userVideoCommentRating);
+                videoCommentResponse.setUserRating(userVideoCommentRatingResponse);
+            });
+            return videoCommentResponse;
+        }).collect(Collectors.toList());
+        return Optional.of(videoCommentResponses);
     }
 }

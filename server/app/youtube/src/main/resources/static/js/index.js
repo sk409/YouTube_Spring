@@ -57286,7 +57286,8 @@ var routes = {
   },
   videoComments: {
     base: "/video_comments",
-    nextComments: "/video_comments/next_comments"
+    nextComments: "/video_comments/next_comments",
+    replies: "/video_comments/replies"
   },
   videoRating: {
     base: "video_rating"

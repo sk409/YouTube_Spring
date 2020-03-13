@@ -17,6 +17,7 @@ public class VideoCommentResponse {
     private Long userId;
     private Long videoId;
 
+    private Long childCount;
     private Long highRatingCount;
     private Long lowRatingCount;
 

@@ -11,11 +11,13 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Long[] idIn;
     private Long[] idNotIn;
     private Long parentIdEqual;
+    private Boolean parentIdIsNull;
     private Long videoIdEqual;
     private Long[] videoIdIn;
 
     public Specification<VideoComment> where() {
-        return Specification.where(equalToParentId()).and(equalToVideoId()).and(inId()).and(inVideoId()).and(notInId());
+        return Specification.where(equalToParentId()).and(equalToVideoId()).and(inId()).and(inVideoId())
+                .and(isNullParentId()).and(notInId());
     }
 
     private Specification<VideoComment> equalToParentId() {
@@ -39,6 +41,12 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Specification<VideoComment> inVideoId() {
         return videoIdIn == null ? null : (root, query, builder) -> {
             return root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIdIn);
+        };
+    }
+
+    private Specification<VideoComment> isNullParentId() {
+        return parentIdIsNull == null || !parentIdIsNull ? null : (root, query, builder) -> {
+            return root.get(VideoComment_.PARENT_ID).isNull();
         };
     }
 

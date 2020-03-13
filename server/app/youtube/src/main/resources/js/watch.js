@@ -20,6 +20,7 @@ new Vue({
         VideoCommentForm
     },
     data: {
+        fetchingNextComment: false,
         notification: "",
         snackbar: false,
         userRating: null,
@@ -98,17 +99,18 @@ new Vue({
             this.snackbar = true;
         },
         fetchNextComments() {
-            if (this.fetchedAllComments) {
+            if (this.fetchedAllComments || this.fetchingNextComment) {
                 return;
             }
+            this.fetchingNextComment = true;
             const data = {
                 videoId: this.video.id,
                 exclude: this.video.comments.map(videoComment => videoComment.id),
-                limit: 10
+                limit: 5
             };
             ajax.get(this.$routes.videoComments.nextComments, data).then(response => {
-                console.log(response);
                 this.video.comments = this.video.comments.concat(response.data);
+                this.fetchingNextComment = false;
             });
         },
         giveRating(ratingId) {

@@ -99,6 +99,7 @@ public class VideosController {
         final ChannelResponse channelResponse = new ChannelResponse(video.getChannel());
         videoResponse.setChannel(channelResponse);
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
+        videoCommentSpecifications.setParentIdIsNull(true);
         videoCommentSpecifications.setVideoIdEqual(video.getId());
         final QueryComponents<VideoComment> videoCommentQuery = new QueryComponents<>();
         videoCommentQuery.setSpecifications(videoCommentSpecifications);

@@ -2033,7 +2033,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     scroll: function scroll() {
-      var scrollBottom = document.documentElement.scrollTop + document.documentElement.clientHeight;
+      var scrollBottom = Math.ceil(document.documentElement.scrollTop + document.documentElement.clientHeight);
 
       if (scrollBottom === document.documentElement.scrollHeight) {
         this.$emit("scroll:bottom");
@@ -2109,7 +2109,24 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VideoCommentForm.vue */ "./src/main/resources/js/components/VideoCommentForm.vue");
+/* harmony import */ var _ajax_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ajax.js */ "./src/main/resources/js/ajax.js");
+/* harmony import */ var _VideoComment_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VideoComment.vue */ "./src/main/resources/js/components/VideoComment.vue");
+/* harmony import */ var _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VideoCommentForm.vue */ "./src/main/resources/js/components/VideoCommentForm.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2143,7 +2160,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  name: "VideoComment",
   props: {
     comment: {
       type: Object,
@@ -2151,10 +2171,13 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   components: {
-    VideoCommentForm: _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    VideoComment: _VideoComment_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    VideoCommentForm: _VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
+      replies: [],
+      showingReplies: false,
       videoCommentForm: false
     };
   },
@@ -2186,6 +2209,28 @@ __webpack_require__.r(__webpack_exports__);
 
       var add = this.comment.userRating.ratingId === this.$constants.lowRatingId ? 1 : 0;
       return lowRatingCount + add;
+    }
+  },
+  methods: {
+    fetchNextReplies: function fetchNextReplies() {
+      var _this = this;
+
+      var data = {
+        videoCommentId: this.comment.id,
+        limit: 10
+      };
+
+      if (this.replies.length !== 0) {
+        data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
+      }
+
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.replies, data).then(function (response) {
+        _this.replies = _this.replies.concat(response.data);
+      });
+    },
+    showReplies: function showReplies() {
+      this.showingReplies = true;
+      this.fetchNextReplies();
     }
   }
 });
@@ -3535,7 +3580,65 @@ var render = function() {
               _vm.videoCommentForm = false
             }
           }
-        })
+        }),
+        _vm._v(" "),
+        _vm.showingReplies
+          ? _c(
+              "div",
+              {
+                on: {
+                  click: function($event) {
+                    _vm.showReplies = false
+                  }
+                }
+              },
+              [
+                _c(
+                  "div",
+                  { staticClass: "d-flex aling-center success--text" },
+                  [
+                    _c("v-icon", { staticClass: "success--text" }, [
+                      _vm._v("mdi-menu-up")
+                    ]),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(_vm.comment.childCount) + "件の返信を非表示"
+                      )
+                    ])
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _vm._l(_vm.replies, function(reply) {
+                  return _c("VideoComment", {
+                    key: reply.id,
+                    attrs: { comment: reply }
+                  })
+                })
+              ],
+              2
+            )
+          : _vm.comment.childCount !== 0
+          ? _c(
+              "div",
+              {
+                staticClass: "d-flex aling-center success--text",
+                on: { click: _vm.showReplies }
+              },
+              [
+                _c("v-icon", { staticClass: "success--text" }, [
+                  _vm._v("mdi-menu-down")
+                ]),
+                _vm._v(
+                  "\n      " +
+                    _vm._s(_vm.comment.childCount) +
+                    "件の返信を表示\n    "
+                )
+              ],
+              1
+            )
+          : _vm._e()
       ],
       1
     )
@@ -57975,7 +58078,8 @@ var routes = {
   },
   videoComments: {
     base: "/video_comments",
-    nextComments: "/video_comments/next_comments"
+    nextComments: "/video_comments/next_comments",
+    replies: "/video_comments/replies"
   },
   videoRating: {
     base: "video_rating"
@@ -58089,6 +58193,7 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
     VideoCommentForm: _components_VideoCommentForm_vue__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: {
+    fetchingNextComment: false,
     notification: "",
     snackbar: false,
     userRating: null,
@@ -58175,20 +58280,21 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
     fetchNextComments: function fetchNextComments() {
       var _this2 = this;
 
-      if (this.fetchedAllComments) {
+      if (this.fetchedAllComments || this.fetchingNextComment) {
         return;
       }
 
+      this.fetchingNextComment = true;
       var data = {
         videoId: this.video.id,
         exclude: this.video.comments.map(function (videoComment) {
           return videoComment.id;
         }),
-        limit: 10
+        limit: 5
       };
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.nextComments, data).then(function (response) {
-        console.log(response);
         _this2.video.comments = _this2.video.comments.concat(response.data);
+        _this2.fetchingNextComment = false;
       });
     },
     giveRating: function giveRating(ratingId) {

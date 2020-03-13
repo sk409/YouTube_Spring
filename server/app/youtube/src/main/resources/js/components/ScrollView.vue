@@ -11,9 +11,10 @@ export default {
   },
   methods: {
     scroll() {
-      const scrollBottom =
+      const scrollBottom = Math.ceil(
         document.documentElement.scrollTop +
-        document.documentElement.clientHeight;
+          document.documentElement.clientHeight
+      );
       if (scrollBottom === document.documentElement.scrollHeight) {
         this.$emit("scroll:bottom");
       }

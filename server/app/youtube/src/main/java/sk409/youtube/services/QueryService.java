@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.sorting.Sorting;
 
 public abstract class QueryService<T> {
 
@@ -56,6 +57,10 @@ public abstract class QueryService<T> {
             if (predicate != null) {
                 query.where(predicate);
             }
+        }
+        if (queryComponents.getSorting() != null) {
+            final Sorting<T> sorting = queryComponents.getSorting();
+            sorting.sort(root, query, builder);
         }
         final TypedQuery<T> typedQuery = entityManager.createQuery(query);
         if (queryComponents.getEntityGraphBuilder() != null) {

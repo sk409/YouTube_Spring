@@ -26,13 +26,31 @@
         class="w-100"
         @cancel="videoCommentForm=false"
       ></VideoCommentForm>
+      <div v-if="showingReplies" @click="showReplies=false">
+        <div class="d-flex aling-center success--text">
+          <v-icon class="success--text">mdi-menu-up</v-icon>
+          <span>{{comment.childCount}}件の返信を非表示</span>
+        </div>
+        <VideoComment v-for="reply in replies" :key="reply.id" :comment="reply"></VideoComment>
+      </div>
+      <div
+        v-else-if="comment.childCount !== 0"
+        class="d-flex aling-center success--text"
+        @click="showReplies"
+      >
+        <v-icon class="success--text">mdi-menu-down</v-icon>
+        {{comment.childCount}}件の返信を表示
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import ajax from "../ajax.js";
+import VideoComment from "./VideoComment.vue";
 import VideoCommentForm from "./VideoCommentForm.vue";
 export default {
+  name: "VideoComment",
   props: {
     comment: {
       type: Object,
@@ -40,10 +58,13 @@ export default {
     }
   },
   components: {
+    VideoComment,
     VideoCommentForm
   },
   data() {
     return {
+      replies: [],
+      showingReplies: false,
       videoCommentForm: false
     };
   },
@@ -75,6 +96,24 @@ export default {
           ? 1
           : 0;
       return lowRatingCount + add;
+    }
+  },
+  methods: {
+    fetchNextReplies() {
+      const data = {
+        videoCommentId: this.comment.id,
+        limit: 10
+      };
+      if (this.replies.length !== 0) {
+        data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
+      }
+      ajax.get(this.$routes.videoComments.replies, data).then(response => {
+        this.replies = this.replies.concat(response.data);
+      });
+    },
+    showReplies() {
+      this.showingReplies = true;
+      this.fetchNextReplies();
     }
   }
 };
