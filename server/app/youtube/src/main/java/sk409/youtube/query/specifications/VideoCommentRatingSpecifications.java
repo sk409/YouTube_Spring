@@ -9,14 +9,21 @@ import sk409.youtube.models.VideoCommentRating_;
 @Data
 public class VideoCommentRatingSpecifications implements Specifications<VideoCommentRating> {
 
+    private Long idEqual;
     private Long userIdEqual;
     private Long userIdNotEqual;
     private Long videoCommentIdEqual;
     private Long[] videoCommentIdIn;
 
     public Specification<VideoCommentRating> where() {
-        return Specification.where(equalToUserId()).and(equalToVideoCommentId()).and(inVideoCommentId())
-                .and(notEqualToUserId());
+        return Specification.where(equalToId()).and(equalToUserId()).and(equalToVideoCommentId())
+                .and(inVideoCommentId()).and(notEqualToUserId());
+    }
+
+    private Specification<VideoCommentRating> equalToId() {
+        return idEqual == null ? null : (root, query, builder) -> {
+            return builder.equal(root.get(VideoCommentRating_.ID), idEqual);
+        };
     }
 
     private Specification<VideoCommentRating> equalToUserId() {

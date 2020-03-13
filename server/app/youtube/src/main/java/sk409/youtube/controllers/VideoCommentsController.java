@@ -3,9 +3,7 @@ package sk409.youtube.controllers;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,35 +18,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import sk409.youtube.graph.builders.VideoCommentGraphBuilder;
-import sk409.youtube.models.Rating;
 import sk409.youtube.models.User;
 import sk409.youtube.models.VideoComment;
-import sk409.youtube.models.VideoCommentRating;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.UserSpecifications;
 import sk409.youtube.requests.VideoCommentFetchNextCommentsRequest;
 import sk409.youtube.requests.VideoCommentFetchRepliesRequest;
 import sk409.youtube.requests.VideoCommentStoreRequest;
-import sk409.youtube.responses.UserResponse;
-import sk409.youtube.responses.VideoCommentRatingResponse;
 import sk409.youtube.responses.VideoCommentResponse;
 import sk409.youtube.services.UserService;
-import sk409.youtube.services.VideoCommentRatingService;
 import sk409.youtube.services.VideoCommentService;
-import sk409.youtube.query.QueryComponents;
-import sk409.youtube.query.specifications.UserSpecifications;
-import sk409.youtube.query.specifications.VideoCommentRatingSpecifications;
 
 @Controller
 @RequestMapping("/video_comments")
 public class VideoCommentsController {
 
     private final UserService userService;
-    private final VideoCommentRatingService videoCommentRatingService;
     private final VideoCommentService videoCommentService;
 
-    public VideoCommentsController(final UserService userService,
-            final VideoCommentRatingService videoCommentRatingService, final VideoCommentService videoCommentService) {
+    public VideoCommentsController(final UserService userService, final VideoCommentService videoCommentService) {
         this.userService = userService;
-        this.videoCommentRatingService = videoCommentRatingService;
         this.videoCommentService = videoCommentService;
     }
 
@@ -94,8 +83,8 @@ public class VideoCommentsController {
     @GetMapping("/replies")
     @ResponseBody
     private ResponseEntity<List<VideoCommentResponse>> fetchReplies(
-            @Validated @ModelAttribute final VideoCommentFetchRepliesRequest request,
-            final BindingResult bindingResult, final Principal principal) {
+            @Validated @ModelAttribute final VideoCommentFetchRepliesRequest request, final BindingResult bindingResult,
+            final Principal principal) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

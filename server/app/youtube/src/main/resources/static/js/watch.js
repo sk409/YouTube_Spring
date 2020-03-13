@@ -2033,9 +2033,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     scroll: function scroll() {
-      var scrollBottom = Math.ceil(document.documentElement.scrollTop + document.documentElement.clientHeight);
+      var diff = Math.abs(document.documentElement.scrollTop + document.documentElement.clientHeight - document.documentElement.scrollHeight);
 
-      if (scrollBottom === document.documentElement.scrollHeight) {
+      if (diff <= 1) {
         this.$emit("scroll:bottom");
       }
     }
@@ -2182,6 +2182,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    highRating: function highRating() {
+      return !!this.comment.userRating && this.comment.userRating.ratingId === this.$constants.highRatingId;
+    },
     highRatingCount: function highRatingCount() {
       if (!this.comment) {
         return 0;
@@ -2195,6 +2198,9 @@ __webpack_require__.r(__webpack_exports__);
 
       var add = this.comment.userRating.ratingId === this.$constants.highRatingId ? 1 : 0;
       return highRatingCount + add;
+    },
+    lowRating: function lowRating() {
+      return !!this.comment.userRating && this.comment.userRating.ratingId === this.$constants.lowRatingId;
     },
     lowRatingCount: function lowRatingCount() {
       if (!this.comment) {
@@ -2212,8 +2218,38 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    fetchNextReplies: function fetchNextReplies() {
+    clickRating: function clickRating(ratingId) {
       var _this = this;
+
+      if (!this.comment.userRating) {
+        var data = {
+          videoCommentId: this.comment.id,
+          ratingId: ratingId
+        };
+        _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.videoCommentRating.base, data).then(function (response) {
+          _this.comment.userRating = response.data;
+        });
+      } else if (this.comment.userRating.ratingId === ratingId) {
+        _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](this.$routes.videoCommentRating.destroy(this.comment.userRating.id));
+        this.comment.userRating = null;
+      } else {
+        var _data = {
+          videoCommentId: this.comment.id,
+          ratingId: ratingId
+        };
+        _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].put(this.$routes.videoCommentRating.update(this.comment.userRating.id), _data).then(function (response) {
+          _this.comment.userRating = response.data;
+        });
+      }
+    },
+    clickHighRating: function clickHighRating() {
+      this.clickRating(this.$constants.highRatingId);
+    },
+    clickLowRating: function clickLowRating() {
+      this.clickRating(this.$constants.lowRatingId);
+    },
+    fetchNextReplies: function fetchNextReplies() {
+      var _this2 = this;
 
       var data = {
         videoCommentId: this.comment.id,
@@ -2225,8 +2261,19 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.replies, data).then(function (response) {
-        _this.replies = _this.replies.concat(response.data);
+        _this2.replies = _this2.replies.concat(response.data);
       });
+    },
+    ratingStyle: function ratingStyle(applying) {
+      console.log(applying);
+
+      if (applying) {
+        return {
+          color: this.$vuetify.theme.currentTheme.success
+        };
+      }
+
+      return {};
     },
     showReplies: function showReplies() {
       this.showingReplies = true;
@@ -3515,11 +3562,16 @@ var render = function() {
           [
             _c(
               "div",
+              { style: _vm.ratingStyle(_vm.highRating) },
               [
                 _c(
                   "v-btn",
-                  { attrs: { icon: "" } },
-                  [_c("v-icon", [_vm._v("mdi-thumb-up")])],
+                  { attrs: { icon: "" }, on: { click: _vm.clickHighRating } },
+                  [
+                    _c("v-icon", { style: _vm.ratingStyle(_vm.highRating) }, [
+                      _vm._v("mdi-thumb-up")
+                    ])
+                  ],
                   1
                 ),
                 _vm._v(" "),
@@ -3530,12 +3582,16 @@ var render = function() {
             _vm._v(" "),
             _c(
               "div",
-              { staticClass: "ml-2" },
+              { staticClass: "ml-2", style: _vm.ratingStyle(_vm.lowRating) },
               [
                 _c(
                   "v-btn",
-                  { attrs: { icon: "" } },
-                  [_c("v-icon", [_vm._v("mdi-thumb-down")])],
+                  { attrs: { icon: "" }, on: { click: _vm.clickLowRating } },
+                  [
+                    _c("v-icon", { style: _vm.ratingStyle(_vm.lowRating) }, [
+                      _vm._v("mdi-thumb-down")
+                    ])
+                  ],
                   1
                 ),
                 _vm._v(" "),
@@ -57542,6 +57598,11 @@ var Ajax = /*#__PURE__*/function () {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(url, this.makeBody(data, config), config);
     }
   }, {
+    key: "put",
+    value: function put(url, data, config) {
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.put(this.makeUrlWithQuery(url, data), config);
+    }
+  }, {
     key: "delete",
     value: function _delete(url, data, config) {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"](this.makeUrlWithQuery(url, data), config);
@@ -58075,6 +58136,15 @@ var routes = {
   },
   root: {
     base: "/"
+  },
+  videoCommentRating: {
+    base: "/video_comment_rating",
+    destroy: function destroy(id) {
+      return "/video_comment_rating/".concat(id);
+    },
+    update: function update(id) {
+      return "/video_comment_rating/".concat(id);
+    }
   },
   videoComments: {
     base: "/video_comments",

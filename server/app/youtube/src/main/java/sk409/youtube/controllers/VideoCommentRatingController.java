@@ -10,17 +10,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import sk409.youtube.models.User;
 import sk409.youtube.models.VideoCommentRating;
-import sk409.youtube.query.QueryComponents;
-import sk409.youtube.query.specifications.UserSpecifications;
-import sk409.youtube.requests.VideoCommentRatingDestroyRequest;
 import sk409.youtube.requests.VideoCommentRatingStoreRequest;
+import sk409.youtube.requests.VideoCommentRatingUpdateRequest;
+import sk409.youtube.responses.VideoCommentRatingResponse;
 import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentRatingService;
 
@@ -37,28 +38,16 @@ public class VideoCommentRatingController {
         this.videoCommentRatingService = videoCommentRatingService;
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<VideoCommentRating> destroy(
-            @Validated @ModelAttribute final VideoCommentRatingDestroyRequest request,
-            final BindingResult bindingResult, Principal principal) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<VideoCommentRatingResponse> destroy(@PathVariable("id") final Long id) {
+        final Optional<VideoCommentRating> _videoCommentRating = videoCommentRatingService.delete(id);
+        if (!_videoCommentRating.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        final String username = principal.getName();
-        final UserSpecifications userSpecifications = new UserSpecifications();
-        userSpecifications.setUsernameEqual(username);
-        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
-        userQueryComponents.setSpecifications(userSpecifications);
-        final Optional<User> _user = userService.findOne(userQueryComponents);
-        if (!_user.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        final User user = _user.get();
-        final Optional<VideoCommentRating> _videoCommentRating = videoCommentRatingService.delete(user.getId(),
-                request.getVideoCommentId());
-        return _videoCommentRating.isPresent() ? new ResponseEntity<>(_videoCommentRating.get(), HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        final VideoCommentRatingResponse videoCommentRatingResponse = new VideoCommentRatingResponse(
+                _videoCommentRating.get());
+        return new ResponseEntity<>(videoCommentRatingResponse, HttpStatus.OK);
     }
 
     @PostMapping
@@ -70,11 +59,7 @@ public class VideoCommentRatingController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         final String username = principal.getName();
-        final UserSpecifications userSpecifications = new UserSpecifications();
-        userSpecifications.setUsernameEqual(username);
-        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
-        userQueryComponents.setSpecifications(userSpecifications);
-        final Optional<User> _user = userService.findOne(userQueryComponents);
+        final Optional<User> _user = userService.findByUsername(username);
         if (!_user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -83,4 +68,26 @@ public class VideoCommentRatingController {
                 request.getVideoCommentId(), request.getRatingId());
         return new ResponseEntity<>(videoCommentRating, HttpStatus.OK);
     }
+
+    @PutMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<VideoCommentRatingResponse> update(@PathVariable("id") final Long id,
+            @Validated @ModelAttribute final VideoCommentRatingUpdateRequest request, final BindingResult bindingResult,
+            final Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final Optional<VideoCommentRating> _videoCommentRating = videoCommentRatingService.findById(id);
+        if (!_videoCommentRating.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        final VideoCommentRating videoCommentRating = _videoCommentRating.get();
+        videoCommentRating.setRatingId(request.getRatingId());
+        videoCommentRating.setVideoCommentId(request.getVideoCommentId());
+        videoCommentRatingService.save(videoCommentRating);
+        final VideoCommentRatingResponse videoCommentRatingResponse = new VideoCommentRatingResponse(
+                videoCommentRating);
+        return new ResponseEntity<>(videoCommentRatingResponse, HttpStatus.OK);
+    }
+
 }

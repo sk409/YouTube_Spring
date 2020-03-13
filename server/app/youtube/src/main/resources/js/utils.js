@@ -21,6 +21,11 @@ export const routes = {
     root: {
         base: "/"
     },
+    videoCommentRating: {
+        base: "/video_comment_rating",
+        destroy: id => `/video_comment_rating/${id}`,
+        update: id => `/video_comment_rating/${id}`
+    },
     videoComments: {
         base: "/video_comments",
         nextComments: "/video_comments/next_comments",

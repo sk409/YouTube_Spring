@@ -5,15 +5,15 @@
       <div>{{comment.user.nickname}}</div>
       <pre>{{comment.text}}</pre>
       <div class="d-flex mt-3">
-        <div>
-          <v-btn icon>
-            <v-icon>mdi-thumb-up</v-icon>
+        <div :style="ratingStyle(highRating)">
+          <v-btn icon @click="clickHighRating">
+            <v-icon :style="ratingStyle(highRating)">mdi-thumb-up</v-icon>
           </v-btn>
           <span>{{highRatingCount}}</span>
         </div>
-        <div class="ml-2">
-          <v-btn icon>
-            <v-icon>mdi-thumb-down</v-icon>
+        <div class="ml-2" :style="ratingStyle(lowRating)">
+          <v-btn icon @click="clickLowRating">
+            <v-icon :style="ratingStyle(lowRating)">mdi-thumb-down</v-icon>
           </v-btn>
           <span>{{lowRatingCount}}</span>
         </div>
@@ -69,6 +69,12 @@ export default {
     };
   },
   computed: {
+    highRating() {
+      return (
+        !!this.comment.userRating &&
+        this.comment.userRating.ratingId === this.$constants.highRatingId
+      );
+    },
     highRatingCount() {
       if (!this.comment) {
         return 0;
@@ -82,6 +88,12 @@ export default {
           ? 1
           : 0;
       return highRatingCount + add;
+    },
+    lowRating() {
+      return (
+        !!this.comment.userRating &&
+        this.comment.userRating.ratingId === this.$constants.lowRatingId
+      );
     },
     lowRatingCount() {
       if (!this.comment) {
@@ -99,6 +111,41 @@ export default {
     }
   },
   methods: {
+    clickRating(ratingId) {
+      if (!this.comment.userRating) {
+        const data = {
+          videoCommentId: this.comment.id,
+          ratingId
+        };
+        ajax.post(this.$routes.videoCommentRating.base, data).then(response => {
+          this.comment.userRating = response.data;
+        });
+      } else if (this.comment.userRating.ratingId === ratingId) {
+        ajax.delete(
+          this.$routes.videoCommentRating.destroy(this.comment.userRating.id)
+        );
+        this.comment.userRating = null;
+      } else {
+        const data = {
+          videoCommentId: this.comment.id,
+          ratingId
+        };
+        ajax
+          .put(
+            this.$routes.videoCommentRating.update(this.comment.userRating.id),
+            data
+          )
+          .then(response => {
+            this.comment.userRating = response.data;
+          });
+      }
+    },
+    clickHighRating() {
+      this.clickRating(this.$constants.highRatingId);
+    },
+    clickLowRating() {
+      this.clickRating(this.$constants.lowRatingId);
+    },
     fetchNextReplies() {
       const data = {
         videoCommentId: this.comment.id,
@@ -110,6 +157,15 @@ export default {
       ajax.get(this.$routes.videoComments.replies, data).then(response => {
         this.replies = this.replies.concat(response.data);
       });
+    },
+    ratingStyle(applying) {
+      console.log(applying);
+      if (applying) {
+        return {
+          color: this.$vuetify.theme.currentTheme.success
+        };
+      }
+      return {};
     },
     showReplies() {
       this.showingReplies = true;

@@ -2,6 +2,7 @@ package sk409.youtube.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import sk409.youtube.Authority;
 import sk409.youtube.models.User;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.UserSpecifications;
 import sk409.youtube.repositories.UserRepository;
 
 @Service
@@ -31,6 +34,15 @@ public class UserService extends QueryService<User> {
     @Override
     public Class<User> classLiteral() {
         return User.class;
+    }
+
+    public Optional<User> findByUsername(String username) {
+        final UserSpecifications userSpecifications = new UserSpecifications();
+        userSpecifications.setUsernameEqual(username);
+        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
+        userQueryComponents.setSpecifications(userSpecifications);
+        final Optional<User> _user = findOne(userQueryComponents);
+        return _user;
     }
 
     public User registerUser(final String username, final String nickname, final String password, final String email) {

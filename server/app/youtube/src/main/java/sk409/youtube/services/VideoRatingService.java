@@ -37,12 +37,12 @@ public class VideoRatingService extends QueryService<VideoRating> {
         return VideoRating.class;
     }
 
-    public VideoRating delete(VideoRating videoRating) {
+    public VideoRating delete(final VideoRating videoRating) {
         videoRatingRepository.delete(videoRating);
         return videoRating;
     }
 
-    public VideoRating save(Long userId, Long videoId, Long ratingId) {
+    public VideoRating save(final Long userId, final Long videoId, final Long ratingId) {
         final VideoRating videoRating = new VideoRating(userId, videoId, ratingId);
         videoRatingRepository.save(videoRating);
         return videoRating;

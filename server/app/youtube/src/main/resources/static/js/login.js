@@ -56456,6 +56456,11 @@ var Ajax = /*#__PURE__*/function () {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(url, this.makeBody(data, config), config);
     }
   }, {
+    key: "put",
+    value: function put(url, data, config) {
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.put(this.makeUrlWithQuery(url, data), config);
+    }
+  }, {
     key: "delete",
     value: function _delete(url, data, config) {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"](this.makeUrlWithQuery(url, data), config);
@@ -56617,6 +56622,15 @@ var routes = {
   },
   root: {
     base: "/"
+  },
+  videoCommentRating: {
+    base: "/video_comment_rating",
+    destroy: function destroy(id) {
+      return "/video_comment_rating/".concat(id);
+    },
+    update: function update(id) {
+      return "/video_comment_rating/".concat(id);
+    }
   },
   videoComments: {
     base: "/video_comments",

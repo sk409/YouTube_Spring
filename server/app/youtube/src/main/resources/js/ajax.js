@@ -39,6 +39,10 @@ class Ajax {
         return axios.post(url, this.makeBody(data, config), config);
     }
 
+    put(url, data, config) {
+        return axios.put(this.makeUrlWithQuery(url, data), config);
+    }
+
     delete(url, data, config) {
         return axios.delete(this.makeUrlWithQuery(url, data), config);
     }
