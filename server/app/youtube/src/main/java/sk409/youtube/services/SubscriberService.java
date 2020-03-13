@@ -1,5 +1,6 @@
 package sk409.youtube.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -24,6 +25,15 @@ public class SubscriberService extends QueryService<Subscriber> {
     @Override
     public Class<Subscriber> classLiteral() {
         return Subscriber.class;
+    }
+
+    public Optional<List<Subscriber>> findByUserId(final Long userId) {
+        final SubscriberSpecifications subscriberSpecifications = new SubscriberSpecifications();
+        subscriberSpecifications.setUserIdEqual(userId);
+        final QueryComponents<Subscriber> subscriberQueryComponents = new QueryComponents<>();
+        subscriberQueryComponents.setSpecifications(subscriberSpecifications);
+        final Optional<List<Subscriber>> _subscribers = findAll(subscriberQueryComponents);
+        return _subscribers;
     }
 
     public Optional<Subscriber> delete(final Long id) {

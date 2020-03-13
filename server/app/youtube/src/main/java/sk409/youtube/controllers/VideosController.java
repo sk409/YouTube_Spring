@@ -78,8 +78,8 @@ public class VideosController {
     }
 
     @GetMapping("/watch")
-    public ModelAndView watch(@RequestParam("v") final String videoUniqueId, final ModelAndView mav,
-            final Principal principal) {
+    public ModelAndView watch(@RequestParam("v") final String videoUniqueId, final Principal principal,
+            final ModelAndView mav) {
         final String username = principal.getName();
         final Optional<User> _user = userService.findByUsername(username);
         if (!_user.isPresent()) {
@@ -157,8 +157,8 @@ public class VideosController {
     }
 
     @GetMapping("/channels/{channelId}/videos/upload")
-    public ModelAndView showUploadForm(@PathVariable("channelId") final Long channelId, final ModelAndView mav,
-            final Principal principal) {
+    public ModelAndView showUploadForm(@PathVariable("channelId") final Long channelId, final Principal principal,
+            final ModelAndView mav) {
         final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
         channelSpecifications.setIdEqual(channelId);
         final EntityGraphBuilder<Channel> channelGraphBuilder = ChannelGraphBuilder.owner;

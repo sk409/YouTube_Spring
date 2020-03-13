@@ -12,9 +12,12 @@
         <navbar-search></navbar-search>
     </div>
     <div layout:fragment="content">
-        <div class="red">
-            INDEX
-        </div>
+        <div ref="subscriptionChannels" hidden th:text="${subscriptionChannelsJSON}"></div>
+        <guide-scaffold :channels="subscriptionChannels" class="h-100">
+            <template #content>
+                CONTENT
+            </template>
+        </guide-scaffold>
     </div>
     <div layout:fragment="scripts">
         <script th:src="@{/js/index.js}"></script>

@@ -1,5 +1,7 @@
 package sk409.youtube.query.specifications;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import lombok.Data;
@@ -9,10 +11,11 @@ import sk409.youtube.models.Channel_;
 @Data
 public class ChannelSpecifications implements Specifications<Channel> {
     private Long idEqual;
+    private List<Long> idIn;
     private Long userIdEqual;
 
     public Specification<Channel> where() {
-        return Specification.where(equalToId()).and(equalToUserId());
+        return Specification.where(equalToId()).and(equalToUserId()).and(inId());
     }
 
     private Specification<Channel> equalToId() {
@@ -24,6 +27,12 @@ public class ChannelSpecifications implements Specifications<Channel> {
     private Specification<Channel> equalToUserId() {
         return userIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Channel_.USER_ID), userIdEqual);
+        };
+    }
+
+    private Specification<Channel> inId() {
+        return idIn == null ? null : (root, query, builder) -> {
+            return root.get(Channel_.ID).in(idIn);
         };
     }
 }

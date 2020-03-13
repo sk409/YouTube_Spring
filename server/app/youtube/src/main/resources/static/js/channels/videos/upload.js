@@ -20825,6 +20825,7 @@ var render = function() {
   return _vm.channel
     ? _c(
         "v-app-bar",
+        { attrs: { color: "white", flat: "" } },
         [
           _c("v-app-bar-nav-icon"),
           _vm._v(" "),

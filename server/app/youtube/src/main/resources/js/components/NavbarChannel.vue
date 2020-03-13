@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar v-if="channel">
+  <v-app-bar v-if="channel" color="white" flat>
     <v-app-bar-nav-icon></v-app-bar-nav-icon>
     <v-spacer></v-spacer>
     <input type="text" placeholder="チャンネル内で検索" />
