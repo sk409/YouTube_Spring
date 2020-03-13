@@ -56664,7 +56664,7 @@ var routes = {
   }
 };
 var serverUrl = function serverUrl(path) {
-  return "http://localhost:6900/" + path;
+  return "http://localhost:6565/" + path;
 };
 var transition = function transition(to) {
   location.href = to;

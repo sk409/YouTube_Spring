@@ -125,6 +125,7 @@ public class VideoCommentService extends QueryService<VideoComment> {
             final Integer limit) {
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
         videoCommentSpecifications.setParentIdEqual(videoCommentId);
+        videoCommentSpecifications.setIdGreaterThan(newAfterVideoCommentId);
         final VideoCommentSorting videoCommentSorting = new VideoCommentSorting();
         videoCommentSorting.setIdAsc(true);
         final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();

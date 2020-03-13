@@ -22,12 +22,14 @@ import sk409.youtube.repositories.UserRepository;
 public class UserService extends QueryService<User> {
 
     private final PasswordEncoder passwordEncoder;
+    private final PathService pathService;
     private final UserRepository userRepository;
 
     public UserService(final EntityManager entityManager, final PasswordEncoder passwordEncoder,
-            final UserRepository userRepository) {
+            final PathService pathService, final UserRepository userRepository) {
         super(entityManager);
         this.passwordEncoder = passwordEncoder;
+        this.pathService = pathService;
         this.userRepository = userRepository;
     }
 
@@ -46,7 +48,12 @@ public class UserService extends QueryService<User> {
     }
 
     public User registerUser(final String username, final String nickname, final String password, final String email) {
-        final User user = new User(username, nickname, passwordEncoder.encode(password), email);
+        return registerUser(username, nickname, password, email, pathService.getRelativeNoImagePath().toString());
+    }
+
+    public User registerUser(final String username, final String nickname, final String password, final String email,
+            final String profileImagePath) {
+        final User user = new User(username, nickname, passwordEncoder.encode(password), email, profileImagePath);
         userRepository.save(user);
         final List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(Authority.ROLE_USER.toString()));

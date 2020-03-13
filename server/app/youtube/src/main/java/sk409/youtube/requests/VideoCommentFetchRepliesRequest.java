@@ -12,7 +12,6 @@ public class VideoCommentFetchRepliesRequest {
 
     private Long newAfterVideoCommentId;
 
-    @NotNull
     private Integer limit;
 
 }

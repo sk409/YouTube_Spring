@@ -1,0 +1,1 @@
+ALTER TABLE users ADD profile_image_path VARCHAR(256) NOT NULL;

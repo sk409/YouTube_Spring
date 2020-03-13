@@ -9,6 +9,8 @@ import sk409.youtube.models.VideoComment_;
 @Data
 public class VideoCommentSpecifications implements Specifications<VideoComment> {
     private Long[] idIn;
+    private Long idLessThan;
+    private Long idGreaterThan;
     private Long[] idNotIn;
     private Long parentIdEqual;
     private Boolean parentIdIsNull;
@@ -16,8 +18,8 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Long[] videoIdIn;
 
     public Specification<VideoComment> where() {
-        return Specification.where(equalToParentId()).and(equalToVideoId()).and(inId()).and(inVideoId())
-                .and(isNullParentId()).and(notInId());
+        return Specification.where(equalToParentId()).and(equalToVideoId()).and(greaterThanId()).and(inId())
+                .and(inVideoId()).and(isNullParentId()).and(lessThanId()).and(notInId());
     }
 
     private Specification<VideoComment> equalToParentId() {
@@ -29,6 +31,12 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Specification<VideoComment> equalToVideoId() {
         return videoIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(VideoComment_.VIDEO_ID), videoIdEqual);
+        };
+    }
+
+    private Specification<VideoComment> greaterThanId() {
+        return idGreaterThan == null ? null : (root, query, builder) -> {
+            return builder.greaterThan(root.get(VideoComment_.ID), idGreaterThan);
         };
     }
 
@@ -47,6 +55,12 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Specification<VideoComment> isNullParentId() {
         return parentIdIsNull == null || !parentIdIsNull ? null : (root, query, builder) -> {
             return root.get(VideoComment_.PARENT_ID).isNull();
+        };
+    }
+
+    private Specification<VideoComment> lessThanId() {
+        return idLessThan == null ? null : (root, query, builder) -> {
+            return builder.lessThan(root.get(VideoComment_.ID), idLessThan);
         };
     }
 

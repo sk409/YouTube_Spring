@@ -1,7 +1,11 @@
 <template>
   <div class="d-flex">
-    <div></div>
-    <div class="flex-fill">
+    <div>
+      <v-avatar size="42">
+        <v-img :src="$serverUrl(comment.user.profileImagePath)"></v-img>
+      </v-avatar>
+    </div>
+    <div class="flex-fill ml-3">
       <div>{{comment.user.nickname}}</div>
       <pre>{{comment.text}}</pre>
       <div class="d-flex mt-3">
@@ -26,12 +30,19 @@
         class="w-100"
         @cancel="videoCommentForm=false"
       ></VideoCommentForm>
-      <div v-if="showingReplies" @click="showReplies=false">
-        <div class="d-flex aling-center success--text">
+      <div v-if="showingReplies">
+        <div class="d-flex aling-center success--text" @click="showingReplies=false">
           <v-icon class="success--text">mdi-menu-up</v-icon>
           <span>{{comment.childCount}}件の返信を非表示</span>
         </div>
         <VideoComment v-for="reply in replies" :key="reply.id" :comment="reply"></VideoComment>
+        <div
+          v-if="comment.childCount !== replies.length"
+          class="d-flex align-center success--text"
+          @click="fetchNextReplies"
+        >
+          <v-icon style="color:inherit;">mdi-subdirectory-arrow-right</v-icon>他の返信を表示
+        </div>
       </div>
       <div
         v-else-if="comment.childCount !== 0"
@@ -148,10 +159,11 @@ export default {
     },
     fetchNextReplies() {
       const data = {
-        videoCommentId: this.comment.id,
-        limit: 10
+        videoCommentId: this.comment.id
       };
-      if (this.replies.length !== 0) {
+      if (this.replies.length === 0) {
+        data.limit = 10;
+      } else {
         data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
       }
       ajax.get(this.$routes.videoComments.replies, data).then(response => {
@@ -159,7 +171,6 @@ export default {
       });
     },
     ratingStyle(applying) {
-      console.log(applying);
       if (applying) {
         return {
           color: this.$vuetify.theme.currentTheme.success
@@ -169,7 +180,9 @@ export default {
     },
     showReplies() {
       this.showingReplies = true;
-      this.fetchNextReplies();
+      if (this.replies.length === 0) {
+        this.fetchNextReplies();
+      }
     }
   }
 };

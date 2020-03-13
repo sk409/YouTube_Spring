@@ -2159,6 +2159,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2252,11 +2263,12 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       var data = {
-        videoCommentId: this.comment.id,
-        limit: 10
+        videoCommentId: this.comment.id
       };
 
-      if (this.replies.length !== 0) {
+      if (this.replies.length === 0) {
+        data.limit = 10;
+      } else {
         data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
       }
 
@@ -2265,8 +2277,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     ratingStyle: function ratingStyle(applying) {
-      console.log(applying);
-
       if (applying) {
         return {
           color: this.$vuetify.theme.currentTheme.success
@@ -2277,7 +2287,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     showReplies: function showReplies() {
       this.showingReplies = true;
-      this.fetchNextReplies();
+
+      if (this.replies.length === 0) {
+        this.fetchNextReplies();
+      }
     }
   }
 });
@@ -3546,11 +3559,26 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "d-flex" }, [
-    _c("div"),
+    _c(
+      "div",
+      [
+        _c(
+          "v-avatar",
+          { attrs: { size: "42" } },
+          [
+            _c("v-img", {
+              attrs: { src: _vm.$serverUrl(_vm.comment.user.profileImagePath) }
+            })
+          ],
+          1
+        )
+      ],
+      1
+    ),
     _vm._v(" "),
     _c(
       "div",
-      { staticClass: "flex-fill" },
+      { staticClass: "flex-fill ml-3" },
       [
         _c("div", [_vm._v(_vm._s(_vm.comment.user.nickname))]),
         _vm._v(" "),
@@ -3641,17 +3669,17 @@ var render = function() {
         _vm.showingReplies
           ? _c(
               "div",
-              {
-                on: {
-                  click: function($event) {
-                    _vm.showReplies = false
-                  }
-                }
-              },
               [
                 _c(
                   "div",
-                  { staticClass: "d-flex aling-center success--text" },
+                  {
+                    staticClass: "d-flex aling-center success--text",
+                    on: {
+                      click: function($event) {
+                        _vm.showingReplies = false
+                      }
+                    }
+                  },
                   [
                     _c("v-icon", { staticClass: "success--text" }, [
                       _vm._v("mdi-menu-up")
@@ -3671,7 +3699,24 @@ var render = function() {
                     key: reply.id,
                     attrs: { comment: reply }
                   })
-                })
+                }),
+                _vm._v(" "),
+                _vm.comment.childCount !== _vm.replies.length
+                  ? _c(
+                      "div",
+                      {
+                        staticClass: "d-flex align-center success--text",
+                        on: { click: _vm.fetchNextReplies }
+                      },
+                      [
+                        _c("v-icon", { staticStyle: { color: "inherit" } }, [
+                          _vm._v("mdi-subdirectory-arrow-right")
+                        ]),
+                        _vm._v("他の返信を表示\n      ")
+                      ],
+                      1
+                    )
+                  : _vm._e()
               ],
               2
             )
@@ -58161,7 +58206,7 @@ var routes = {
   }
 };
 var serverUrl = function serverUrl(path) {
-  return "http://localhost:6900/" + path;
+  return "http://localhost:6565/" + path;
 };
 var transition = function transition(to) {
   location.href = to;

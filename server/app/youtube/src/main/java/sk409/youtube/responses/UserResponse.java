@@ -16,12 +16,10 @@ public class UserResponse {
     private String nickname;
     private String password;
     private String email;
+    private String profileImagePath;
 
     @JsonManagedReference("user")
     private List<ChannelResponse> channels;
-
-    // @JsonManagedReference("user")
-    // private List<VideoCommentResponse> videoComments;
 
     public UserResponse(final User user) {
         id = user.getId();
@@ -29,6 +27,7 @@ public class UserResponse {
         nickname = user.getNickname();
         password = user.getPassword();
         email = user.getEmail();
+        profileImagePath = user.getProfileImagePath();
     }
 
 }

@@ -32,7 +32,7 @@ public class User extends Model implements UserDetails {
     @Getter
     private Long id;
 
-    @Column(name="name", length = 256, nullable = false, unique = true)
+    @Column(name = "name", length = 256, nullable = false, unique = true)
     private String username;
 
     @Column(length = 256, nullable = false)
@@ -48,11 +48,18 @@ public class User extends Model implements UserDetails {
     @Setter
     private String email;
 
-    public User(final String username, final String nickname, final String password, final String email) {
+    @Column(nullable = false)
+    @Getter
+    @Setter
+    private String profileImagePath;
+
+    public User(final String username, final String nickname, final String password, final String email,
+            final String profileImagePath) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
         this.email = email;
+        this.profileImagePath = profileImagePath;
     }
 
     protected User() {

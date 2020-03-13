@@ -40,7 +40,7 @@ export const routes = {
 };
 
 export const serverUrl = path => {
-    return "http://localhost:6900/" + path;
+    return "http://localhost:6565/" + path;
 };
 
 export const transition = to => {
