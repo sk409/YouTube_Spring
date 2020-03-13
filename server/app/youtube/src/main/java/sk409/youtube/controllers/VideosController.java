@@ -26,6 +26,7 @@ import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.graph.builders.VideoGraphBuilder;
 import sk409.youtube.models.Channel;
 import sk409.youtube.models.Rating;
+import sk409.youtube.models.Subscriber;
 import sk409.youtube.models.User;
 import sk409.youtube.models.Video;
 import sk409.youtube.models.VideoComment;
@@ -33,16 +34,20 @@ import sk409.youtube.models.VideoRating;
 import sk409.youtube.models.Video_;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
+import sk409.youtube.responses.SubscriberResponse;
+import sk409.youtube.responses.UserResponse;
 import sk409.youtube.responses.VideoRatingResponse;
 import sk409.youtube.responses.VideoResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.JSONService;
+import sk409.youtube.services.SubscriberService;
 import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentService;
 import sk409.youtube.services.VideoRatingService;
 import sk409.youtube.services.VideoService;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.ChannelSpecifications;
+import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.query.specifications.UserSpecifications;
 import sk409.youtube.query.specifications.VideoCommentSpecifications;
 import sk409.youtube.query.specifications.VideoRatingSpecifications;
@@ -53,16 +58,19 @@ public class VideosController {
 
     private final ChannelService channelService;
     private final JSONService jsonService;
+    private final SubscriberService subscriberService;
     private final UserService userService;
     private final VideoCommentService videoCommentService;
     private final VideoRatingService videoRatingService;
     private final VideoService videoService;
 
     public VideosController(final ChannelService channelService, final JSONService jsonService,
-            final UserService userService, final VideoCommentService videoCommentService,
-            final VideoRatingService videoRatingService, final VideoService videoService) {
+            final SubscriberService subscriberService, final UserService userService,
+            final VideoCommentService videoCommentService, final VideoRatingService videoRatingService,
+            final VideoService videoService) {
         this.channelService = channelService;
         this.jsonService = jsonService;
+        this.subscriberService = subscriberService;
         this.userService = userService;
         this.videoCommentService = videoCommentService;
         this.videoRatingService = videoRatingService;
@@ -73,30 +81,23 @@ public class VideosController {
     public ModelAndView watch(@RequestParam("v") final String videoUniqueId, final ModelAndView mav,
             final Principal principal) {
         final String username = principal.getName();
-        final UserSpecifications userSpecifications = new UserSpecifications();
-        userSpecifications.setUsernameEqual(username);
-        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
-        userQueryComponents.setSpecifications(userSpecifications);
-        final Optional<User> _user = userService.findOne(userQueryComponents);
+        final Optional<User> _user = userService.findByUsername(username);
         if (!_user.isPresent()) {
             mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return mav;
         }
         final User user = _user.get();
-        final VideoSpecifications videoSpecifications = new VideoSpecifications();
-        videoSpecifications.setUniqueIdEqual(videoUniqueId);
-        final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.make(Video_.CHANNEL, Video_.RATING);
-        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
-        videoQueryComponents.setSpecifications(videoSpecifications);
-        videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
-        final Optional<Video> _video = videoService.findOne(videoQueryComponents);
+        final Optional<Video> _video = videoService.findByUniqueId(videoUniqueId, Video_.CHANNEL, Video_.RATING);
         if (!_video.isPresent()) {
             mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return mav;
         }
         final Video video = _video.get();
+        final Channel channel = video.getChannel();
         final VideoResponse videoResponse = new VideoResponse(video);
-        final ChannelResponse channelResponse = new ChannelResponse(video.getChannel());
+        final ChannelResponse channelResponse = new ChannelResponse(channel);
+        final UserResponse userResponse = new UserResponse(user);
+        channelResponse.setUser(userResponse);
         videoResponse.setChannel(channelResponse);
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
         videoCommentSpecifications.setParentIdIsNull(true);
@@ -122,8 +123,16 @@ public class VideosController {
         videoRatingQueryComponents.setSpecifications(videoRatingSpecifications);
         final Optional<String> _userRatingJSON = videoRatingService.findOne(videoRatingQueryComponents)
                 .map(videoRating -> jsonService.toJSON(new VideoRatingResponse(videoRating)));
+        final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
+        userSubscriberSpecifications.setChannelIdEqual(channel.getId());
+        userSubscriberSpecifications.setUserIdEqual(user.getId());
+        final QueryComponents<Subscriber> subscriberQueryComponents = new QueryComponents<>();
+        subscriberQueryComponents.setSpecifications(userSubscriberSpecifications);
+        final Optional<String> _userSubscriberJSON = subscriberService.findOne(subscriberQueryComponents)
+                .map(userSubscriber -> jsonService.toJSON(new SubscriberResponse(userSubscriber)));
         mav.addObject("videoJSON", videoJSON);
         mav.addObject("userRatingJSON", _userRatingJSON.orElse(null));
+        mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
         mav.setViewName("watch");
         video.setViews(video.getViews() + 1);
         videoService.save(video);

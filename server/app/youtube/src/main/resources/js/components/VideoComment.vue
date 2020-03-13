@@ -31,26 +31,27 @@
         @cancel="videoCommentForm=false"
       ></VideoCommentForm>
       <div v-if="showingReplies">
-        <div class="d-flex aling-center success--text" @click="showingReplies=false">
-          <v-icon class="success--text">mdi-menu-up</v-icon>
-          <span>{{comment.childCount}}件の返信を非表示</span>
+        <div>
+          <v-btn text class="d-flex aling-center success--text" @click="showingReplies=false">
+            <v-icon class="success--text">mdi-menu-up</v-icon>
+            <span>{{comment.childCount}}件の返信を非表示</span>
+          </v-btn>
         </div>
         <VideoComment v-for="reply in replies" :key="reply.id" :comment="reply"></VideoComment>
-        <div
+        <v-btn
           v-if="comment.childCount !== replies.length"
+          text
           class="d-flex align-center success--text"
           @click="fetchNextReplies"
         >
           <v-icon style="color:inherit;">mdi-subdirectory-arrow-right</v-icon>他の返信を表示
-        </div>
+        </v-btn>
       </div>
-      <div
-        v-else-if="comment.childCount !== 0"
-        class="d-flex aling-center success--text"
-        @click="showReplies"
-      >
-        <v-icon class="success--text">mdi-menu-down</v-icon>
-        {{comment.childCount}}件の返信を表示
+      <div v-else-if="comment.childCount !== 0">
+        <v-btn text class="d-flex aling-center success--text" @click="showReplies">
+          <v-icon class="success--text">mdi-menu-down</v-icon>
+          {{comment.childCount}}件の返信を表示
+        </v-btn>
       </div>
     </div>
   </div>

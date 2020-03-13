@@ -2,14 +2,20 @@ package sk409.youtube.services;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import sk409.youtube.graph.builders.EntityGraphBuilder;
+import sk409.youtube.graph.builders.VideoGraphBuilder;
 import sk409.youtube.models.Video;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.VideoSpecifications;
 import sk409.youtube.repositories.VideoRepository;
+import sk409.youtube.responses.VideoResponse;
 
 @Service
 public class VideoService extends QueryService<Video> {
@@ -29,6 +35,16 @@ public class VideoService extends QueryService<Video> {
     @Override
     public Class<Video> classLiteral() {
         return Video.class;
+    }
+
+    public Optional<Video> findByUniqueId(final String uniqueId, final String... nodes) {
+        final VideoSpecifications videoSpecifications = new VideoSpecifications();
+        videoSpecifications.setUniqueIdEqual(uniqueId);
+        final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.make(nodes);
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.setSpecifications(videoSpecifications);
+        videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
+        return findOne(videoQueryComponents);
     }
 
     public Video save(final String title, final String overview, final Float duration, final String uniqueId,

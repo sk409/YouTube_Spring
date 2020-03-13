@@ -1,4 +1,5 @@
 import ajax from "./ajax.js";
+import ChannelUnsubscribeForm from "./components/ChannelUnsubscribeForm.vue";
 import NavbarSearch from "./components/NavbarSearch.vue";
 import ScrollView from "./components/ScrollView.vue";
 import SnackbarView from "./components/SnackbarView.vue";
@@ -13,6 +14,7 @@ new Vue({
     el: "#app",
     vuetify,
     components: {
+        ChannelUnsubscribeForm,
         NavbarSearch,
         ScrollView,
         SnackbarView,
@@ -20,10 +22,12 @@ new Vue({
         VideoCommentForm
     },
     data: {
+        dialogChannelUnsubscribeForm: false,
         fetchingNextComment: false,
         notification: "",
         snackbar: false,
         userRating: null,
+        userSubscriber: null,
         video: null
     },
     computed: {
@@ -73,6 +77,7 @@ new Vue({
         video.comments = [];
         this.video = video;
         this.userRating = this.$refs.userRating.textContent ? JSON.parse(this.$refs.userRating.textContent) : null;
+        this.userSubscriber = this.$refs.userSubscriber.textContent ? JSON.parse(this.$refs.userSubscriber.textContent) : null;
         this.fetchNextComments();
     },
     methods: {
@@ -97,6 +102,10 @@ new Vue({
         createdVideoComment() {
             this.notification = "コメントを公開しました。";
             this.snackbar = true;
+        },
+        unsubscribed() {
+            this.dialogChannelUnsubscribeForm = false;
+            this.userSubscriber = null;
         },
         fetchNextComments() {
             if (this.fetchedAllComments || this.fetchingNextComment) {
@@ -129,6 +138,14 @@ new Vue({
                     this.userRating = response.data;
                 });
             }
+        },
+        subscribe() {
+            const data = {
+                channelId: this.video.channel.id
+            };
+            ajax.post(this.$routes.subscribers.base, data).then(response => {
+                this.userSubscriber = response.data;
+            });
         }
     }
 });

@@ -21,6 +21,10 @@ export const routes = {
     root: {
         base: "/"
     },
+    subscribers: {
+        base: "/subscribers",
+        destroy: id => `/subscribers/${id}`
+    },
     videoCommentRating: {
         base: "/video_comment_rating",
         destroy: id => `/video_comment_rating/${id}`,

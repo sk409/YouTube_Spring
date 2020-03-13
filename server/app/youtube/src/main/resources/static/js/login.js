@@ -56623,6 +56623,12 @@ var routes = {
   root: {
     base: "/"
   },
+  subscribers: {
+    base: "/subscribers",
+    destroy: function destroy(id) {
+      return "/subscribers/".concat(id);
+    }
+  },
   videoCommentRating: {
     base: "/video_comment_rating",
     destroy: function destroy(id) {
