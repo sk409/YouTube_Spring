@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,9 @@ import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.requests.ChannelStoreRequest;
 import sk409.youtube.requests.ChannelSubscriptionRequest;
 import sk409.youtube.responses.ChannelResponse;
+import sk409.youtube.responses.SubscriberResponse;
 import sk409.youtube.services.ChannelService;
+import sk409.youtube.services.JSONService;
 import sk409.youtube.services.SubscriberService;
 import sk409.youtube.services.UserService;
 
@@ -36,18 +39,48 @@ import sk409.youtube.services.UserService;
 public class ChannelsController {
 
     private final ChannelService channelService;
+    private final JSONService jsonService;
     private final SubscriberService subscriberService;
     private final UserService userService;
 
-    public ChannelsController(final ChannelService channelService, final SubscriberService subscriberService,
-            final UserService userService) {
+    public ChannelsController(final ChannelService channelService, final JSONService jsonService,
+            final SubscriberService subscriberService, final UserService userService) {
         this.channelService = channelService;
+        this.jsonService = jsonService;
         this.subscriberService = subscriberService;
         this.userService = userService;
     }
 
     @GetMapping("/{channelUniqueId}")
-    public ModelAndView show(final ModelAndView mav) {
+    public ModelAndView show(@PathVariable final String channelUniqueId, final Principal principal,
+            final ModelAndView mav) {
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return mav;
+        }
+        final User user = _user.get();
+        final Optional<Channel> _channel = channelService.findByUniqueId(channelUniqueId);
+        if (!_channel.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return mav;
+        }
+        final Channel channel = _channel.get();
+        final ChannelResponse channelResponse = new ChannelResponse(channel);
+        final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
+        channelResponse.setSubscriberCount(subscriberCount);
+        final String channelResponseJSON = jsonService.toJSON(channelResponse);
+        final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
+        userSubscriberSpecifications.setChannelIdEqual(channel.getId());
+        userSubscriberSpecifications.setUserIdEqual(user.getId());
+        final Optional<Subscriber> _userSubscriber = subscriberService.findOne(userSubscriberSpecifications);
+        final Optional<SubscriberResponse> _userSubscriberResponse = _userSubscriber
+                .map(userSubscriber -> new SubscriberResponse(userSubscriber));
+        final Optional<String> _userSubscriberJSON = _userSubscriberResponse
+                .map(userSubscriber -> jsonService.toJSON(userSubscriber));
+        mav.addObject("channelJSON", channelResponseJSON);
+        mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
         mav.setViewName("channels/show");
         return mav;
     }

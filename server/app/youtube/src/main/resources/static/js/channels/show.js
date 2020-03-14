@@ -1951,6 +1951,60 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--1!./node_modules/vue-loader/lib??vue-loader-options!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ajax_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ajax.js */ "./src/main/resources/js/ajax.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    channelname: {
+      type: String,
+      required: true
+    },
+    subscriberId: {
+      type: Number,
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      loading: false
+    };
+  },
+  methods: {
+    unsubscribe: function unsubscribe() {
+      var _this = this;
+
+      this.loading = true;
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](this.$routes.subscribers.destroy(this.subscriberId)).then(function (response) {
+        _this.loading = false;
+
+        _this.$emit("unsubscribed", response.data);
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/main/resources/js/components/GuideMenu.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--1!./node_modules/vue-loader/lib??vue-loader-options!./src/main/resources/js/components/GuideMenu.vue?vue&type=script&lang=js& ***!
@@ -3276,6 +3330,59 @@ var render = function() {
               on: { click: _vm.create }
             },
             [_vm._v("作成")]
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-card",
+    [
+      _c("v-card-title", [
+        _vm._v(_vm._s(_vm.channelname) + "のチャンネル登録を解除しますか?")
+      ]),
+      _vm._v(" "),
+      _c("v-divider"),
+      _vm._v(" "),
+      _c(
+        "v-card-actions",
+        [
+          _c("v-btn", { staticClass: "ml-auto", attrs: { text: "" } }, [
+            _vm._v("キャンセル")
+          ]),
+          _vm._v(" "),
+          _c(
+            "v-btn",
+            {
+              attrs: { color: "success", loading: _vm.loading, text: "" },
+              on: { click: _vm.unsubscribe }
+            },
+            [_vm._v("登録解除")]
           )
         ],
         1
@@ -57437,22 +57544,67 @@ var ajax = new Ajax();
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_GuideScaffold_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/GuideScaffold.vue */ "./src/main/resources/js/components/GuideScaffold.vue");
-/* harmony import */ var _components_NavbarSearch_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/NavbarSearch.vue */ "./src/main/resources/js/components/NavbarSearch.vue");
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var _vuetify_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./vuetify.js */ "./src/main/resources/js/vuetify.js");
-/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./common.js */ "./src/main/resources/js/common.js");
+/* harmony import */ var _ajax_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ajax.js */ "./src/main/resources/js/ajax.js");
+/* harmony import */ var _components_ChannelUnsubscribeForm_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/ChannelUnsubscribeForm.vue */ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue");
+/* harmony import */ var _components_GuideScaffold_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/GuideScaffold.vue */ "./src/main/resources/js/components/GuideScaffold.vue");
+/* harmony import */ var _components_NavbarSearch_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/NavbarSearch.vue */ "./src/main/resources/js/components/NavbarSearch.vue");
+/* harmony import */ var _components_SnackbarView_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/SnackbarView.vue */ "./src/main/resources/js/components/SnackbarView.vue");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var _vuetify_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./vuetify.js */ "./src/main/resources/js/vuetify.js");
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./common.js */ "./src/main/resources/js/common.js");
 
 
 
 
 
-new vue__WEBPACK_IMPORTED_MODULE_2__["default"]({
+
+
+
+new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
   el: "#app",
-  vuetify: _vuetify_js__WEBPACK_IMPORTED_MODULE_3__["default"],
+  vuetify: _vuetify_js__WEBPACK_IMPORTED_MODULE_6__["default"],
   components: {
-    GuideScaffold: _components_GuideScaffold_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    NavbarSearch: _components_NavbarSearch_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    ChannelUnsubscribeForm: _components_ChannelUnsubscribeForm_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    GuideScaffold: _components_GuideScaffold_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    NavbarSearch: _components_NavbarSearch_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    SnackbarView: _components_SnackbarView_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
+  data: function data() {
+    return {
+      channel: null,
+      dialogChannelUnsubscribeForm: false,
+      notification: "",
+      snackbar: false,
+      userSubscriber: null
+    };
+  },
+  mounted: function mounted() {
+    var channelJSON = this.$refs.channel.textContent;
+    this.channel = channelJSON ? JSON.parse(channelJSON) : null;
+    var userSubscriberJSON = this.$refs.userSubscriber.textContent;
+    this.userSubscriber = userSubscriberJSON ? JSON.parse(userSubscriberJSON) : null;
+  },
+  methods: {
+    subscribe: function subscribe() {
+      var _this = this;
+
+      var data = {
+        channelId: this.channel.id
+      };
+      this.channel.subscriberCount += 1;
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.subscribers.base, data).then(function (response) {
+        _this.notification = "登録チャンネルに追加しました";
+        _this.snackbar = true;
+        _this.userSubscriber = response.data;
+      });
+    },
+    unsubscribed: function unsubscribed() {
+      this.channel.subscriberCount -= 1;
+      this.notification = "登録チャンネルから削除しました";
+      this.snackbar = true;
+      this.dialogChannelUnsubscribeForm = false;
+      this.userSubscriber = null;
+    }
   }
 });
 
@@ -57638,6 +57790,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelForm_vue_vue_type_template_id_b6f28726___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelForm_vue_vue_type_template_id_b6f28726___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue":
+/*!*********************************************************************!*\
+  !*** ./src/main/resources/js/components/ChannelUnsubscribeForm.vue ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c& */ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c&");
+/* harmony import */ var _ChannelUnsubscribeForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ChannelUnsubscribeForm.vue?vue&type=script&lang=js& */ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ChannelUnsubscribeForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "src/main/resources/js/components/ChannelUnsubscribeForm.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************!*\
+  !*** ./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelUnsubscribeForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--1!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ChannelUnsubscribeForm.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_1_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelUnsubscribeForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c&":
+/*!****************************************************************************************************!*\
+  !*** ./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c& ***!
+  \****************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./src/main/resources/js/components/ChannelUnsubscribeForm.vue?vue&type=template&id=3c28879c&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ChannelUnsubscribeForm_vue_vue_type_template_id_3c28879c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -52,6 +52,15 @@ public class ChannelService extends QueryService<Channel> {
         return _channels;
     }
 
+    public Optional<Channel> findByUniqueId(final String uniqueId) {
+        final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
+        channelSpecifications.setUniqueIdEqual(uniqueId);
+        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
+        channelQueryComponents.setSpecifications(channelSpecifications);
+        final Optional<Channel> _channel = findOne(channelQueryComponents);
+        return _channel;
+    }
+
     public Optional<Channel> findByUserId(final Long userId) {
         final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
         channelSpecifications.setUserIdEqual(userId);

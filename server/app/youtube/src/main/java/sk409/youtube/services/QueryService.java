@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.sorting.Sorting;
+import sk409.youtube.query.specifications.Specifications;
 
 public abstract class QueryService<T> {
 
@@ -28,6 +29,12 @@ public abstract class QueryService<T> {
 
     protected abstract Class<T> classLiteral();
 
+    public Optional<List<T>> findAll(final Specifications<T> specifications) {
+        final QueryComponents<T> queryComponents = new QueryComponents<>();
+        queryComponents.setSpecifications(specifications);
+        return findAll(queryComponents);
+    }
+
     public Optional<List<T>> findAll(final QueryComponents<T> queryComponents) {
         final TypedQuery<T> typedQuery = makeTypedQuery(queryComponents);
         if (queryComponents.getLimit() != null) {
@@ -35,6 +42,12 @@ public abstract class QueryService<T> {
         }
         final List<T> list = typedQuery.getResultList();
         return Optional.ofNullable(list.size() == 0 ? null : list);
+    }
+
+    public Optional<T> findOne(final Specifications<T> specifications) {
+        final QueryComponents<T> queryComponents = new QueryComponents<>();
+        queryComponents.setSpecifications(specifications);
+        return findOne(queryComponents);
     }
 
     public Optional<T> findOne(final QueryComponents<T> queryComponents) {

@@ -1984,11 +1984,19 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     }
   },
+  data: function data() {
+    return {
+      loading: false
+    };
+  },
   methods: {
     unsubscribe: function unsubscribe() {
       var _this = this;
 
+      this.loading = true;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](this.$routes.subscribers.destroy(this.subscriberId)).then(function (response) {
+        _this.loading = false;
+
         _this.$emit("unsubscribed", response.data);
       });
     }
@@ -3465,7 +3473,7 @@ var render = function() {
           _c(
             "v-btn",
             {
-              attrs: { color: "success", text: "" },
+              attrs: { color: "success", loading: _vm.loading, text: "" },
               on: { click: _vm.unsubscribe }
             },
             [_vm._v("登録解除")]
@@ -58674,10 +58682,6 @@ new vue__WEBPACK_IMPORTED_MODULE_7__["default"]({
       this.notification = "コメントを公開しました。";
       this.snackbar = true;
     },
-    unsubscribed: function unsubscribed() {
-      this.dialogChannelUnsubscribeForm = false;
-      this.userSubscriber = null;
-    },
     fetchNextComments: function fetchNextComments() {
       var _this2 = this;
 
@@ -58726,6 +58730,10 @@ new vue__WEBPACK_IMPORTED_MODULE_7__["default"]({
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.subscribers.base, data).then(function (response) {
         _this4.userSubscriber = response.data;
       });
+    },
+    unsubscribed: function unsubscribed() {
+      this.dialogChannelUnsubscribeForm = false;
+      this.userSubscriber = null;
     }
   }
 });

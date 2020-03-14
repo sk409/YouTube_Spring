@@ -103,10 +103,6 @@ new Vue({
             this.notification = "コメントを公開しました。";
             this.snackbar = true;
         },
-        unsubscribed() {
-            this.dialogChannelUnsubscribeForm = false;
-            this.userSubscriber = null;
-        },
         fetchNextComments() {
             if (this.fetchedAllComments || this.fetchingNextComment) {
                 return;
@@ -146,6 +142,10 @@ new Vue({
             ajax.post(this.$routes.subscribers.base, data).then(response => {
                 this.userSubscriber = response.data;
             });
+        },
+        unsubscribed() {
+            this.dialogChannelUnsubscribeForm = false;
+            this.userSubscriber = null;
         }
     }
 });

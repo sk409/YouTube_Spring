@@ -13,15 +13,22 @@ public class ChannelSpecifications implements Specifications<Channel> {
     private Long idEqual;
     private List<Long> idIn;
     private List<Long> idNotIn;
+    private String uniqueIdEqual;
     private Long userIdEqual;
 
     public Specification<Channel> where() {
-        return Specification.where(equalToId()).and(equalToUserId()).and(inId()).and(notInId());
+        return Specification.where(equalToId()).and(equalToUniqueId()).and(equalToUserId()).and(inId()).and(notInId());
     }
 
     private Specification<Channel> equalToId() {
         return idEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Channel_.ID), idEqual);
+        };
+    }
+
+    private Specification<Channel> equalToUniqueId() {
+        return uniqueIdEqual == null ? null : (root, query, builder) -> {
+            return builder.equal(root.get(Channel_.UNIQUE_ID), uniqueIdEqual);
         };
     }
 

@@ -4,7 +4,7 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-btn text class="ml-auto">キャンセル</v-btn>
-      <v-btn color="success" text @click="unsubscribe">登録解除</v-btn>
+      <v-btn color="success" :loading="loading" text @click="unsubscribe">登録解除</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -22,11 +22,18 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      loading: false
+    };
+  },
   methods: {
     unsubscribe() {
+      this.loading = true;
       ajax
         .delete(this.$routes.subscribers.destroy(this.subscriberId))
         .then(response => {
+          this.loading = false;
           this.$emit("unsubscribed", response.data);
         });
     }

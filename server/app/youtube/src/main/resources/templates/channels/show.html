@@ -12,7 +12,37 @@
         <navbar-search></navbar-search>
     </div>
     <div layout:fragment="content">
-        <guide-scaffold></guide-scaffold>
+        <div ref="channel" hidden th:text="${channelJSON}"></div>
+        <div ref="userSubscriber" hidden th:text="${userSubscriberJSON}"></div>
+        <guide-scaffold v-if="channel">
+            <template #content>
+                <div></div>
+                <v-container>
+                    <div class="d-flex">
+                        <v-avatar>
+                            <v-img :src="$serverUrl(channel.profileImagePath)"></v-img>
+                        </v-avatar>
+                        <div class="ml-5">
+                            <h3>{{channel.name}}</h3>
+                            <div class="grey--text">チャンネル登録者<span class="ml-1">{{channel.subscriberCount}}人</span></div>
+                        </div>
+                        <div class="ml-auto">
+                            <v-btn v-if="!userSubscriber" color="primary" class="ml-auto" @click="subscribe">
+                                チャンネル登録</v-btn>
+                            <v-btn v-else class="ml-auto" @click="dialogChannelUnsubscribeForm=true">
+                                登録済み</v-btn>
+                        </div>
+                    </div>
+                    <div></div>
+                </v-container>
+            </template>
+        </guide-scaffold>
+        <v-dialog v-model="dialogChannelUnsubscribeForm" width="420">
+            <channel-unsubscribe-form v-if="channel && userSubscriber" :channelname="channel.name"
+                :subscriber-id="userSubscriber.id" @unsubscribed="unsubscribed">
+            </channel-unsubscribe-form>
+        </v-dialog>
+        <snackbar-view :message="notification" :visible.sync="snackbar"></snackbar-view>
     </div>
     <div layout:fragment="scripts">
         <script th:src="@{/js/channels/show.js}"></script>
