@@ -2278,6 +2278,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     video: {
@@ -2337,7 +2340,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.video-title {\r\n  word-break: break-all;\n}\r\n", ""]);
+exports.push([module.i, "\n.video-title {\r\n  word-break: break-all;\n}\n.duration {\r\n  background: rgb(70, 69, 77);\r\n  color: rgb(249, 249, 249);\r\n  right: 4px;\r\n  bottom: 4px;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3692,10 +3695,21 @@ var render = function() {
       }
     },
     [
-      _c("v-img", {
-        staticClass: "w-100",
-        attrs: { src: _vm.$serverUrl(_vm.video.thumbnailPath) }
-      }),
+      _c(
+        "div",
+        { staticClass: "p-relative" },
+        [
+          _c("v-img", {
+            staticClass: "w-100",
+            attrs: { src: _vm.$serverUrl(_vm.video.thumbnailPath) }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "caption duration p-absolute" }, [
+            _vm._v(_vm._s(_vm._f("timeColonSeconds")(_vm.video.duration)))
+          ])
+        ],
+        1
+      ),
       _vm._v(" "),
       _c(
         "div",
@@ -3725,15 +3739,18 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "caption" }, [
-                _vm._v(_vm._s(_vm.video.views) + "回視聴")
+                _vm._v(
+                  _vm._s(_vm.video.views) +
+                    "回視聴・" +
+                    _vm._s(_vm._f("dateAgo")(_vm.video.createdAt))
+                )
               ])
             ])
           ])
         ],
         1
       )
-    ],
-    1
+    ]
   )
 }
 var staticRenderFns = []
@@ -57643,6 +57660,54 @@ vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("date", function (str, format
   var d = date.getDate();
   return "".concat(year, "/").concat(month, "/").concat(d);
 });
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("dateAgo", function (str) {
+  var date = new Date(str);
+  var now = new Date();
+  var milliseconds = now - date;
+
+  if (milliseconds < 1000) {
+    return "0秒前";
+  }
+
+  var seconds = Math.floor(milliseconds / 1000);
+
+  if (seconds < 60) {
+    return "".concat(seconds, "\u79D2\u524D");
+  }
+
+  var minutes = Math.floor(seconds / 60);
+
+  if (minutes < 60) {
+    return "".concat(minutes, "\u5206\u524D");
+  }
+
+  var hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return "".concat(hours, "\u6642\u9593\u524D");
+  }
+
+  var days = Math.floor(hours / 24);
+
+  if (days < 7) {
+    return "".concat(days, "\u65E5\u524D");
+  }
+
+  var weeks = Math.floor(days / 7);
+
+  if (weeks < 4) {
+    return "".concat(weeks, "\u9031\u9593\u524D");
+  }
+
+  var months = Math.floor(weeks / 4);
+
+  if (months < 12) {
+    return "".concat(months, "\u30F5\u6708\u524D");
+  }
+
+  var years = Math.floor(months / 12);
+  return "".concat(years, "\u5E74\u524D");
+});
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("default", function (str, d) {
   return !str || str.length === 0 ? d : str;
 });
@@ -57652,6 +57717,26 @@ vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("percentage", function (str) 
   }
 
   return Math.round(str * 100) + "%";
+});
+vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("timeColonSeconds", function (str) {
+  var padding = function padding(t) {
+    return t < 10 ? "0" + t : t;
+  };
+
+  var seconds = Math.round(str);
+
+  if (seconds < 60) {
+    return "00:".concat(padding(seconds));
+  }
+
+  var minutes = Math.floor(seconds / 60);
+
+  if (minutes < 60) {
+    return "".concat(padding(minutes), ":").concat(padding(seconds % 60));
+  }
+
+  var hours = Math.floor(minutes / 60);
+  return "".concat(padding(hours), ":").concat(padding(minutes % 60), ":").concat(padding(seconds % 3600));
 });
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].filter("truncate", function (str, maxLength) {
   var suffix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "...";
