@@ -7,6 +7,7 @@ export const routes = {
     channels: {
         base: "/channels",
         lastSelected: "/channels/last_selected",
+        show: (uniqueId) => `/channels/${uniqueId}`,
         subscription: "/channels/subscription",
         videos: {
             base: channelId => `/channels/${channelId}/videos`,
@@ -25,6 +26,9 @@ export const routes = {
     subscribers: {
         base: "/subscribers",
         destroy: id => `/subscribers/${id}`
+    },
+    users: {
+        subscriptionCount: "/users/subscription_count"
     },
     videoCommentRating: {
         base: "/video_comment_rating",

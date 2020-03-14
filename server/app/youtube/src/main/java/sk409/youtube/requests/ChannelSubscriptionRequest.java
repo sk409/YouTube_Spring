@@ -9,4 +9,6 @@ public class ChannelSubscriptionRequest {
 
     private List<Long> excludedChannelIds;
 
+    private Integer limit;
+
 }

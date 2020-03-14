@@ -29,6 +29,7 @@
         :video-id="comment.videoId"
         class="w-100"
         @cancel="videoCommentForm=false"
+        @created="createdReply"
       ></VideoCommentForm>
       <div v-if="showingReplies">
         <div>
@@ -39,7 +40,7 @@
         </div>
         <VideoComment v-for="reply in replies" :key="reply.id" :comment="reply"></VideoComment>
         <v-btn
-          v-if="comment.childCount !== replies.length"
+          v-if="replies.length < comment.childCount"
           text
           class="d-flex align-center success--text"
           @click="fetchNextReplies"
@@ -157,6 +158,9 @@ export default {
     },
     clickLowRating() {
       this.clickRating(this.$constants.lowRatingId);
+    },
+    createdReply(reply) {
+      this.$emit("created:reply", reply);
     },
     fetchNextReplies() {
       const data = {

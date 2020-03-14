@@ -84,12 +84,12 @@ public class ChannelService extends QueryService<Channel> {
         return _channels;
     }
 
-    public Channel save(final String name, final Long userId) {
-        return save(name, pathService.getRelativeNoImagePath().toString(), userId);
+    public Channel save(final String name, final String uniqueId, final Long userId) {
+        return save(name, pathService.getRelativeNoImagePath().toString(), uniqueId, userId);
     }
 
-    public Channel save(final String name, final String profileImagePath, final Long userId) {
-        final Channel channel = new Channel(name, profileImagePath, userId);
+    public Channel save(final String name, final String profileImagePath, final String uniqueId, final Long userId) {
+        final Channel channel = new Channel(name, profileImagePath, uniqueId, userId);
         channelRepository.save(channel);
         return channel;
     }

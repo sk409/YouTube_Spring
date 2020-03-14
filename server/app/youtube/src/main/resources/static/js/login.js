@@ -56673,6 +56673,9 @@ var routes = {
   channels: {
     base: "/channels",
     lastSelected: "/channels/last_selected",
+    show: function show(uniqueId) {
+      return "/channels/".concat(uniqueId);
+    },
     subscription: "/channels/subscription",
     videos: {
       base: function base(channelId) {
@@ -56697,6 +56700,9 @@ var routes = {
     destroy: function destroy(id) {
       return "/subscribers/".concat(id);
     }
+  },
+  users: {
+    subscriptionCount: "/users/subscription_count"
   },
   videoCommentRating: {
     base: "/video_comment_rating",

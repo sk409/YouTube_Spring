@@ -12,4 +12,8 @@ public class ChannelStoreRequest {
     @Size(min = 1, max = 256)
     private String name;
 
+    @NotNull
+    @Size(min = 1, max = 256)
+    private String uniqueId;
+
 }

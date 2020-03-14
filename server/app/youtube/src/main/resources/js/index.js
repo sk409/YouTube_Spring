@@ -15,17 +15,11 @@ new Vue({
     },
     data() {
         return {
-            recommendedVideos: null,
-            subscriptionChannels: null,
-            user: null
+            recommendedVideos: null
         }
     },
     mounted() {
         const recommendedVideosJSON = this.$refs.recommendedVideos.textContent;
         this.recommendedVideos = recommendedVideosJSON ? JSON.parse(recommendedVideosJSON) : [];
-        const subscriptionChannelsJSON = this.$refs.subscriptionChannels.textContent;
-        this.subscriptionChannels = subscriptionChannelsJSON ? JSON.parse(subscriptionChannelsJSON) : [];
-        const userJSON = this.$refs.user.textContent;
-        this.user = userJSON ? JSON.parse(userJSON) : null;
     }
 });

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel</title>
+</head>
+
+<body>
+    <div layout:fragment="navbar">
+        <navbar-search></navbar-search>
+    </div>
+    <div layout:fragment="content">
+        <guide-scaffold></guide-scaffold>
+    </div>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/channels/show.js}"></script>
+    </div>
+</body>
+
+</html>

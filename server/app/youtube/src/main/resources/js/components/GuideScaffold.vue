@@ -1,15 +1,8 @@
 <template>
-  <div class="h-100">
-    <div class="d-flex h-100">
-      <GuideMenu
-        :channels="channels"
-        :subscription-count="subscriptionCount"
-        class="guide-menu"
-        @update:channels="updateChannels"
-      ></GuideMenu>
-      <div class="flex-fill main">
-        <slot name="content"></slot>
-      </div>
+  <div ref="guideScaffold" class="d-flex h-100">
+    <GuideMenu class="guide-menu" :style="menuStyle"></GuideMenu>
+    <div class="flex-fill main">
+      <slot name="content"></slot>
     </div>
   </div>
 </template>
@@ -17,23 +10,19 @@
 <script>
 import GuideMenu from "./GuideMenu.vue";
 export default {
-  props: {
-    channels: {
-      default: () => [],
-      type: Array
-    },
-    subscriptionCount: {
-      default: 0,
-      type: Number
-    }
-  },
   components: {
     GuideMenu
   },
-  methods: {
-    updateChannels(channels) {
-      this.$emit("update:channels", channels);
-    }
+  data() {
+    return {
+      menuStyle: {}
+    };
+  },
+  mounted() {
+    const menuHeight = this.$refs.guideScaffold.clientHeight + "px";
+    this.menuStyle = {
+      height: menuHeight
+    };
   }
 };
 </script>

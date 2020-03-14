@@ -13,10 +13,7 @@
     </div>
     <div layout:fragment="content">
         <div ref="recommendedVideos" hidden th:text="${recommendedVideosJSON}"></div>
-        <div ref="subscriptionChannels" hidden th:text="${subscriptionChannelsJSON}"></div>
-        <div ref="user" hidden th:text="${userJSON}"></div>
-        <guide-scaffold v-if="subscriptionChannels && user" :channels.sync="subscriptionChannels"
-            :subscription-count="user.subscriptionCount" class="h-100">
+        <guide-scaffold class="h-100">
             <template #content>
                 <v-container>
                     <h3>あなたへのおすすめ</h3>

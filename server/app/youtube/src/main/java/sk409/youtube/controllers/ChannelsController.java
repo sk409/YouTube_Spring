@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import sk409.youtube.models.Channel;
 import sk409.youtube.models.Subscriber;
@@ -45,6 +46,12 @@ public class ChannelsController {
         this.userService = userService;
     }
 
+    @GetMapping("/{channelUniqueId}")
+    public ModelAndView show(final ModelAndView mav) {
+        mav.setViewName("channels/show");
+        return mav;
+    }
+
     @PostMapping
     @ResponseBody
     public ResponseEntity<Channel> store(@Validated @RequestBody final ChannelStoreRequest request,
@@ -58,7 +65,7 @@ public class ChannelsController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         final User user = _user.get();
-        final Channel channel = channelService.save(request.getName(), user.getId());
+        final Channel channel = channelService.save(request.getName(), request.getUniqueId(), user.getId());
         return new ResponseEntity<Channel>(channel, HttpStatus.OK);
     }
 
@@ -99,6 +106,7 @@ public class ChannelsController {
         subscriberSpecifications.setChannelIdNotIn(request.getExcludedChannelIds());
         final QueryComponents<Subscriber> subscriberQueryComponents = new QueryComponents<>();
         subscriberQueryComponents.setSpecifications(subscriberSpecifications);
+        subscriberQueryComponents.setLimit(request.getLimit());
         final Optional<List<Subscriber>> _subscribers = subscriberService.findAll(subscriberQueryComponents);
         final List<Long> channelIds = _subscribers.map(subscribers -> subscribers.stream()
                 .map(subscriber -> subscriber.getChannelId()).collect(Collectors.toList())).orElse(new ArrayList<>());

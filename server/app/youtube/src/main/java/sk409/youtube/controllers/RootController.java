@@ -54,20 +54,26 @@ public class RootController {
             return mav;
         }
         final User user = _user.get();
-        final Long subscriptionCount = subscriberService.countSubscription(user.getId());
-        final UserResponse userResponse = new UserResponse(user);
-        userResponse.setSubscriptionCount(subscriptionCount);
-        final String userResponseJSON = jsonService.toJSON(userResponse);
-        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
-        channelQueryComponents.setLimit(2);
-        final Optional<List<Channel>> _subscriptionChannels = channelService.findSubscription(user.getId(),
-                channelQueryComponents);
-        final Optional<List<ChannelResponse>> _subscriptionChannelResponses = _subscriptionChannels
-                .map(subscriptionChannels -> subscriptionChannels.stream()
-                        .map(subscriptionChannel -> new ChannelResponse(subscriptionChannel))
-                        .collect(Collectors.toList()));
-        final Optional<String> _subscriptionChannelResponsesJSON = _subscriptionChannelResponses
-                .map(subscriptionChannelResponses -> jsonService.toJSON(subscriptionChannelResponses));
+        // final Long subscriptionCount =
+        // subscriberService.countSubscription(user.getId());
+        // final UserResponse userResponse = new UserResponse(user);
+        // userResponse.setSubscriptionCount(subscriptionCount);
+        // final String userResponseJSON = jsonService.toJSON(userResponse);
+        // final QueryComponents<Channel> channelQueryComponents = new
+        // QueryComponents<>();
+        // channelQueryComponents.setLimit(2);
+        // final Optional<List<Channel>> _subscriptionChannels =
+        // channelService.findSubscription(user.getId(),
+        // channelQueryComponents);
+        // final Optional<List<ChannelResponse>> _subscriptionChannelResponses =
+        // _subscriptionChannels
+        // .map(subscriptionChannels -> subscriptionChannels.stream()
+        // .map(subscriptionChannel -> new ChannelResponse(subscriptionChannel))
+        // .collect(Collectors.toList()));
+        // final Optional<String> _subscriptionChannelResponsesJSON =
+        // _subscriptionChannelResponses
+        // .map(subscriptionChannelResponses ->
+        // jsonService.toJSON(subscriptionChannelResponses));
         final EntityGraphBuilder<Video> videoGraphBuilder = VideoGraphBuilder.user;
         final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
         videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
@@ -87,8 +93,9 @@ public class RootController {
         });
         final Optional<String> _recommendedVideoResponsesJSON = _recommendedVideoResponses
                 .map(videoResponses -> jsonService.toJSON(videoResponses));
-        mav.addObject("userJSON", userResponseJSON);
-        mav.addObject("subscriptionChannelsJSON", _subscriptionChannelResponsesJSON.orElse(null));
+        // mav.addObject("userJSON", userResponseJSON);
+        // mav.addObject("subscriptionChannelsJSON",
+        // _subscriptionChannelResponsesJSON.orElse(null));
         mav.addObject("recommendedVideosJSON", _recommendedVideoResponsesJSON.orElse(null));
         mav.setViewName("index");
         return mav;

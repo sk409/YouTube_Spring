@@ -1,5 +1,5 @@
 <template>
-  <div class="pl-3">
+  <div class="pl-3 overflow-y-auto">
     <div
       v-for="menuItem in menuItems"
       :key="menuItem.title"
@@ -20,7 +20,7 @@
     <div v-if="fetchingSubscriptionChannels" class="py-2 text-center">
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
-    <div v-else-if="remainingChannelCount !== 0" @click="fetchSubscriptionChannels">
+    <div v-else-if="remainingChannelCount !== 0" @click="fetchSubscriptionChannels(null)">
       <v-icon class="icon">mdi-menu-down</v-icon>
       <span class="ml-3">他の{{remainingChannelCount}}件を表示</span>
     </div>
@@ -30,18 +30,9 @@
 <script>
 import ajax from "../ajax.js";
 export default {
-  props: {
-    channels: {
-      default: () => [],
-      type: Array
-    },
-    subscriptionCount: {
-      default: 0,
-      type: Number
-    }
-  },
   data() {
     return {
+      channels: [],
       fetchingSubscriptionChannels: false,
       menuItems: [
         {
@@ -77,7 +68,8 @@ export default {
           title: "高く評価した動画",
           icon: "mdi-thumb-up"
         }
-      ]
+      ],
+      subscriptionCount: 0
     };
   },
   computed: {
@@ -85,15 +77,28 @@ export default {
       return Math.max(0, this.subscriptionCount - this.channels.length);
     }
   },
+  created() {
+    this.fetchSubscriptionChannels(5);
+    this.fetchSubscriptionCount();
+  },
   methods: {
-    fetchSubscriptionChannels() {
-      const data = {
-        excludedChannelIds: this.channels.map(channel => channel.id)
-      };
+    fetchSubscriptionChannels(limit) {
+      const data = {};
+      if (this.channels.length != 0) {
+        data.excludedChannelIds = this.channels.map(channel => channel.id);
+      }
+      if (limit) {
+        data.limit = limit;
+      }
       this.fetchingSubscriptionChannels = true;
       ajax.get(this.$routes.channels.subscription, data).then(response => {
-        this.$emit("update:channels", this.channels.concat(response.data));
+        this.channels = this.channels.concat(response.data);
         this.fetchingSubscriptionChannels = false;
+      });
+    },
+    fetchSubscriptionCount() {
+      ajax.get(this.$routes.users.subscriptionCount).then(response => {
+        this.subscriptionCount = response.data;
       });
     },
     isMenuItemActive(menuItem) {

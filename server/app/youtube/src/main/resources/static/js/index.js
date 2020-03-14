@@ -1927,6 +1927,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      loading: false,
       name: ""
     };
   },
@@ -1935,9 +1936,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       var data = {
-        name: this.name
+        name: this.name,
+        uniqueId: this.$uuid()
       };
+      this.loading = true;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.channels.base, data).then(function (response) {
+        _this.loading = false;
+
         _this.$emit("created", response.data);
       });
     }
@@ -1987,20 +1992,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    channels: {
-      "default": function _default() {
-        return [];
-      },
-      type: Array
-    },
-    subscriptionCount: {
-      "default": 0,
-      type: Number
-    }
-  },
   data: function data() {
     return {
+      channels: [],
       fetchingSubscriptionChannels: false,
       menuItems: [{
         title: "ホーム",
@@ -2027,7 +2021,8 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         title: "高く評価した動画",
         icon: "mdi-thumb-up"
-      }]
+      }],
+      subscriptionCount: 0
     };
   },
   computed: {
@@ -2035,20 +2030,37 @@ __webpack_require__.r(__webpack_exports__);
       return Math.max(0, this.subscriptionCount - this.channels.length);
     }
   },
+  created: function created() {
+    this.fetchSubscriptionChannels(5);
+    this.fetchSubscriptionCount();
+  },
   methods: {
-    fetchSubscriptionChannels: function fetchSubscriptionChannels() {
+    fetchSubscriptionChannels: function fetchSubscriptionChannels(limit) {
       var _this = this;
 
-      var data = {
-        excludedChannelIds: this.channels.map(function (channel) {
+      var data = {};
+
+      if (this.channels.length != 0) {
+        data.excludedChannelIds = this.channels.map(function (channel) {
           return channel.id;
-        })
-      };
+        });
+      }
+
+      if (limit) {
+        data.limit = limit;
+      }
+
       this.fetchingSubscriptionChannels = true;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.channels.subscription, data).then(function (response) {
-        _this.$emit("update:channels", _this.channels.concat(response.data));
-
+        _this.channels = _this.channels.concat(response.data);
         _this.fetchingSubscriptionChannels = false;
+      });
+    },
+    fetchSubscriptionCount: function fetchSubscriptionCount() {
+      var _this2 = this;
+
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.users.subscriptionCount).then(function (response) {
+        _this2.subscriptionCount = response.data;
       });
     },
     isMenuItemActive: function isMenuItemActive(menuItem) {
@@ -2096,34 +2108,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    channels: {
-      "default": function _default() {
-        return [];
-      },
-      type: Array
-    },
-    subscriptionCount: {
-      "default": 0,
-      type: Number
-    }
-  },
   components: {
     GuideMenu: _GuideMenu_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  methods: {
-    updateChannels: function updateChannels(channels) {
-      this.$emit("update:channels", channels);
-    }
+  data: function data() {
+    return {
+      menuStyle: {}
+    };
+  },
+  mounted: function mounted() {
+    var menuHeight = this.$refs.guideScaffold.clientHeight + "px";
+    this.menuStyle = {
+      height: menuHeight
+    };
   }
 });
 
@@ -2281,6 +2280,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     video: {
@@ -2340,7 +2342,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.video-title {\r\n  word-break: break-all;\n}\n.duration {\r\n  background: rgb(70, 69, 77);\r\n  color: rgb(249, 249, 249);\r\n  right: 4px;\r\n  bottom: 4px;\n}\r\n", ""]);
+exports.push([module.i, "\n.channel-name,\r\n.views-and-date {\r\n  font-size: 16px;\n}\n.channel-name:hover {\r\n  text-decoration: underline;\r\n  font-weight: bold;\n}\n.duration {\r\n  background: rgb(70, 69, 77);\r\n  color: rgb(249, 249, 249);\r\n  right: 4px;\r\n  bottom: 4px;\n}\n.video-title {\r\n  word-break: break-all;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3364,7 +3366,7 @@ var render = function() {
             "v-btn",
             {
               staticClass: "mx-auto",
-              attrs: { color: "success" },
+              attrs: { color: "success", loading: _vm.loading },
               on: { click: _vm.create }
             },
             [_vm._v("作成")]
@@ -3400,7 +3402,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "pl-3" },
+    { staticClass: "pl-3 overflow-y-auto" },
     [
       _vm._l(_vm.menuItems, function(menuItem) {
         return _c(
@@ -3461,7 +3463,13 @@ var render = function() {
         : _vm.remainingChannelCount !== 0
         ? _c(
             "div",
-            { on: { click: _vm.fetchSubscriptionChannels } },
+            {
+              on: {
+                click: function($event) {
+                  return _vm.fetchSubscriptionChannels(null)
+                }
+              }
+            },
             [
               _c("v-icon", { staticClass: "icon" }, [_vm._v("mdi-menu-down")]),
               _vm._v(" "),
@@ -3498,25 +3506,16 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "h-100" }, [
-    _c(
-      "div",
-      { staticClass: "d-flex h-100" },
-      [
-        _c("GuideMenu", {
-          staticClass: "guide-menu",
-          attrs: {
-            channels: _vm.channels,
-            "subscription-count": _vm.subscriptionCount
-          },
-          on: { "update:channels": _vm.updateChannels }
-        }),
-        _vm._v(" "),
-        _c("div", { staticClass: "flex-fill main" }, [_vm._t("content")], 2)
-      ],
-      1
-    )
-  ])
+  return _c(
+    "div",
+    { ref: "guideScaffold", staticClass: "d-flex h-100" },
+    [
+      _c("GuideMenu", { staticClass: "guide-menu", style: _vm.menuStyle }),
+      _vm._v(" "),
+      _c("div", { staticClass: "flex-fill main" }, [_vm._t("content")], 2)
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -3687,7 +3686,7 @@ var render = function() {
   return _c(
     "v-card",
     {
-      attrs: { flat: "" },
+      attrs: { flat: "", ripple: false },
       on: {
         click: function($event) {
           _vm.$transition(_vm.$routes.watch.base(_vm.video.uniqueId))
@@ -3734,11 +3733,24 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "mt-1" }, [
-              _c("div", { staticClass: "caption" }, [
-                _vm._v(_vm._s(_vm.video.channel.name))
-              ]),
+              _c(
+                "div",
+                {
+                  staticClass: "channel-name",
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      $event.stopPropagation()
+                      _vm.$transition(
+                        _vm.$routes.channels.show(_vm.video.channel.uniqueId)
+                      )
+                    }
+                  }
+                },
+                [_vm._v(_vm._s(_vm.video.channel.name))]
+              ),
               _vm._v(" "),
-              _c("div", { staticClass: "caption" }, [
+              _c("div", { staticClass: "views-and-date" }, [
                 _vm._v(
                   _vm._s(_vm.video.views) +
                     "回視聴・" +
@@ -58250,18 +58262,12 @@ new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
   },
   data: function data() {
     return {
-      recommendedVideos: null,
-      subscriptionChannels: null,
-      user: null
+      recommendedVideos: null
     };
   },
   mounted: function mounted() {
     var recommendedVideosJSON = this.$refs.recommendedVideos.textContent;
     this.recommendedVideos = recommendedVideosJSON ? JSON.parse(recommendedVideosJSON) : [];
-    var subscriptionChannelsJSON = this.$refs.subscriptionChannels.textContent;
-    this.subscriptionChannels = subscriptionChannelsJSON ? JSON.parse(subscriptionChannelsJSON) : [];
-    var userJSON = this.$refs.user.textContent;
-    this.user = userJSON ? JSON.parse(userJSON) : null;
   }
 });
 
@@ -58289,6 +58295,9 @@ var routes = {
   channels: {
     base: "/channels",
     lastSelected: "/channels/last_selected",
+    show: function show(uniqueId) {
+      return "/channels/".concat(uniqueId);
+    },
     subscription: "/channels/subscription",
     videos: {
       base: function base(channelId) {
@@ -58313,6 +58322,9 @@ var routes = {
     destroy: function destroy(id) {
       return "/subscribers/".concat(id);
     }
+  },
+  users: {
+    subscriptionCount: "/users/subscription_count"
   },
   videoCommentRating: {
     base: "/video_comment_rating",

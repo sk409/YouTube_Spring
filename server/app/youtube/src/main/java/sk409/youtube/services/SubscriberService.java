@@ -35,7 +35,7 @@ public class SubscriberService extends QueryService<Subscriber> {
         return Subscriber.class;
     }
 
-    public Long countSubscription(final Long userId) {
+    public Long countByUserId(final Long userId) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> query = builder.createQuery(Long.class);
         final Root<Subscriber> root = query.from(Subscriber.class);
