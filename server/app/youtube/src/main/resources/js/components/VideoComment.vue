@@ -39,8 +39,11 @@
           </v-btn>
         </div>
         <VideoComment v-for="reply in replies" :key="reply.id" :comment="reply"></VideoComment>
+        <div v-if="fetchingNextReplies" class="py-2 text-center">
+          <v-progress-circular color="primary" indeterminate></v-progress-circular>
+        </div>
         <v-btn
-          v-if="replies.length < comment.childCount"
+          v-else-if="replies.length < comment.childCount"
           text
           class="d-flex align-center success--text"
           @click="fetchNextReplies"
@@ -76,6 +79,7 @@ export default {
   },
   data() {
     return {
+      fetchingNextReplies: false,
       replies: [],
       showingReplies: false,
       videoCommentForm: false
@@ -171,7 +175,9 @@ export default {
       } else {
         data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
       }
+      this.fetchingNextReplies = true;
       ajax.get(this.$routes.videoComments.replies, data).then(response => {
+        this.fetchingNextReplies = false;
         this.replies = this.replies.concat(response.data);
       });
     },

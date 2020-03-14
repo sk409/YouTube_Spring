@@ -139,11 +139,17 @@ new Vue({
             const data = {
                 channelId: this.video.channel.id
             };
+            this.video.channel.subscriberCount += 1;
             ajax.post(this.$routes.subscribers.base, data).then(response => {
+                this.notification = "登録チャンネルに追加しました";
+                this.snackbar = true;
                 this.userSubscriber = response.data;
             });
         },
         unsubscribed() {
+            this.video.channel.subscriberCount -= 1;
+            this.notification = "登録チャンネルから削除しました";
+            this.snackbar = true;
             this.dialogChannelUnsubscribeForm = false;
             this.userSubscriber = null;
         }

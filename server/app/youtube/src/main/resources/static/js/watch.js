@@ -2231,6 +2231,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 
@@ -2248,6 +2251,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      fetchingNextReplies: false,
       replies: [],
       showingReplies: false,
       videoCommentForm: false
@@ -2336,7 +2340,9 @@ __webpack_require__.r(__webpack_exports__);
         data.newAfterVideoCommentId = this.replies[this.replies.length - 1].id;
       }
 
+      this.fetchingNextReplies = true;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videoComments.replies, data).then(function (response) {
+        _this2.fetchingNextReplies = false;
         _this2.replies = _this2.replies.concat(response.data);
       });
     },
@@ -3826,7 +3832,18 @@ var render = function() {
                   })
                 }),
                 _vm._v(" "),
-                _vm.replies.length < _vm.comment.childCount
+                _vm.fetchingNextReplies
+                  ? _c(
+                      "div",
+                      { staticClass: "py-2 text-center" },
+                      [
+                        _c("v-progress-circular", {
+                          attrs: { color: "primary", indeterminate: "" }
+                        })
+                      ],
+                      1
+                    )
+                  : _vm.replies.length < _vm.comment.childCount
                   ? _c(
                       "v-btn",
                       {
@@ -58727,11 +58744,17 @@ new vue__WEBPACK_IMPORTED_MODULE_7__["default"]({
       var data = {
         channelId: this.video.channel.id
       };
+      this.video.channel.subscriberCount += 1;
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.$routes.subscribers.base, data).then(function (response) {
+        _this4.notification = "登録チャンネルに追加しました";
+        _this4.snackbar = true;
         _this4.userSubscriber = response.data;
       });
     },
     unsubscribed: function unsubscribed() {
+      this.video.channel.subscriberCount -= 1;
+      this.notification = "登録チャンネルから削除しました";
+      this.snackbar = true;
       this.dialogChannelUnsubscribeForm = false;
       this.userSubscriber = null;
     }
