@@ -6,6 +6,15 @@
     color: inherit;
 }
 
+.d-grid {
+    display: grid;
+    ;
+}
+
+.grid-columns-4 {
+    grid-template-columns: repeat(4, 25%);
+}
+
 .w-100 {
     width: 100%;
 }

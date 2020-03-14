@@ -1,5 +1,7 @@
 package sk409.youtube.query.specifications;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import lombok.Data;
@@ -13,7 +15,7 @@ public class VideoCommentRatingSpecifications implements Specifications<VideoCom
     private Long userIdEqual;
     private Long userIdNotEqual;
     private Long videoCommentIdEqual;
-    private Long[] videoCommentIdIn;
+    private List<Long> videoCommentIdIn;
 
     public Specification<VideoCommentRating> where() {
         return Specification.where(equalToId()).and(equalToUserId()).and(equalToVideoCommentId())
@@ -40,7 +42,7 @@ public class VideoCommentRatingSpecifications implements Specifications<VideoCom
 
     private Specification<VideoCommentRating> inVideoCommentId() {
         return videoCommentIdIn == null ? null : (root, query, builder) -> {
-            return root.get(VideoCommentRating_.VIDEO_COMMENT_ID).in((Object[]) videoCommentIdIn);
+            return root.get(VideoCommentRating_.VIDEO_COMMENT_ID).in(videoCommentIdIn);
         };
     }
 

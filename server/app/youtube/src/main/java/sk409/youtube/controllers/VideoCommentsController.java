@@ -22,8 +22,8 @@ import sk409.youtube.models.User;
 import sk409.youtube.models.VideoComment;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.UserSpecifications;
-import sk409.youtube.requests.VideoCommentFetchNextCommentsRequest;
-import sk409.youtube.requests.VideoCommentFetchRepliesRequest;
+import sk409.youtube.requests.VideoCommentNextCommentsRequest;
+import sk409.youtube.requests.VideoCommentRepliesRequest;
 import sk409.youtube.requests.VideoCommentStoreRequest;
 import sk409.youtube.responses.VideoCommentResponse;
 import sk409.youtube.services.UserService;
@@ -65,8 +65,8 @@ public class VideoCommentsController {
 
     @GetMapping("/next_comments")
     @ResponseBody
-    public ResponseEntity<List<VideoCommentResponse>> fetchNextComments(
-            @Validated @ModelAttribute VideoCommentFetchNextCommentsRequest request, final BindingResult bindingResult,
+    public ResponseEntity<List<VideoCommentResponse>> nextComments(
+            @Validated @ModelAttribute VideoCommentNextCommentsRequest request, final BindingResult bindingResult,
             final Principal principal) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -82,8 +82,8 @@ public class VideoCommentsController {
 
     @GetMapping("/replies")
     @ResponseBody
-    private ResponseEntity<List<VideoCommentResponse>> fetchReplies(
-            @Validated @ModelAttribute final VideoCommentFetchRepliesRequest request, final BindingResult bindingResult,
+    private ResponseEntity<List<VideoCommentResponse>> replies(
+            @Validated @ModelAttribute final VideoCommentRepliesRequest request, final BindingResult bindingResult,
             final Principal principal) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

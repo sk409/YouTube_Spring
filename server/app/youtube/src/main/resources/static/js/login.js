@@ -56605,6 +56605,7 @@ var routes = {
   channels: {
     base: "/channels",
     lastSelected: "/channels/last_selected",
+    subscription: "/channels/subscription",
     videos: {
       base: function base(channelId) {
         return "/channels/".concat(channelId, "/videos");
@@ -56653,7 +56654,8 @@ var routes = {
   }
 };
 var serverUrl = function serverUrl(path) {
-  return "http://localhost:6565/" + path;
+  var serverOrigin = "http://localhost:6565";
+  return path.startsWith("/") ? serverOrigin + path : serverOrigin + "/" + path;
 };
 var transition = function transition(to) {
   location.href = to;

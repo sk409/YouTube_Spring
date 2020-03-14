@@ -12,10 +12,19 @@
         <navbar-search></navbar-search>
     </div>
     <div layout:fragment="content">
+        <div ref="recommendedVideos" hidden th:text="${recommendedVideosJSON}"></div>
         <div ref="subscriptionChannels" hidden th:text="${subscriptionChannelsJSON}"></div>
-        <guide-scaffold :channels="subscriptionChannels" class="h-100">
+        <div ref="user" hidden th:text="${userJSON}"></div>
+        <guide-scaffold v-if="subscriptionChannels && user" :channels.sync="subscriptionChannels"
+            :subscription-count="user.subscriptionCount" class="h-100">
             <template #content>
-                CONTENT
+                <v-container>
+                    <h3>あなたへのおすすめ</h3>
+                    <div class="d-grid grid-columns-4">
+                        <video-card v-for="video in recommendedVideos" :key="video.id" :video="video" class="ma-3">
+                        </video-card>
+                    </div>
+                </v-container>
             </template>
         </guide-scaffold>
     </div>

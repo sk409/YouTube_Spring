@@ -1,5 +1,7 @@
 package sk409.youtube.query.specifications;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import lombok.Data;
@@ -8,14 +10,14 @@ import sk409.youtube.models.VideoComment_;
 
 @Data
 public class VideoCommentSpecifications implements Specifications<VideoComment> {
-    private Long[] idIn;
+    private List<Long> idIn;
     private Long idLessThan;
     private Long idGreaterThan;
-    private Long[] idNotIn;
+    private List<Long> idNotIn;
     private Long parentIdEqual;
     private Boolean parentIdIsNull;
     private Long videoIdEqual;
-    private Long[] videoIdIn;
+    private List<Long> videoIdIn;
 
     public Specification<VideoComment> where() {
         return Specification.where(equalToParentId()).and(equalToVideoId()).and(greaterThanId()).and(inId())
@@ -42,13 +44,13 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
 
     private Specification<VideoComment> inId() {
         return idIn == null ? null : (root, query, builder) -> {
-            return root.get(VideoComment_.ID).in((Object[]) idIn);
+            return root.get(VideoComment_.ID).in(idIn);
         };
     }
 
     private Specification<VideoComment> inVideoId() {
         return videoIdIn == null ? null : (root, query, builder) -> {
-            return root.get(VideoComment_.VIDEO_ID).in((Object[]) videoIdIn);
+            return root.get(VideoComment_.VIDEO_ID).in(videoIdIn);
         };
     }
 
@@ -66,7 +68,7 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
 
     private Specification<VideoComment> notInId() {
         return idNotIn == null ? null : (root, query, builder) -> {
-            return root.get(VideoComment_.ID).in((Object[]) idNotIn).not();
+            return root.get(VideoComment_.ID).in(idNotIn).not();
         };
     }
 }

@@ -18,12 +18,14 @@ import sk409.youtube.repositories.ChannelRepository;
 public class ChannelService extends QueryService<Channel> {
 
     private final ChannelRepository channelRepository;
+    private final PathService pathService;
     private final SubscriberService subscriberService;
 
     public ChannelService(final ChannelRepository channelRepository, final EntityManager entityManager,
-            final SubscriberService subscriberService) {
+            final PathService pathService, final SubscriberService subscriberService) {
         super(entityManager);
         this.channelRepository = channelRepository;
+        this.pathService = pathService;
         this.subscriberService = subscriberService;
     }
 
@@ -32,7 +34,38 @@ public class ChannelService extends QueryService<Channel> {
         return Channel.class;
     }
 
+    public Optional<List<Channel>> findByIdIn(final List<Long> ids) {
+        final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
+        channelSpecifications.setIdIn(ids);
+        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
+        channelQueryComponents.setSpecifications(channelSpecifications);
+        final Optional<List<Channel>> _channels = findAll(channelQueryComponents);
+        return _channels;
+    }
+
+    public Optional<List<Channel>> findByIdNotIn(final List<Long> ids) {
+        final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
+        channelSpecifications.setIdNotIn(ids);
+        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
+        channelQueryComponents.setSpecifications(channelSpecifications);
+        final Optional<List<Channel>> _channels = findAll(channelQueryComponents);
+        return _channels;
+    }
+
+    public Optional<Channel> findByUserId(final Long userId) {
+        final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
+        channelSpecifications.setUserIdEqual(userId);
+        final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
+        channelQueryComponents.setSpecifications(channelSpecifications);
+        final Optional<Channel> _channel = findOne(channelQueryComponents);
+        return _channel;
+    }
+
     public Optional<List<Channel>> findSubscription(final Long userId) {
+        return findSubscription(userId, null);
+    }
+
+    public Optional<List<Channel>> findSubscription(final Long userId, final QueryComponents<Channel> options) {
         final Optional<List<Subscriber>> _subscribers = subscriberService.findByUserId(userId);
         if (!_subscribers.isPresent()) {
             return Optional.ofNullable(null);
@@ -44,12 +77,19 @@ public class ChannelService extends QueryService<Channel> {
         channelSpecifications.setIdIn(channelIds);
         final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
         channelQueryComponents.setSpecifications(channelSpecifications);
+        if (options != null) {
+            channelQueryComponents.assign(options);
+        }
         final Optional<List<Channel>> _channels = findAll(channelQueryComponents);
         return _channels;
     }
 
     public Channel save(final String name, final Long userId) {
-        final Channel channel = new Channel(name, userId);
+        return save(name, pathService.getRelativeNoImagePath().toString(), userId);
+    }
+
+    public Channel save(final String name, final String profileImagePath, final Long userId) {
+        final Channel channel = new Channel(name, profileImagePath, userId);
         channelRepository.save(channel);
         return channel;
     }

@@ -7,6 +7,7 @@ export const routes = {
     channels: {
         base: "/channels",
         lastSelected: "/channels/last_selected",
+        subscription: "/channels/subscription",
         videos: {
             base: channelId => `/channels/${channelId}/videos`,
             upload: channelId => `/channels/${channelId}/videos/upload`
@@ -44,7 +45,8 @@ export const routes = {
 };
 
 export const serverUrl = path => {
-    return "http://localhost:6565/" + path;
+    const serverOrigin = "http://localhost:6565";
+    return path.startsWith("/") ? serverOrigin + path : serverOrigin + "/" + path;
 };
 
 export const transition = to => {

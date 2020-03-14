@@ -12,10 +12,11 @@ import sk409.youtube.models.Channel_;
 public class ChannelSpecifications implements Specifications<Channel> {
     private Long idEqual;
     private List<Long> idIn;
+    private List<Long> idNotIn;
     private Long userIdEqual;
 
     public Specification<Channel> where() {
-        return Specification.where(equalToId()).and(equalToUserId()).and(inId());
+        return Specification.where(equalToId()).and(equalToUserId()).and(inId()).and(notInId());
     }
 
     private Specification<Channel> equalToId() {
@@ -33,6 +34,12 @@ public class ChannelSpecifications implements Specifications<Channel> {
     private Specification<Channel> inId() {
         return idIn == null ? null : (root, query, builder) -> {
             return root.get(Channel_.ID).in(idIn);
+        };
+    }
+
+    private Specification<Channel> notInId() {
+        return idNotIn == null ? null : (root, query, builder) -> {
+            return builder.not(root.get(Channel_.ID).in(idNotIn));
         };
     }
 }

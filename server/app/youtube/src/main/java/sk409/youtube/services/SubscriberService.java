@@ -4,10 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Service;
 
 import sk409.youtube.models.Subscriber;
+import sk409.youtube.models.Subscriber_;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.repositories.SubscriberRepository;
@@ -15,16 +21,29 @@ import sk409.youtube.repositories.SubscriberRepository;
 @Service
 public class SubscriberService extends QueryService<Subscriber> {
 
+    private final EntityManager entityManager;
     private final SubscriberRepository subscriberRepository;
 
     public SubscriberService(final EntityManager entityManager, final SubscriberRepository subscriberRepository) {
         super(entityManager);
+        this.entityManager = entityManager;
         this.subscriberRepository = subscriberRepository;
     }
 
     @Override
     public Class<Subscriber> classLiteral() {
         return Subscriber.class;
+    }
+
+    public Long countSubscription(final Long userId) {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        final Root<Subscriber> root = query.from(Subscriber.class);
+        final Path<Long> userIdPath = root.get(Subscriber_.USER_ID);
+        final Expression<Long> countExpression = builder.count(root);
+        query.select(countExpression).where(builder.equal(userIdPath, userId));
+        final Long count = entityManager.createQuery(query).getSingleResult().longValue();
+        return count;
     }
 
     public Optional<List<Subscriber>> findByUserId(final Long userId) {

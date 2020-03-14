@@ -32,6 +32,13 @@ import sk409.youtube.models.Video;
 import sk409.youtube.models.VideoComment;
 import sk409.youtube.models.VideoRating;
 import sk409.youtube.models.Video_;
+import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.specifications.ChannelSpecifications;
+import sk409.youtube.query.specifications.SubscriberSpecifications;
+import sk409.youtube.query.specifications.VideoCommentSpecifications;
+import sk409.youtube.query.specifications.VideoRatingSpecifications;
+import sk409.youtube.query.specifications.VideoSpecifications;
+import sk409.youtube.requests.VideoRecommendationRequest;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.responses.SubscriberResponse;
@@ -45,13 +52,6 @@ import sk409.youtube.services.UserService;
 import sk409.youtube.services.VideoCommentService;
 import sk409.youtube.services.VideoRatingService;
 import sk409.youtube.services.VideoService;
-import sk409.youtube.query.QueryComponents;
-import sk409.youtube.query.specifications.ChannelSpecifications;
-import sk409.youtube.query.specifications.SubscriberSpecifications;
-import sk409.youtube.query.specifications.UserSpecifications;
-import sk409.youtube.query.specifications.VideoCommentSpecifications;
-import sk409.youtube.query.specifications.VideoRatingSpecifications;
-import sk409.youtube.query.specifications.VideoSpecifications;
 
 @Controller
 public class VideosController {
@@ -172,11 +172,7 @@ public class VideosController {
         }
         final Channel channel = _channel.get();
         final String username = principal.getName();
-        final UserSpecifications userSpecifications = new UserSpecifications();
-        userSpecifications.setUsernameEqual(username);
-        final QueryComponents<User> userQueryComponents = new QueryComponents<>();
-        userQueryComponents.setSpecifications(userSpecifications);
-        final Optional<User> _user = userService.findOne(userQueryComponents);
+        final Optional<User> _user = userService.findByUsername(username);
         if (!_user.isPresent()) {
             mav.setStatus(HttpStatus.BAD_REQUEST);
             return mav;
@@ -195,8 +191,7 @@ public class VideosController {
         videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
         final Optional<List<Video>> _videos = videoService.findAll(videoQueryComponents);
         final List<Video> videos = _videos.isPresent() ? _videos.get() : new ArrayList<>();
-        final Long[] videoIds = videos.stream().map(video -> video.getId()).collect(Collectors.toList())
-                .toArray(new Long[] {});
+        final List<Long> videoIds = videos.stream().map(video -> video.getId()).collect(Collectors.toList());
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
         videoCommentSpecifications.setVideoIdIn(videoIds);
         final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
@@ -226,6 +221,34 @@ public class VideosController {
         mav.addObject("channelJSON", channelJSON);
         mav.setViewName("channels/videos/upload");
         return mav;
+    }
+
+    @GetMapping("/videos/recommendation")
+    @ResponseBody
+    public ResponseEntity<List<VideoResponse>> recommendataion(
+            @Validated @ModelAttribute final VideoRecommendationRequest request, final BindingResult bindingResult,
+            final Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        final User user = _user.get();
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.setLimit(request.getLimit());
+        if (request.getExcludedIds() != null) {
+            final VideoSpecifications videoSpecifications = new VideoSpecifications();
+            videoSpecifications.setIdNotIn(request.getExcludedIds());
+            videoQueryComponents.setSpecifications(videoSpecifications);
+        }
+        final Optional<List<Video>> _videos = videoService.findRecommendation(user.getId(), videoQueryComponents);
+        final List<VideoResponse> videoResponses = _videos
+                .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
+                .orElse(new ArrayList<>());
+        return new ResponseEntity<>(videoResponses, HttpStatus.OK);
     }
 
 }

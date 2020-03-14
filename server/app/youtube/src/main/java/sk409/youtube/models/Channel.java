@@ -30,6 +30,11 @@ public class Channel extends Model {
     @Setter
     private String name;
 
+    @Column(nullable = false)
+    @Getter
+    @Setter
+    private String profileImagePath;
+
     @Column(name = "user_id", nullable = false)
     @Getter
     @Setter
@@ -49,8 +54,9 @@ public class Channel extends Model {
     public Channel() {
     }
 
-    public Channel(final String name, final Long userId) {
+    public Channel(final String name, final String profileImagePath, final Long userId) {
         this.name = name;
+        this.profileImagePath = profileImagePath;
         this.userId = userId;
     }
 

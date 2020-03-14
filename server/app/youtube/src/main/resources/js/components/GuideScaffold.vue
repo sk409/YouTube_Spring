@@ -1,8 +1,13 @@
 <template>
   <div class="h-100">
     <div class="d-flex h-100">
-      <GuideMenu :channels="channels" class="guide-menu"></GuideMenu>
-      <div class="flex-fill">
+      <GuideMenu
+        :channels="channels"
+        :subscription-count="subscriptionCount"
+        class="guide-menu"
+        @update:channels="updateChannels"
+      ></GuideMenu>
+      <div class="flex-fill main">
         <slot name="content"></slot>
       </div>
     </div>
@@ -16,10 +21,19 @@ export default {
     channels: {
       default: () => [],
       type: Array
+    },
+    subscriptionCount: {
+      default: 0,
+      type: Number
     }
   },
   components: {
     GuideMenu
+  },
+  methods: {
+    updateChannels(channels) {
+      this.$emit("update:channels", channels);
+    }
   }
 };
 </script>
@@ -27,7 +41,10 @@ export default {
 <style>
 .guide-menu {
   width: 240px;
-  border-right: 1px solid lightgray;
+}
+
+.main {
+  background: rgb(249, 249, 249);
 }
 </style>
 

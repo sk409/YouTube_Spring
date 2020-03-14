@@ -70,7 +70,7 @@ public class VideoCommentService extends QueryService<VideoComment> {
         videoCommentSpecifications.setParentIdIsNull(true);
         videoCommentSpecifications.setVideoIdEqual(videoId);
         if (exclude.size() != 0) {
-            videoCommentSpecifications.setIdNotIn(exclude.toArray(new Long[] {}));
+            videoCommentSpecifications.setIdNotIn(exclude);
         }
         final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
         videoCommentQueryComponents.setSpecifications(videoCommentSpecifications);
@@ -80,8 +80,8 @@ public class VideoCommentService extends QueryService<VideoComment> {
             return Optional.ofNullable(null);
         }
         final List<VideoComment> videoComments = _videoComments.get();
-        final Long[] videoIds = videoComments.stream().map(videoComment -> videoComment.getId())
-                .collect(Collectors.toList()).toArray(new Long[] {});
+        final List<Long> videoIds = videoComments.stream().map(videoComment -> videoComment.getId())
+                .collect(Collectors.toList());
         final VideoCommentRatingSpecifications videoCommentRatingSpecifications = new VideoCommentRatingSpecifications();
         videoCommentRatingSpecifications.setVideoCommentIdIn(videoIds);
         final QueryComponents<VideoCommentRating> videoCommentRatingQueryComponents = new QueryComponents<>();
@@ -152,8 +152,8 @@ public class VideoCommentService extends QueryService<VideoComment> {
             return Optional.ofNullable(null);
         }
         final User user = _user.get();
-        final Long[] videoCommentIds = videoComments.stream().map(videoComment -> videoComment.getId())
-                .collect(Collectors.toList()).toArray(new Long[] {});
+        final List<Long> videoCommentIds = videoComments.stream().map(videoComment -> videoComment.getId())
+                .collect(Collectors.toList());
         final VideoCommentRatingSpecifications videoCommentRatingSpecifications = new VideoCommentRatingSpecifications();
         videoCommentRatingSpecifications.setUserIdNotEqual(user.getId());
         videoCommentRatingSpecifications.setVideoCommentIdIn(videoCommentIds);

@@ -1,5 +1,7 @@
 package sk409.youtube.query.specifications;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import lombok.Data;
@@ -10,11 +12,14 @@ import sk409.youtube.models.Subscriber_;
 public class SubscriberSpecifications implements Specifications<Subscriber> {
 
     private Long channelIdEqual;
+    private List<Long> channelIdNotIn;
     private Long idEqual;
+    private List<Long> idNotIn;
     private Long userIdEqual;
 
     public Specification<Subscriber> where() {
-        return Specification.where(equalToChannelId()).and(equalToId()).and(equalToUserId());
+        return Specification.where(equalToChannelId()).and(equalToId()).and(equalToUserId()).and(notInChannelId())
+                .and(notInId());
     }
 
     private Specification<Subscriber> equalToChannelId() {
@@ -32,6 +37,18 @@ public class SubscriberSpecifications implements Specifications<Subscriber> {
     private Specification<Subscriber> equalToUserId() {
         return userIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Subscriber_.USER_ID), userIdEqual);
+        };
+    }
+
+    private Specification<Subscriber> notInChannelId() {
+        return channelIdNotIn == null ? null : (root, query, builder) -> {
+            return builder.not(root.get(Subscriber_.CHANNEL_ID).in(channelIdNotIn));
+        };
+    }
+
+    private Specification<Subscriber> notInId() {
+        return idNotIn == null ? null : (root, query, builder) -> {
+            return builder.not(root.get(Subscriber_.ID).in(idNotIn));
         };
     }
 }

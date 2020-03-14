@@ -18,6 +18,8 @@ public class UserResponse {
     private String email;
     private String profileImagePath;
 
+    private Long subscriptionCount;
+
     @JsonManagedReference("user")
     private List<ChannelResponse> channels;
 

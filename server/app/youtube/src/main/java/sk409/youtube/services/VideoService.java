@@ -2,6 +2,7 @@ package sk409.youtube.services;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -15,7 +16,6 @@ import sk409.youtube.models.Video;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.VideoSpecifications;
 import sk409.youtube.repositories.VideoRepository;
-import sk409.youtube.responses.VideoResponse;
 
 @Service
 public class VideoService extends QueryService<Video> {
@@ -44,7 +44,15 @@ public class VideoService extends QueryService<Video> {
         final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
         videoQueryComponents.setSpecifications(videoSpecifications);
         videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
-        return findOne(videoQueryComponents);
+        final Optional<Video> _video = findOne(videoQueryComponents);
+        return _video;
+    }
+
+    public Optional<List<Video>> findRecommendation(final Long userId, final QueryComponents<Video> options) {
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.assign(options);
+        final Optional<List<Video>> _videos = findAll(videoQueryComponents);
+        return _videos;
     }
 
     public Video save(final String title, final String overview, final Float duration, final String uniqueId,

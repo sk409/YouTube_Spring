@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class VideoCommentFetchNextCommentsRequest {
+public class VideoCommentNextCommentsRequest {
 
     @NotNull
     private Integer limit;

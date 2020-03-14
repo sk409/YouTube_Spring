@@ -11,4 +11,19 @@ public class QueryComponents<T> {
     private Specifications<T> specifications;
     private Sorting<T> sorting;
     private Integer limit;
+
+    public void assign(final QueryComponents<T> other) {
+        if (entityGraphBuilder == null) {
+            entityGraphBuilder = other.getEntityGraphBuilder();
+        }
+        if (specifications == null) {
+            specifications = other.getSpecifications();
+        }
+        if (sorting == null) {
+            sorting = other.getSorting();
+        }
+        if (limit == null) {
+            limit = other.getLimit();
+        }
+    }
 }

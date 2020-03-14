@@ -13,6 +13,7 @@ public class ChannelResponse {
 
     private Long id;
     private String name;
+    private String profileImagePath;
     private Long userId;
 
     @JsonBackReference("UserResponse")
@@ -24,6 +25,7 @@ public class ChannelResponse {
     public ChannelResponse(final Channel channel) {
         id = channel.getId();
         name = channel.getName();
+        profileImagePath = channel.getProfileImagePath();
         userId = channel.getUserId();
     }
 
