@@ -87,6 +87,7 @@ public class VideosController {
             return mav;
         }
         final User user = _user.get();
+        final UserResponse userResponse = new UserResponse(user);
         final Optional<Video> _video = videoService.findByUniqueId(videoUniqueId, Video_.CHANNEL, Video_.RATING);
         if (!_video.isPresent()) {
             mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -96,8 +97,9 @@ public class VideosController {
         final Channel channel = video.getChannel();
         final VideoResponse videoResponse = new VideoResponse(video);
         final ChannelResponse channelResponse = new ChannelResponse(channel);
-        final UserResponse userResponse = new UserResponse(user);
         channelResponse.setUser(userResponse);
+        final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
+        channelResponse.setSubscriberCount(subscriberCount);
         videoResponse.setChannel(channelResponse);
         final VideoCommentSpecifications videoCommentSpecifications = new VideoCommentSpecifications();
         videoCommentSpecifications.setParentIdIsNull(true);

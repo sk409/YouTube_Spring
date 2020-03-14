@@ -17,6 +17,8 @@ public class ChannelResponse {
     private String uniqueId;
     private Long userId;
 
+    private Long subscriberCount;
+
     @JsonBackReference("UserResponse")
     private UserResponse user;
 

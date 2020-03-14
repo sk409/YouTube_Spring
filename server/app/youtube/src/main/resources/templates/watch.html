@@ -72,14 +72,15 @@
                                 <div class="d-flex">
                                     <div>
                                         <div class="title">{{video.channel.name}}</div>
-                                        <div class="caption">チャンネル登録者</div>
+                                        <div class="caption">チャンネル登録者<span
+                                                class="ml-1">{{video.channel.subscriberCount}}人</span></div>
                                     </div>
                                     <v-btn v-if="!userSubscriber" color="primary" class="ml-auto" @click="subscribe">
                                         チャンネル登録</v-btn>
                                     <v-btn v-else class="ml-auto" @click="dialogChannelUnsubscribeForm=true">
                                         登録済み</v-btn>
                                 </div>
-                                <div class="word-break-all">{{video.overview}}</div>
+                                <div class="mt-3 word-break-all">{{video.overview}}</div>
                             </div>
                         </div>
                         <v-divider class="mt-3"></v-divider>

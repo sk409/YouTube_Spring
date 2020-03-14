@@ -35,6 +35,17 @@ public class SubscriberService extends QueryService<Subscriber> {
         return Subscriber.class;
     }
 
+    public Long countByChannelId(final Long channelId) {
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        final Root<Subscriber> root = query.from(Subscriber.class);
+        final Path<Long> channelIdPath = root.get(Subscriber_.CHANNEL_ID);
+        final Expression<Long> countExpression = builder.count(root);
+        query.select(countExpression).where(builder.equal(channelIdPath, channelId));
+        final Long count = entityManager.createQuery(query).getSingleResult().longValue();
+        return count;
+    }
+
     public Long countByUserId(final Long userId) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> query = builder.createQuery(Long.class);
