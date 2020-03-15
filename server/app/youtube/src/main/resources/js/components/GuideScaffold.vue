@@ -1,7 +1,7 @@
 <template>
   <div ref="guideScaffold" class="d-flex h-100">
     <GuideMenu class="guide-menu" :style="menuStyle"></GuideMenu>
-    <div class="main">
+    <div class="content overflow-y-auto" :style="contentStyle">
       <slot name="content"></slot>
     </div>
   </div>
@@ -15,13 +15,17 @@ export default {
   },
   data() {
     return {
+      contentStyle: {},
       menuStyle: {}
     };
   },
   mounted() {
-    const menuHeight = this.$refs.guideScaffold.clientHeight + "px";
+    const height = this.$refs.guideScaffold.clientHeight + "px";
+    this.contentStyle = {
+      height
+    };
     this.menuStyle = {
-      height: menuHeight
+      height
     };
   }
 };
@@ -32,7 +36,7 @@ export default {
   width: 20%;
 }
 
-.main {
+.content {
   background: rgb(249, 249, 249);
   width: 80%;
 }

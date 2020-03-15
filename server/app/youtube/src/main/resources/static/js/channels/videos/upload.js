@@ -1925,6 +1925,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
@@ -2608,7 +2613,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".scroll-menu-item-active {\n  border-left: 3px solid #ea3524;\n}\n.scroll-menu-item:hover, .scroll-menu-item-active {\n  background: #f4f4f4;\n  color: #ea3524;\n}\n", ""]);
+exports.push([module.i, ".scroll-menu-item-active {\n  border-left: 3px solid #ea3524;\n}\n.scroll-menu-item:hover,\n.scroll-menu-item-active {\n  background: #f4f4f4;\n  color: #ea3524;\n}\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3618,7 +3623,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _vm.channel
-    ? _c("div", { staticClass: "channel-menu" }, [
+    ? _c("div", [
         _c("div", [
           _c("div", { staticClass: "subtitle-1" }, [
             _vm._v(_vm._s(_vm.channel.name))

@@ -22,6 +22,7 @@ new Vue({
         return {
             channel: null,
             dialogChannelUnsubscribeForm: false,
+            newVideos: [],
             notification: "",
             popularVideos: [],
             snackbar: false,
@@ -33,6 +34,9 @@ new Vue({
     mounted() {
         const channelJSON = this.$refs.channel.textContent;
         this.channel = channelJSON ? JSON.parse(channelJSON) : null;
+        const newVideosJSON = this.$refs.newVideos.textContent;
+        this.newVideos = newVideosJSON ? JSON.parse(newVideosJSON) : [];
+        //console.log(this.newVideos);
         const popularVideosJSON = this.$refs.popularVideos.textContent;
         this.popularVideos = popularVideosJSON ? JSON.parse(popularVideosJSON) : [];
         const userSubscriberJSON = this.$refs.userSubscriber.textContent;

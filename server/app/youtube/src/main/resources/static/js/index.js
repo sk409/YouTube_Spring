@@ -2115,13 +2115,17 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      contentStyle: {},
       menuStyle: {}
     };
   },
   mounted: function mounted() {
-    var menuHeight = this.$refs.guideScaffold.clientHeight + "px";
+    var height = this.$refs.guideScaffold.clientHeight + "px";
+    this.contentStyle = {
+      height: height
+    };
     this.menuStyle = {
-      height: menuHeight
+      height: height
     };
   }
 });
@@ -2315,6 +2319,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
+    resizing: {
+      type: Boolean,
+      "default": false
+    },
     vertical: {
       type: Boolean,
       "default": false
@@ -2325,19 +2333,30 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var videoThumbnail = this.$refs.videoThumbnail;
-    var image = this.$refs.image;
+    this.resize();
+  },
+  watch: {
+    resizing: function resizing() {
+      if (this.resizing) {
+        this.resize();
+        this.$emit("update:resizing", false);
+      }
+    }
+  },
+  methods: {
+    resize: function resize() {
+      var videoThumbnail = this.$refs.videoThumbnail;
+      var image = this.$refs.image;
 
-    if (this.vertical) {
-      var imageHeight = videoThumbnail.clientHeight;
-      console.log("**");
-      console.log(imageHeight);
-      image.$el.style.height = imageHeight + "px";
-      image.$el.style.width = imageHeight * 16 / 9 + "px";
-    } else {
-      var imageWidth = videoThumbnail.clientWidth;
-      image.$el.style.width = imageWidth;
-      image.$el.style.height = imageWidth * 9 / 16 + "px";
+      if (this.vertical) {
+        var imageHeight = videoThumbnail.clientHeight;
+        image.$el.style.height = imageHeight + "px";
+        image.$el.style.width = imageHeight * 16 / 9 + "px";
+      } else {
+        var imageWidth = videoThumbnail.clientWidth;
+        image.$el.style.width = imageWidth;
+        image.$el.style.height = imageWidth * 9 / 16 + "px";
+      }
     }
   }
 });
@@ -2373,7 +2392,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.guide-menu {\r\n  width: 20%;\n}\n.main {\r\n  background: rgb(249, 249, 249);\r\n  width: 80%;\n}\r\n", ""]);
+exports.push([module.i, "\n.guide-menu {\r\n  width: 20%;\n}\n.content {\r\n  background: rgb(249, 249, 249);\r\n  width: 80%;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3610,7 +3629,12 @@ var render = function() {
     [
       _c("GuideMenu", { staticClass: "guide-menu", style: _vm.menuStyle }),
       _vm._v(" "),
-      _c("div", { staticClass: "main" }, [_vm._t("content")], 2)
+      _c(
+        "div",
+        { staticClass: "content overflow-y-auto", style: _vm.contentStyle },
+        [_vm._t("content")],
+        2
+      )
     ],
     1
   )

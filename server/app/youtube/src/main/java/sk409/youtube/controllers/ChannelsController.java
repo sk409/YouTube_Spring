@@ -76,20 +76,26 @@ public class ChannelsController {
         final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
         channelResponse.setSubscriberCount(subscriberCount);
         final String channelResponseJSON = jsonService.toJSON(channelResponse);
-        final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
-        userSubscriberSpecifications.setChannelIdEqual(channel.getId());
-        userSubscriberSpecifications.setUserIdEqual(user.getId());
-        final Optional<List<Video>> _popularVideos = videoService.findPopularChannel(channel.getId(), 4);
+        final Optional<List<Video>> _newVideos = videoService.findNewVideosChannel(channel.getId(), 12);
+        final Optional<List<VideoResponse>> _newVideoResponses = _newVideos.map(newVideos -> newVideos.stream()
+                .map(newVideo -> new VideoResponse(newVideo)).collect(Collectors.toList()));
+        final Optional<String> _newVideoResponsesJSON = _newVideoResponses
+                .map(newVideoResponses -> jsonService.toJSON(newVideoResponses));
+        final Optional<List<Video>> _popularVideos = videoService.findPopularChannel(channel.getId(), 12);
         final Optional<List<VideoResponse>> _popularVideoResponses = _popularVideos.map(popularVideos -> popularVideos
                 .stream().map(popularVideo -> new VideoResponse(popularVideo)).collect(Collectors.toList()));
         final Optional<String> _popularVideoResponsesJSON = _popularVideoResponses
                 .map(popularVideoResponses -> jsonService.toJSON(popularVideoResponses));
+        final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
+        userSubscriberSpecifications.setChannelIdEqual(channel.getId());
+        userSubscriberSpecifications.setUserIdEqual(user.getId());
         final Optional<Subscriber> _userSubscriber = subscriberService.findOne(userSubscriberSpecifications);
         final Optional<SubscriberResponse> _userSubscriberResponse = _userSubscriber
                 .map(userSubscriber -> new SubscriberResponse(userSubscriber));
         final Optional<String> _userSubscriberJSON = _userSubscriberResponse
                 .map(userSubscriber -> jsonService.toJSON(userSubscriber));
         mav.addObject("channelJSON", channelResponseJSON);
+        mav.addObject("newVideosJSON", _newVideoResponsesJSON.orElse(null));
         mav.addObject("popularVideosJSON", _popularVideoResponsesJSON.orElse(null));
         mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
         mav.setViewName("channels/show");

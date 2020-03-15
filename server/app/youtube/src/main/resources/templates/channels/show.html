@@ -13,6 +13,7 @@
     </div>
     <div layout:fragment="content">
         <div ref="channel" hidden th:text="${channelJSON}"></div>
+        <div ref="newVideos" hidden th:text="${newVideosJSON}"></div>
         <div ref="popularVideos" hidden th:text="${popularVideosJSON}"></div>
         <div ref="userSubscriber" hidden th:text="${userSubscriberJSON}"></div>
         <guide-scaffold v-if="channel">
@@ -45,7 +46,8 @@
                 <div>
                     <v-tabs-items v-model="tab" class="transparent">
                         <v-tab-item value="ホーム">
-                            <channel-home :channel="channel" :popular-videos="popularVideos"></channel-home>
+                            <channel-home :channel="channel" :new-videos="newVideos" :popular-videos="popularVideos">
+                            </channel-home>
                         </v-tab-item>
                     </v-tabs-items>
                 </div>

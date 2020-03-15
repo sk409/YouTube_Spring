@@ -49,6 +49,19 @@ public class VideoService extends QueryService<Video> {
         return _video;
     }
 
+    public Optional<List<Video>> findNewVideosChannel(final Long channelId, final Integer limit) {
+        final VideoSpecifications videoSepcifications = new VideoSpecifications();
+        videoSepcifications.setChannelIdEqual(channelId);
+        final VideoSorting videoSorting = new VideoSorting();
+        videoSorting.sortByCreatedAtDesc();
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.setSpecifications(videoSepcifications);
+        videoQueryComponents.setSorting(videoSorting);
+        videoQueryComponents.setLimit(limit);
+        final Optional<List<Video>> _videos = findAll(videoQueryComponents);
+        return _videos;
+    }
+
     public Optional<List<Video>> findPopularChannel(final Long channelId, final Integer limit) {
         final VideoSpecifications videoSepcifications = new VideoSpecifications();
         videoSepcifications.setChannelIdEqual(channelId);

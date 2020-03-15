@@ -1985,12 +1985,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
       type: Object,
       required: true
+    },
+    newVideos: {
+      "default": function _default() {
+        return [];
+      },
+      type: Array
     },
     popularVideos: {
       "default": function _default() {
@@ -2002,7 +2031,38 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     VideoThumbnail: _VideoThumbnail_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  methods: {}
+  data: function data() {
+    return {
+      resizingNewVideoThumbnailArray: [false, false, false, false, false, false, false, false, false, false, false, false],
+      showingAllPopularVideos: false
+    };
+  },
+  computed: {
+    showedPopularVideos: function showedPopularVideos() {
+      return this.showingAllPopularVideos ? this.popularVideos : this.popularVideos.slice(0, 4);
+    }
+  },
+  mounted: function mounted() {
+    this.setupNewVideos();
+  },
+  methods: {
+    setupNewVideos: function setupNewVideos() {
+      var _this = this;
+
+      var containerWidth = this.$refs.newVideosContainer.clientWidth;
+      var thumbnailWidth = containerWidth * 0.23;
+      var marginRight = containerWidth * 0.02;
+      this.$refs.newVideos.forEach(function (newVideo) {
+        newVideo.style.width = thumbnailWidth + "px";
+        newVideo.style.marginRight = marginRight + "px";
+      });
+      this.$refs.newVideoThumbnails.forEach(function (newVideoThumbnail, index) {
+        newVideoThumbnail.$el.style.width = thumbnailWidth + "px";
+
+        _this.$set(_this.resizingNewVideoThumbnailArray, index, true);
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -2225,13 +2285,17 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      contentStyle: {},
       menuStyle: {}
     };
   },
   mounted: function mounted() {
-    var menuHeight = this.$refs.guideScaffold.clientHeight + "px";
+    var height = this.$refs.guideScaffold.clientHeight + "px";
+    this.contentStyle = {
+      height: height
+    };
     this.menuStyle = {
-      height: menuHeight
+      height: height
     };
   }
 });
@@ -2378,6 +2442,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
+    resizing: {
+      type: Boolean,
+      "default": false
+    },
     vertical: {
       type: Boolean,
       "default": false
@@ -2388,19 +2456,30 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var videoThumbnail = this.$refs.videoThumbnail;
-    var image = this.$refs.image;
+    this.resize();
+  },
+  watch: {
+    resizing: function resizing() {
+      if (this.resizing) {
+        this.resize();
+        this.$emit("update:resizing", false);
+      }
+    }
+  },
+  methods: {
+    resize: function resize() {
+      var videoThumbnail = this.$refs.videoThumbnail;
+      var image = this.$refs.image;
 
-    if (this.vertical) {
-      var imageHeight = videoThumbnail.clientHeight;
-      console.log("**");
-      console.log(imageHeight);
-      image.$el.style.height = imageHeight + "px";
-      image.$el.style.width = imageHeight * 16 / 9 + "px";
-    } else {
-      var imageWidth = videoThumbnail.clientWidth;
-      image.$el.style.width = imageWidth;
-      image.$el.style.height = imageWidth * 9 / 16 + "px";
+      if (this.vertical) {
+        var imageHeight = videoThumbnail.clientHeight;
+        image.$el.style.height = imageHeight + "px";
+        image.$el.style.width = imageHeight * 16 / 9 + "px";
+      } else {
+        var imageWidth = videoThumbnail.clientWidth;
+        image.$el.style.width = imageWidth;
+        image.$el.style.height = imageWidth * 9 / 16 + "px";
+      }
     }
   }
 });
@@ -2418,7 +2497,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.left {\r\n  width: 70%;\n}\n.right {\r\n  width: 30%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail {\r\n  height: 160px;\n}\r\n", ""]);
+exports.push([module.i, "\n.left {\r\n  width: 85%;\n}\n.right {\r\n  width: 15%;\n}\n.video-new {\r\n  width: 25%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail-new {\r\n  width: 98%;\n}\n.video-thumbnail-popular {\r\n  height: 160px;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -2454,7 +2533,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.guide-menu {\r\n  width: 20%;\n}\n.main {\r\n  background: rgb(249, 249, 249);\r\n  width: 80%;\n}\r\n", ""]);
+exports.push([module.i, "\n.guide-menu {\r\n  width: 20%;\n}\n.content {\r\n  background: rgb(249, 249, 249);\r\n  width: 80%;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3570,7 +3649,7 @@ var render = function() {
           _vm._v("人気のアップロード動画")
         ]),
         _vm._v(" "),
-        _vm._l(_vm.popularVideos, function(popularVideo) {
+        _vm._l(_vm.showedPopularVideos, function(popularVideo) {
           return _c(
             "div",
             {
@@ -3578,13 +3657,13 @@ var render = function() {
               staticClass: "d-flex mb-2",
               on: {
                 click: function($event) {
-                  _vm.$transition(_vm.$routes.watch(_vm.video.uniqueId))
+                  _vm.$transition(_vm.$routes.watch(popularVideo.uniqueId))
                 }
               }
             },
             [
               _c("VideoThumbnail", {
-                staticClass: "video-thumbnail",
+                staticClass: "video-thumbnail-popular",
                 attrs: { vertical: "", video: popularVideo }
               }),
               _vm._v(" "),
@@ -3614,7 +3693,69 @@ var render = function() {
             ],
             1
           )
-        })
+        }),
+        _vm._v(" "),
+        !_vm.showingAllPopularVideos
+          ? _c(
+              "div",
+              {
+                staticClass: "caption cursor-pointer mt-4",
+                on: {
+                  click: function($event) {
+                    _vm.showingAllPopularVideos = true
+                  }
+                }
+              },
+              [_vm._v("もっと見る")]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _c("v-divider", { staticClass: "my-5" }),
+        _vm._v(" "),
+        _c("div", { staticClass: "subtitle-1" }, [_vm._v("アップロード動画")]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            ref: "newVideosContainer",
+            staticClass: "d-flex overflow-x-hidden"
+          },
+          _vm._l(_vm.newVideos, function(newVideo, index) {
+            return _c(
+              "div",
+              {
+                key: newVideo.id,
+                ref: "newVideos",
+                refInFor: true,
+                staticClass: "video-new"
+              },
+              [
+                _c("VideoThumbnail", {
+                  ref: "newVideoThumbnails",
+                  refInFor: true,
+                  staticClass: "video-thumbnail-new",
+                  attrs: {
+                    resizing: _vm.resizingNewVideoThumbnailArray[index],
+                    video: newVideo
+                  },
+                  on: {
+                    "update:resizing": function($event) {
+                      return _vm.$set(
+                        _vm.resizingNewVideoThumbnailArray,
+                        index,
+                        $event
+                      )
+                    }
+                  }
+                })
+              ],
+              1
+            )
+          }),
+          0
+        ),
+        _vm._v(" "),
+        _c("v-divider", { staticClass: "my-5" })
       ],
       2
     ),
@@ -3818,7 +3959,12 @@ var render = function() {
     [
       _c("GuideMenu", { staticClass: "guide-menu", style: _vm.menuStyle }),
       _vm._v(" "),
-      _c("div", { staticClass: "main" }, [_vm._t("content")], 2)
+      _c(
+        "div",
+        { staticClass: "content overflow-y-auto", style: _vm.contentStyle },
+        [_vm._t("content")],
+        2
+      )
     ],
     1
   )
@@ -57949,6 +58095,7 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
     return {
       channel: null,
       dialogChannelUnsubscribeForm: false,
+      newVideos: [],
       notification: "",
       popularVideos: [],
       snackbar: false,
@@ -57960,6 +58107,9 @@ new vue__WEBPACK_IMPORTED_MODULE_6__["default"]({
   mounted: function mounted() {
     var channelJSON = this.$refs.channel.textContent;
     this.channel = channelJSON ? JSON.parse(channelJSON) : null;
+    var newVideosJSON = this.$refs.newVideos.textContent;
+    this.newVideos = newVideosJSON ? JSON.parse(newVideosJSON) : []; //console.log(this.newVideos);
+
     var popularVideosJSON = this.$refs.popularVideos.textContent;
     this.popularVideos = popularVideosJSON ? JSON.parse(popularVideosJSON) : [];
     var userSubscriberJSON = this.$refs.userSubscriber.textContent;
