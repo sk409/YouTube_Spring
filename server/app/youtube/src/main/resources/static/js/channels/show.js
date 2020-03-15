@@ -2008,6 +2008,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2033,11 +2043,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      resizingNewVideoThumbnailArray: [false, false, false, false, false, false, false, false, false, false, false, false],
+      newVideoPage: 0,
+      newVideoSlideWidth: 0,
+      resizingNewVideoThumbnailArray: [],
       showingAllPopularVideos: false
     };
   },
   computed: {
+    newVideoStyle: function newVideoStyle() {
+      return {
+        transform: "translateX(".concat(-this.newVideoPage * this.newVideoSlideWidth * 4, "px)")
+      };
+    },
     showedPopularVideos: function showedPopularVideos() {
       return this.showingAllPopularVideos ? this.popularVideos : this.popularVideos.slice(0, 4);
     }
@@ -2049,9 +2066,13 @@ __webpack_require__.r(__webpack_exports__);
     setupNewVideos: function setupNewVideos() {
       var _this = this;
 
+      this.$refs.newVideos.forEach(function (newVideo) {
+        _this.resizingNewVideoThumbnailArray.push(false);
+      });
       var containerWidth = this.$refs.newVideosContainer.clientWidth;
-      var thumbnailWidth = containerWidth * 0.23;
-      var marginRight = containerWidth * 0.02;
+      var thumbnailWidth = containerWidth * 0.24;
+      var marginRight = containerWidth * 0.01;
+      this.newVideoSlideWidth = thumbnailWidth + marginRight;
       this.$refs.newVideos.forEach(function (newVideo) {
         newVideo.style.width = thumbnailWidth + "px";
         newVideo.style.marginRight = marginRight + "px";
@@ -2061,6 +2082,9 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.$set(_this.resizingNewVideoThumbnailArray, index, true);
       });
+    },
+    showNextNewVideos: function showNextNewVideos() {
+      this.newVideoPage += 1;
     }
   }
 });
@@ -2497,7 +2521,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.left {\r\n  width: 85%;\n}\n.right {\r\n  width: 15%;\n}\n.video-new {\r\n  width: 25%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail-new {\r\n  width: 98%;\n}\n.video-thumbnail-popular {\r\n  height: 160px;\n}\r\n", ""]);
+exports.push([module.i, "\n.left {\r\n  width: 85%;\n}\n.next-new-video-button {\r\n  right: 0;\r\n  top: 25%;\r\n  transform: translateX(30%);\n}\n.right {\r\n  width: 15%;\n}\n.video-new {\r\n  transition: all 0.5s;\r\n  width: 25%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title-new {\r\n  font-size: 20;\r\n  font-weight: 400;\n}\n.video-title-popular {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail-new {\r\n  width: 98%;\n}\n.video-thumbnail-popular {\r\n  height: 160px;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3668,9 +3692,11 @@ var render = function() {
               }),
               _vm._v(" "),
               _c("div", { staticClass: "ml-3" }, [
-                _c("div", { staticClass: "video-title word-break-all" }, [
-                  _vm._v(_vm._s(_vm._f("truncate")(popularVideo.title, 50)))
-                ]),
+                _c(
+                  "div",
+                  { staticClass: "video-title-popular word-break-all" },
+                  [_vm._v(_vm._s(_vm._f("truncate")(popularVideo.title, 50)))]
+                ),
                 _vm._v(" "),
                 _c("div", { staticClass: "caption" }, [
                   _vm._v(
@@ -3716,43 +3742,76 @@ var render = function() {
         _vm._v(" "),
         _c(
           "div",
-          {
-            ref: "newVideosContainer",
-            staticClass: "d-flex overflow-x-hidden"
-          },
-          _vm._l(_vm.newVideos, function(newVideo, index) {
-            return _c(
+          { ref: "newVideosContainer", staticClass: "mt-3 p-relative" },
+          [
+            _c(
               "div",
-              {
-                key: newVideo.id,
-                ref: "newVideos",
-                refInFor: true,
-                staticClass: "video-new"
-              },
-              [
-                _c("VideoThumbnail", {
-                  ref: "newVideoThumbnails",
-                  refInFor: true,
-                  staticClass: "video-thumbnail-new",
-                  attrs: {
-                    resizing: _vm.resizingNewVideoThumbnailArray[index],
-                    video: newVideo
+              { staticClass: "d-flex overflow-x-hidden w-100" },
+              _vm._l(_vm.newVideos, function(newVideo, index) {
+                return _c(
+                  "div",
+                  {
+                    key: newVideo.id,
+                    ref: "newVideos",
+                    refInFor: true,
+                    staticClass: "video-new",
+                    style: _vm.newVideoStyle
                   },
-                  on: {
-                    "update:resizing": function($event) {
-                      return _vm.$set(
-                        _vm.resizingNewVideoThumbnailArray,
-                        index,
-                        $event
+                  [
+                    _c("VideoThumbnail", {
+                      ref: "newVideoThumbnails",
+                      refInFor: true,
+                      staticClass: "video-thumbnail-new",
+                      attrs: {
+                        resizing: _vm.resizingNewVideoThumbnailArray[index],
+                        video: newVideo
+                      },
+                      on: {
+                        "update:resizing": function($event) {
+                          return _vm.$set(
+                            _vm.resizingNewVideoThumbnailArray,
+                            index,
+                            $event
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "video-title-new" }, [
+                      _vm._v(_vm._s(newVideo.title))
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "caption" }, [
+                      _vm._v(
+                        _vm._s(newVideo.views) +
+                          "回視聴・" +
+                          _vm._s(_vm._f("dateAgo")(newVideo.createdAt))
                       )
-                    }
-                  }
-                })
+                    ])
+                  ],
+                  1
+                )
+              }),
+              0
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "next-new-video-button p-absolute" },
+              [
+                _c(
+                  "v-btn",
+                  {
+                    attrs: { fab: "", small: "" },
+                    on: { click: _vm.showNextNewVideos }
+                  },
+                  [_c("v-icon", [_vm._v("mdi-menu-right")])],
+                  1
+                )
               ],
               1
             )
-          }),
-          0
+          ]
         ),
         _vm._v(" "),
         _c("v-divider", { staticClass: "my-5" })
