@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex px-2 pt-3">
+  <div class="d-flex px-4 pt-3">
     <div class="left">
       <div class="subtitle-1 mb-4">人気のアップロード動画</div>
       <div
@@ -41,7 +41,12 @@
             <div class="caption">{{newVideo.views}}回視聴・{{newVideo.createdAt | dateAgo}}</div>
           </div>
         </div>
-        <div class="next-new-video-button p-absolute">
+        <div v-show="newVideoPage !== 0" class="previous-new-video-button p-absolute">
+          <v-btn fab small @click="showPreviousNewVideos">
+            <v-icon>mdi-menu-left</v-icon>
+          </v-btn>
+        </div>
+        <div v-show="moreNextVideos" class="next-new-video-button p-absolute">
           <v-btn fab small @click="showNextNewVideos">
             <v-icon>mdi-menu-right</v-icon>
           </v-btn>
@@ -57,6 +62,9 @@
 
 <script>
 import VideoThumbnail from "./VideoThumbnail.vue";
+
+const newVideoDisplayCount = 4;
+
 export default {
   props: {
     channel: {
@@ -84,17 +92,22 @@ export default {
     };
   },
   computed: {
+    moreNextVideos() {
+      return (
+        (this.newVideoPage + 1) * newVideoDisplayCount < this.newVideos.length
+      );
+    },
     newVideoStyle() {
       return {
         transform: `translateX(${-this.newVideoPage *
           this.newVideoSlideWidth *
-          4}px)`
+          newVideoDisplayCount}px)`
       };
     },
     showedPopularVideos() {
       return this.showingAllPopularVideos
         ? this.popularVideos
-        : this.popularVideos.slice(0, 4);
+        : this.popularVideos.slice(0, newVideoDisplayCount);
     }
   },
   mounted() {
@@ -120,6 +133,9 @@ export default {
     },
     showNextNewVideos() {
       this.newVideoPage += 1;
+    },
+    showPreviousNewVideos() {
+      this.newVideoPage -= 1;
     }
   }
 };
@@ -130,10 +146,19 @@ export default {
   width: 85%;
 }
 
+.next-new-video-button,
+.previous-new-video-button {
+  top: 25%;
+}
+
 .next-new-video-button {
   right: 0;
-  top: 25%;
   transform: translateX(30%);
+}
+
+.previous-new-video-button {
+  left: 0;
+  transform: translateX(-30%);
 }
 
 .right {

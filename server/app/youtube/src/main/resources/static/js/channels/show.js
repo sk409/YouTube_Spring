@@ -2018,7 +2018,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
+var newVideoDisplayCount = 4;
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
@@ -2050,13 +2056,16 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    moreNextVideos: function moreNextVideos() {
+      return (this.newVideoPage + 1) * newVideoDisplayCount < this.newVideos.length;
+    },
     newVideoStyle: function newVideoStyle() {
       return {
-        transform: "translateX(".concat(-this.newVideoPage * this.newVideoSlideWidth * 4, "px)")
+        transform: "translateX(".concat(-this.newVideoPage * this.newVideoSlideWidth * newVideoDisplayCount, "px)")
       };
     },
     showedPopularVideos: function showedPopularVideos() {
-      return this.showingAllPopularVideos ? this.popularVideos : this.popularVideos.slice(0, 4);
+      return this.showingAllPopularVideos ? this.popularVideos : this.popularVideos.slice(0, newVideoDisplayCount);
     }
   },
   mounted: function mounted() {
@@ -2085,6 +2094,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     showNextNewVideos: function showNextNewVideos() {
       this.newVideoPage += 1;
+    },
+    showPreviousNewVideos: function showPreviousNewVideos() {
+      this.newVideoPage -= 1;
     }
   }
 });
@@ -2521,7 +2533,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n.left {\r\n  width: 85%;\n}\n.next-new-video-button {\r\n  right: 0;\r\n  top: 25%;\r\n  transform: translateX(30%);\n}\n.right {\r\n  width: 15%;\n}\n.video-new {\r\n  transition: all 0.5s;\r\n  width: 25%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title-new {\r\n  font-size: 20;\r\n  font-weight: 400;\n}\n.video-title-popular {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail-new {\r\n  width: 98%;\n}\n.video-thumbnail-popular {\r\n  height: 160px;\n}\r\n", ""]);
+exports.push([module.i, "\n.left {\r\n  width: 85%;\n}\n.next-new-video-button,\r\n.previous-new-video-button {\r\n  top: 25%;\n}\n.next-new-video-button {\r\n  right: 0;\r\n  transform: translateX(30%);\n}\n.previous-new-video-button {\r\n  left: 0;\r\n  transform: translateX(-30%);\n}\n.right {\r\n  width: 15%;\n}\n.video-new {\r\n  transition: all 0.5s;\r\n  width: 25%;\n}\n.video-overview {\r\n  color: rgb(100, 100, 100);\n}\n.video-title-new {\r\n  font-size: 20;\r\n  font-weight: 400;\n}\n.video-title-popular {\r\n  font-size: 24;\r\n  font-weight: 500;\n}\n.video-thumbnail-new {\r\n  width: 98%;\n}\n.video-thumbnail-popular {\r\n  height: 160px;\n}\r\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -3664,7 +3676,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "d-flex px-2 pt-3" }, [
+  return _c("div", { staticClass: "d-flex px-4 pt-3" }, [
     _c(
       "div",
       { staticClass: "left" },
@@ -3797,7 +3809,44 @@ var render = function() {
             _vm._v(" "),
             _c(
               "div",
-              { staticClass: "next-new-video-button p-absolute" },
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.newVideoPage !== 0,
+                    expression: "newVideoPage !== 0"
+                  }
+                ],
+                staticClass: "previous-new-video-button p-absolute"
+              },
+              [
+                _c(
+                  "v-btn",
+                  {
+                    attrs: { fab: "", small: "" },
+                    on: { click: _vm.showPreviousNewVideos }
+                  },
+                  [_c("v-icon", [_vm._v("mdi-menu-left")])],
+                  1
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.moreNextVideos,
+                    expression: "moreNextVideos"
+                  }
+                ],
+                staticClass: "next-new-video-button p-absolute"
+              },
               [
                 _c(
                   "v-btn",
