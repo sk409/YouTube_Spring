@@ -1,4 +1,5 @@
 import ajax from "./ajax.js";
+import ChannelHome from "./components/ChannelHome.vue";
 import ChannelUnsubscribeForm from "./components/ChannelUnsubscribeForm.vue";
 import GuideScaffold from "./components/GuideScaffold.vue";
 import NavbarSearch from "./components/NavbarSearch.vue";
@@ -11,6 +12,7 @@ new Vue({
     el: "#app",
     vuetify,
     components: {
+        ChannelHome,
         ChannelUnsubscribeForm,
         GuideScaffold,
         NavbarSearch,
@@ -21,13 +23,18 @@ new Vue({
             channel: null,
             dialogChannelUnsubscribeForm: false,
             notification: "",
+            popularVideos: [],
             snackbar: false,
+            tab: "",
+            tabs: ["ホーム", "動画", "再生リスト", "コミュニティ", "チャンネル", "概要"],
             userSubscriber: null
         }
     },
     mounted() {
         const channelJSON = this.$refs.channel.textContent;
         this.channel = channelJSON ? JSON.parse(channelJSON) : null;
+        const popularVideosJSON = this.$refs.popularVideos.textContent;
+        this.popularVideos = popularVideosJSON ? JSON.parse(popularVideosJSON) : [];
         const userSubscriberJSON = this.$refs.userSubscriber.textContent;
         this.userSubscriber = userSubscriberJSON ? JSON.parse(userSubscriberJSON) : null;
     },

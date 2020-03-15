@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import ImageInterpolator from "../ImageInterpolator.js";
 export default {
   props: {
     file: {
@@ -57,9 +58,9 @@ export default {
         video.onloadeddata = () => {
           video.currentTime = (video.duration * index) / videos.length;
           if (index === this.selectedVideoIndex) {
-              video.onseeked = () => {
-                  this.selectVideo();
-              };
+            video.onseeked = () => {
+              this.selectVideo();
+            };
           }
         };
       });
@@ -71,8 +72,26 @@ export default {
       canvas.height = video.videoHeight;
       const context = canvas.getContext("2d");
       context.drawImage(video, 0, 0);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const dstWidth =
+        canvas.width < canvas.height ? canvas.width : (canvas.height / 9) * 16;
+      const dstHeight =
+        canvas.height < canvas.width ? canvas.height : (canvas.width / 16) * 9;
+      const resizedData = new Uint8ClampedArray(
+        ImageInterpolator.nearestNeighbor(
+          imageData.data,
+          canvas.width,
+          canvas.height,
+          dstWidth,
+          dstHeight
+        )
+      );
+      const resizedImageData = new ImageData(resizedData, dstWidth, dstHeight);
+      canvas.width = dstWidth;
+      canvas.height = dstHeight;
+      context.putImageData(resizedImageData, 0, 0);
       canvas.toBlob(blob => {
-          this.$emit("selected", new File([blob], "thumbnail.png"));
+        this.$emit("selected", new File([blob], "thumbnail.png"));
       });
     }
   }

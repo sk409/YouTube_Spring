@@ -38,6 +38,7 @@ import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.query.specifications.VideoCommentSpecifications;
 import sk409.youtube.query.specifications.VideoRatingSpecifications;
 import sk409.youtube.query.specifications.VideoSpecifications;
+import sk409.youtube.requests.VideoPopularChannelRequest;
 import sk409.youtube.requests.VideoRecommendationRequest;
 import sk409.youtube.requests.VideoStoreRequest;
 import sk409.youtube.responses.ChannelResponse;
@@ -223,6 +224,21 @@ public class VideosController {
         mav.addObject("channelJSON", channelJSON);
         mav.setViewName("channels/videos/upload");
         return mav;
+    }
+
+    @GetMapping("/videos/popular_channel")
+    @ResponseBody
+    public ResponseEntity<List<VideoResponse>> popularChannel(
+            @Validated @ModelAttribute final VideoPopularChannelRequest request, final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final Optional<List<Video>> _videos = videoService.findPopularChannel(request.getChannelId(),
+                request.getLimit());
+        final List<VideoResponse> videoResponses = _videos
+                .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
+                .orElse(new ArrayList<>());
+        return new ResponseEntity<>(videoResponses, HttpStatus.OK);
     }
 
     @GetMapping("/videos/recommendation")

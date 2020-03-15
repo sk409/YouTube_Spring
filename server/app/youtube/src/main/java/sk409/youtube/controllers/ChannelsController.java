@@ -23,16 +23,19 @@ import org.springframework.web.servlet.ModelAndView;
 import sk409.youtube.models.Channel;
 import sk409.youtube.models.Subscriber;
 import sk409.youtube.models.User;
+import sk409.youtube.models.Video;
 import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.requests.ChannelStoreRequest;
 import sk409.youtube.requests.ChannelSubscriptionRequest;
 import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.responses.SubscriberResponse;
+import sk409.youtube.responses.VideoResponse;
 import sk409.youtube.services.ChannelService;
 import sk409.youtube.services.JSONService;
 import sk409.youtube.services.SubscriberService;
 import sk409.youtube.services.UserService;
+import sk409.youtube.services.VideoService;
 
 @Controller
 @RequestMapping("/channels")
@@ -42,13 +45,15 @@ public class ChannelsController {
     private final JSONService jsonService;
     private final SubscriberService subscriberService;
     private final UserService userService;
+    private final VideoService videoService;
 
     public ChannelsController(final ChannelService channelService, final JSONService jsonService,
-            final SubscriberService subscriberService, final UserService userService) {
+            final SubscriberService subscriberService, final UserService userService, final VideoService videoService) {
         this.channelService = channelService;
         this.jsonService = jsonService;
         this.subscriberService = subscriberService;
         this.userService = userService;
+        this.videoService = videoService;
     }
 
     @GetMapping("/{channelUniqueId}")
@@ -74,12 +79,18 @@ public class ChannelsController {
         final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
         userSubscriberSpecifications.setChannelIdEqual(channel.getId());
         userSubscriberSpecifications.setUserIdEqual(user.getId());
+        final Optional<List<Video>> _popularVideos = videoService.findPopularChannel(channel.getId(), 4);
+        final Optional<List<VideoResponse>> _popularVideoResponses = _popularVideos.map(popularVideos -> popularVideos
+                .stream().map(popularVideo -> new VideoResponse(popularVideo)).collect(Collectors.toList()));
+        final Optional<String> _popularVideoResponsesJSON = _popularVideoResponses
+                .map(popularVideoResponses -> jsonService.toJSON(popularVideoResponses));
         final Optional<Subscriber> _userSubscriber = subscriberService.findOne(userSubscriberSpecifications);
         final Optional<SubscriberResponse> _userSubscriberResponse = _userSubscriber
                 .map(userSubscriber -> new SubscriberResponse(userSubscriber));
         final Optional<String> _userSubscriberJSON = _userSubscriberResponse
                 .map(userSubscriber -> jsonService.toJSON(userSubscriber));
         mav.addObject("channelJSON", channelResponseJSON);
+        mav.addObject("popularVideosJSON", _popularVideoResponsesJSON.orElse(null));
         mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
         mav.setViewName("channels/show");
         return mav;

@@ -2476,6 +2476,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ImageInterpolator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ImageInterpolator.js */ "./src/main/resources/js/ImageInterpolator.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 //
@@ -2496,6 +2497,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     file: {
@@ -2560,6 +2562,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       canvas.height = video.videoHeight;
       var context = canvas.getContext("2d");
       context.drawImage(video, 0, 0);
+      var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      var dstWidth = canvas.width < canvas.height ? canvas.width : canvas.height / 9 * 16;
+      var dstHeight = canvas.height < canvas.width ? canvas.height : canvas.width / 16 * 9;
+      var resizedData = new Uint8ClampedArray(_ImageInterpolator_js__WEBPACK_IMPORTED_MODULE_0__["default"].nearestNeighbor(imageData.data, canvas.width, canvas.height, dstWidth, dstHeight));
+      var resizedImageData = new ImageData(resizedData, dstWidth, dstHeight);
+      canvas.width = dstWidth;
+      canvas.height = dstHeight;
+      context.putImageData(resizedImageData, 0, 0);
       canvas.toBlob(function (blob) {
         _this3.$emit("selected", new File([blob], "thumbnail.png"));
       });
@@ -58227,6 +58237,354 @@ try {
 // easier to handle this case. if(!global) { ...}
 
 module.exports = g;
+
+
+/***/ }),
+
+/***/ "./src/main/resources/js/ImageInterpolator.js":
+/*!****************************************************!*\
+  !*** ./src/main/resources/js/ImageInterpolator.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ImageInterpolator; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var ImageIndex = /*#__PURE__*/function () {
+  _createClass(ImageIndex, null, [{
+    key: "properties",
+    value: function properties() {
+      return ["r", "g", "b", "a"];
+    }
+  }]);
+
+  function ImageIndex(x, y, width) {
+    _classCallCheck(this, ImageIndex);
+
+    this.r = (x + y * width) * 4;
+    this.g = this.r + 1;
+    this.b = this.g + 1;
+    this.a = this.b + 1;
+  }
+
+  return ImageIndex;
+}();
+
+var ImageInterpolator = /*#__PURE__*/function () {
+  function ImageInterpolator() {
+    _classCallCheck(this, ImageInterpolator);
+  }
+
+  _createClass(ImageInterpolator, null, [{
+    key: "nearestNeighbor",
+    value: function nearestNeighbor(data, srcWidth, srcHeight, dstWidth, dstHeight) {
+      var result = new Array(dstWidth * dstHeight);
+      var ratioX = dstWidth / srcWidth;
+      var ratioY = dstHeight / srcHeight;
+
+      for (var x = 0; x < dstWidth; ++x) {
+        var i = Math.floor(x / ratioX + 0.5);
+
+        for (var y = 0; y < dstHeight; ++y) {
+          var j = Math.floor(y / ratioY + 0.5);
+          var srcIndex = new ImageIndex(i, j, srcWidth);
+          var dstIndex = new ImageIndex(x, y, dstWidth);
+          result[dstIndex.r] = data[srcIndex.r];
+          result[dstIndex.g] = data[srcIndex.g];
+          result[dstIndex.b] = data[srcIndex.b];
+          result[dstIndex.a] = data[srcIndex.a];
+        }
+      }
+
+      return result;
+    }
+  }, {
+    key: "bilinear",
+    value: function bilinear(data, srcWidth, srcHeight, dstWidth, dstHeight) {
+      var result = new Array(dstWidth * dstHeight);
+      var ratioX = dstWidth / srcWidth;
+      var ratioY = dstHeight / srcHeight;
+
+      for (var x = 0; x < dstWidth; ++x) {
+        var mx = x / ratioX;
+        var x0 = Math.floor(mx);
+        var x1 = Math.ceil(mx);
+        var dx = mx - x0;
+
+        for (var y = 0; y < dstHeight; ++y) {
+          var my = y / ratioY;
+          var y0 = Math.floor(my);
+          var y1 = Math.ceil(my);
+          var dy = my - y0;
+          var srcIndex00 = new ImageIndex(x0, y0, srcWidth);
+          var srcIndex01 = new ImageIndex(x0, y1, srcWidth);
+          var srcIndex10 = new ImageIndex(x1, y0, srcWidth);
+          var srcIndex11 = new ImageIndex(x1, y1, srcWidth);
+          var dstIndex = new ImageIndex(x, y, dstWidth);
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = ImageIndex.properties()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var property = _step.value;
+              result[dstIndex[property]] = (1 - dx) * (1 - dy) * data[srcIndex00[property]] + (1 - dx) * dy * data[srcIndex01[property]] + dx * (1 - dy) * data[srcIndex10[property]] + dx * dy * data[srcIndex11[property]];
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+  }, {
+    key: "bicubic",
+    value: function bicubic(data, srcWidth, srcHeight, dstWidth, dstHeight) {
+      var a = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : -1;
+
+      var weight = function weight(t) {
+        var abst = Math.abs(t);
+
+        if (abst <= 1) {
+          return (a + 2) * abst * abst * abst - (a + 3) * abst * abst + 1;
+        } else if (abst <= 2) {
+          return a * abst * abst * abst - 5 * a * abst * abst + 8 * a * abst - 4 * a;
+        }
+
+        return 0;
+      };
+
+      var result = new Array(dstWidth * dstHeight);
+      var ratioX = dstWidth / srcWidth;
+      var ratioY = dstHeight / srcHeight;
+
+      for (var x = 0; x < dstWidth; ++x) {
+        var mx = x / ratioX;
+        var x0 = Math.floor(mx) - 1;
+
+        for (var y = 0; y < dstHeight; ++y) {
+          var my = y / ratioY;
+          var y0 = Math.floor(my) - 1;
+          var pixel = {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0
+          };
+
+          for (var i = 0; i < 4; ++i) {
+            var xi = x0 + i;
+
+            if (xi < 0 || srcWidth <= xi) {
+              continue;
+            }
+
+            var dx = Math.abs(mx - xi);
+            var wx = weight(dx);
+
+            for (var j = 0; j < 4; ++j) {
+              var yj = y0 + j;
+
+              if (yj < 0 || srcHeight <= yj) {
+                continue;
+              }
+
+              var dy = Math.abs(my - yj);
+              var wy = weight(dy);
+              var srcIndex = new ImageIndex(xi, yj, srcWidth);
+              var _iteratorNormalCompletion2 = true;
+              var _didIteratorError2 = false;
+              var _iteratorError2 = undefined;
+
+              try {
+                for (var _iterator2 = ImageIndex.properties()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                  var property = _step2.value;
+                  pixel[property] += data[srcIndex[property]] * wx * wy;
+                }
+              } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                    _iterator2["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError2) {
+                    throw _iteratorError2;
+                  }
+                }
+              }
+            }
+          }
+
+          var dstIndex = new ImageIndex(x, y, dstWidth);
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = ImageIndex.properties()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var _property = _step3.value;
+              result[dstIndex[_property]] = pixel[_property];
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+  }, {
+    key: "lanczos",
+    value: function lanczos(data, srcWidth, srcHeight, dstWidth, dstHeight) {
+      var n = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 3;
+
+      var sinc = function sinc(x) {
+        if (x === 0) {
+          return 1;
+        }
+
+        return Math.sin(Math.PI * x) / (Math.PI * x);
+      };
+
+      var weight = function weight(dx) {
+        if (n <= Math.abs(dx)) {
+          return 0;
+        }
+
+        return sinc(dx) * sinc(dx / n);
+      };
+
+      var result = new Array(dstWidth * dstHeight);
+      var ratioX = dstWidth / srcWidth;
+      var ratioY = dstHeight / srcHeight;
+
+      for (var x = 0; x < dstWidth; ++x) {
+        var mx = x / ratioX;
+        var x0 = Math.floor(mx) - n + 1;
+
+        for (var y = 0; y < dstHeight; ++y) {
+          var my = y / ratioY;
+          var y0 = Math.floor(my) - n + 1;
+          var pixel = {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0
+          };
+
+          for (var i = 0; i < 2 * n; ++i) {
+            var xi = x0 + i;
+
+            if (xi < 0 || srcWidth <= xi) {
+              continue;
+            }
+
+            var dx = Math.abs(mx - xi);
+            var wx = weight(dx);
+
+            for (var j = 0; j < 2 * n; ++j) {
+              var yj = y0 + j;
+
+              if (yj < 0 || srcHeight <= yj) {
+                continue;
+              }
+
+              var dy = Math.abs(my - yj);
+              var wy = weight(dy);
+              var srcIndex = new ImageIndex(xi, yj, srcWidth);
+              var _iteratorNormalCompletion4 = true;
+              var _didIteratorError4 = false;
+              var _iteratorError4 = undefined;
+
+              try {
+                for (var _iterator4 = ImageIndex.properties()[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  var property = _step4.value;
+                  pixel[property] += data[srcIndex[property]] * wx * wy;
+                }
+              } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                    _iterator4["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError4) {
+                    throw _iteratorError4;
+                  }
+                }
+              }
+            }
+          }
+
+          var dstIndex = new ImageIndex(x, y, dstWidth);
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
+
+          try {
+            for (var _iterator5 = ImageIndex.properties()[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var _property2 = _step5.value;
+              result[dstIndex[_property2]] = pixel[_property2];
+            }
+          } catch (err) {
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                _iterator5["return"]();
+              }
+            } finally {
+              if (_didIteratorError5) {
+                throw _iteratorError5;
+              }
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+  }]);
+
+  return ImageInterpolator;
+}();
+
 
 
 /***/ }),

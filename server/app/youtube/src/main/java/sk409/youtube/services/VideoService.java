@@ -14,6 +14,7 @@ import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.graph.builders.VideoGraphBuilder;
 import sk409.youtube.models.Video;
 import sk409.youtube.query.QueryComponents;
+import sk409.youtube.query.sorting.VideoSorting;
 import sk409.youtube.query.specifications.VideoSpecifications;
 import sk409.youtube.repositories.VideoRepository;
 
@@ -46,6 +47,19 @@ public class VideoService extends QueryService<Video> {
         videoQueryComponents.setEntityGraphBuilder(videoGraphBuilder);
         final Optional<Video> _video = findOne(videoQueryComponents);
         return _video;
+    }
+
+    public Optional<List<Video>> findPopularChannel(final Long channelId, final Integer limit) {
+        final VideoSpecifications videoSepcifications = new VideoSpecifications();
+        videoSepcifications.setChannelIdEqual(channelId);
+        final VideoSorting videoSorting = new VideoSorting();
+        videoSorting.sortByViewsDesc();
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.setSpecifications(videoSepcifications);
+        videoQueryComponents.setSorting(videoSorting);
+        videoQueryComponents.setLimit(limit);
+        final Optional<List<Video>> _videos = findAll(videoQueryComponents);
+        return _videos;
     }
 
     public Optional<List<Video>> findRecommendation(final Long userId, final QueryComponents<Video> options) {

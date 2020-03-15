@@ -1,7 +1,7 @@
 <template>
   <div ref="guideScaffold" class="d-flex h-100">
     <GuideMenu class="guide-menu" :style="menuStyle"></GuideMenu>
-    <div class="flex-fill main">
+    <div class="main">
       <slot name="content"></slot>
     </div>
   </div>
@@ -29,11 +29,12 @@ export default {
 
 <style>
 .guide-menu {
-  width: 240px;
+  width: 20%;
 }
 
 .main {
   background: rgb(249, 249, 249);
+  width: 80%;
 }
 </style>
 

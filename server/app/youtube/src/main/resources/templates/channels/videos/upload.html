@@ -13,10 +13,6 @@
     </div>
     <div layout:fragment="content" class="h-100">
         <div ref="channel" hidden th:text="${channelJSON}"></div>
-        <!-- <div th:text="${channelJSON}"></div> -->
-        <!-- <div ref="videos" hidden th:text="${videosJSON}"></div>
-        <div ref="videoCommentCounts" hidden th:text="${videoCommentCountsJSON}"></div>
-        <div ref="videoRatingCounts" hidden th:text="${videoRatingCountsJSON}"></div> -->
         <channel-scaffold :channel="channel">
             <template #content>
                 <h3 class="ml-4 mt-4">このチャンネルの動画</h3>

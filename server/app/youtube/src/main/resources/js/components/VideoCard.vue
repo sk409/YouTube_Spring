@@ -1,9 +1,6 @@
 <template>
   <v-card flat :ripple="false" @click="$transition($routes.watch.base(video.uniqueId))">
-    <div class="p-relative">
-      <v-img :src="$serverUrl(video.thumbnailPath)" class="w-100"></v-img>
-      <div class="caption duration p-absolute">{{video.duration | timeColonSeconds}}</div>
-    </div>
+    <VideoThumbnail :video="video"></VideoThumbnail>
     <div class="d-flex">
       <v-avatar size="40">
         <v-img :src="$serverUrl(video.channel.user.profileImagePath)"></v-img>
@@ -23,12 +20,16 @@
 </template>
 
 <script>
+import VideoThumbnail from "./VideoThumbnail.vue";
 export default {
   props: {
     video: {
       type: Object,
       required: true
     }
+  },
+  components: {
+    VideoThumbnail
   },
   methods: {}
 };
@@ -43,13 +44,6 @@ export default {
 .channel-name:hover {
   text-decoration: underline;
   font-weight: bold;
-}
-
-.duration {
-  background: rgb(70, 69, 77);
-  color: rgb(249, 249, 249);
-  right: 4px;
-  bottom: 4px;
 }
 
 .video-title {

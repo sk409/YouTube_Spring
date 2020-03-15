@@ -127,7 +127,7 @@ public class VideoCommentService extends QueryService<VideoComment> {
         videoCommentSpecifications.setParentIdEqual(videoCommentId);
         videoCommentSpecifications.setIdGreaterThan(newAfterVideoCommentId);
         final VideoCommentSorting videoCommentSorting = new VideoCommentSorting();
-        videoCommentSorting.setIdAsc(true);
+        videoCommentSorting.sortByIdAsc();
         final QueryComponents<VideoComment> videoCommentQueryComponents = new QueryComponents<>();
         videoCommentQueryComponents.setSpecifications(videoCommentSpecifications);
         videoCommentQueryComponents.setSorting(videoCommentSorting);
