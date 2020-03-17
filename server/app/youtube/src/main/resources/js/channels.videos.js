@@ -112,6 +112,19 @@ new Vue({
                     this.videos = this.videos.concat(response.data);
                 });
         },
-        fetchVideosPopular() {}
+        fetchVideosPopular() {
+            const data = {
+                channelId: this.channel.id,
+                limit: fetchSize
+            };
+            if (this.videos.length !== 0) {
+                data.excludedIds = this.videos.map(video => video.id);
+            }
+            ajax
+                .get(this.$routes.videos.popularChannel, data)
+                .then(response => {
+                    this.videos = this.videos.concat(response.data);
+                });
+        }
     }
 });

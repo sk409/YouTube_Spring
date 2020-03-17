@@ -58196,7 +58196,24 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
         _this2.videos = _this2.videos.concat(response.data);
       });
     },
-    fetchVideosPopular: function fetchVideosPopular() {}
+    fetchVideosPopular: function fetchVideosPopular() {
+      var _this3 = this;
+
+      var data = {
+        channelId: this.channel.id,
+        limit: fetchSize
+      };
+
+      if (this.videos.length !== 0) {
+        data.excludedIds = this.videos.map(function (video) {
+          return video.id;
+        });
+      }
+
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videos.popularChannel, data).then(function (response) {
+        _this3.videos = _this3.videos.concat(response.data);
+      });
+    }
   }
 });
 

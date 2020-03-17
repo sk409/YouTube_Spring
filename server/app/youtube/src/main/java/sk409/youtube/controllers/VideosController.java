@@ -256,8 +256,10 @@ public class VideosController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        final VideoSpecifications videoSpecifications = new VideoSpecifications();
+        videoSpecifications.setIdNotIn(request.getExcludedIds());
         final Optional<List<Video>> _videos = videoService.findPopularChannel(request.getChannelId(),
-                request.getLimit());
+                request.getLimit(), videoSpecifications);
         final List<VideoResponse> videoResponses = _videos
                 .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
                 .orElse(new ArrayList<>());
