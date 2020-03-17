@@ -168,7 +168,7 @@ export default {
       const video = document.createElement("video");
       video.src = URL.createObjectURL(file);
       video.load();
-      video.onloadedmetadata = () => this.duration = video.duration;
+      video.onloadedmetadata = () => (this.duration = video.duration);
       this.video = file;
       this.title = file.name;
       this.uniqueId = this.$uuid();
@@ -207,6 +207,7 @@ export default {
     },
     createVideo() {
       const data = {
+        channelId: this.channel.id,
         duration: this.duration,
         thumbnail: this.thumbnail,
         title: this.title,
@@ -220,13 +221,11 @@ export default {
         }
       };
       this.loading = true;
-      ajax
-        .post(this.$routes.channels.videos.base(this.channel.id), data, config)
-        .then(response => {
-          this.loading = false;
-          this.clear();
-          this.$emit("created", response.data);
-        });
+      ajax.post(this.$routes.videos.base, data, config).then(response => {
+        this.loading = false;
+        this.clear();
+        this.$emit("created", response.data);
+      });
     },
     goNextStep() {
       this.checkErrors();

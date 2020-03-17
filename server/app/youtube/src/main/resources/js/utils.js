@@ -7,10 +7,16 @@ export const routes = {
     channels: {
         base: "/channels",
         lastSelected: "/channels/last_selected",
-        show: (uniqueId) => `/channels/${uniqueId}`,
+        home: (channelUniqueId) => `/channels/${channelUniqueId}`,
         subscription: "/channels/subscription",
         videos: {
-            base: channelId => `/channels/${channelId}/videos`,
+            base: (channelUniqueId, sort) => {
+                if (sort) {
+                    return `/channels/${channelUniqueId}/videos?sort=${sort}`;
+                } else {
+                    return `/channels/${channelUniqueId}/videos`;
+                }
+            },
             new: channelId => `/channels/${channelId}/videos/new`,
             upload: channelId => `/channels/${channelId}/videos/upload`
         }
@@ -43,6 +49,9 @@ export const routes = {
     },
     videoRating: {
         base: "video_rating"
+    },
+    videos: {
+        base: "/videos"
     },
     watch: {
         base: videoUniqueId => `/watch?v=${videoUniqueId}`

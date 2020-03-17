@@ -10,7 +10,7 @@
         <div class="mt-1">
           <div
             class="channel-name"
-            @click.prevent.stop="$transition($routes.channels.show(video.channel.uniqueId))"
+            @click.prevent.stop="$transition($routes.channels.home(video.channel.uniqueId))"
           >{{video.channel.name}}</div>
           <div class="views-and-date">{{video.views}}回視聴・{{video.createdAt | dateAgo}}</div>
         </div>

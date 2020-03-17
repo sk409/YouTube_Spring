@@ -3861,7 +3861,7 @@ var render = function() {
                       $event.preventDefault()
                       $event.stopPropagation()
                       _vm.$transition(
-                        _vm.$routes.channels.show(_vm.video.channel.uniqueId)
+                        _vm.$routes.channels.home(_vm.video.channel.uniqueId)
                       )
                     }
                   }
@@ -58574,13 +58574,17 @@ var routes = {
   channels: {
     base: "/channels",
     lastSelected: "/channels/last_selected",
-    show: function show(uniqueId) {
-      return "/channels/".concat(uniqueId);
+    home: function home(channelUniqueId) {
+      return "/channels/".concat(channelUniqueId);
     },
     subscription: "/channels/subscription",
     videos: {
-      base: function base(channelId) {
-        return "/channels/".concat(channelId, "/videos");
+      base: function base(channelUniqueId, sort) {
+        if (sort) {
+          return "/channels/".concat(channelUniqueId, "/videos?sort=").concat(sort);
+        } else {
+          return "/channels/".concat(channelUniqueId, "/videos");
+        }
       },
       "new": function _new(channelId) {
         return "/channels/".concat(channelId, "/videos/new");
@@ -58624,6 +58628,9 @@ var routes = {
   },
   videoRating: {
     base: "video_rating"
+  },
+  videos: {
+    base: "/videos"
   },
   watch: {
     base: function base(videoUniqueId) {

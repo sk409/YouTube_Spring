@@ -1,6 +1,5 @@
 <template>
-  <!-- class="d-grid grid-columns-5" -->
-  <div class="overflow-y-auto">
+  <div class="d-grid grid-columns-5">
     <div v-for="video in videos" :key="video.id">
       <VideoThumbnail :video="video" class="mx-2 my-3"></VideoThumbnail>
       <div>{{video.title | truncate(30)}}</div>
@@ -49,7 +48,7 @@ export default {
     fetchNewVideos() {
       const data = {
         channelId: this.channel.id,
-        limit: 5
+        limit: 30
       };
       if (this.videos.length !== 0) {
         data.oldBeforeId = this.videos[this.videos.length - 1].id;

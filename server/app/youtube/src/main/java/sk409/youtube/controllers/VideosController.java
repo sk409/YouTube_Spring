@@ -143,23 +143,6 @@ public class VideosController {
         return mav;
     }
 
-    @PostMapping("/channels/{channelId}/videos")
-    @ResponseBody
-    public ResponseEntity<Video> store(@PathVariable("channelId") final Long channelId,
-            @Validated @ModelAttribute final VideoStoreRequest request, final BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            final Video video = videoService.save(request.getTitle(), request.getOverview(), request.getDuration(),
-                    request.getUniqueId(), channelId, request.getVideo(), request.getThumbnail());
-            return new ResponseEntity<>(video, HttpStatus.OK);
-        } catch (IOException exception) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("/channels/{channelId}/videos/upload")
     public ModelAndView showUploadForm(@PathVariable("channelId") final Long channelId, final Principal principal,
             final ModelAndView mav) {
@@ -257,6 +240,22 @@ public class VideosController {
                 .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
                 .orElse(new ArrayList<>());
         return new ResponseEntity<>(videoResponses, HttpStatus.OK);
+    }
+
+    @PostMapping("/videos")
+    @ResponseBody
+    public ResponseEntity<Video> store(@Validated @ModelAttribute final VideoStoreRequest request,
+            final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        try {
+            final Video video = videoService.save(request.getTitle(), request.getOverview(), request.getDuration(),
+                    request.getUniqueId(), request.getChannelId(), request.getVideo(), request.getThumbnail());
+            return new ResponseEntity<>(video, HttpStatus.OK);
+        } catch (IOException exception) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/videos/recommendation")

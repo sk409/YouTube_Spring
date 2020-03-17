@@ -1,0 +1,49 @@
+.left {
+  width: 85%;
+}
+
+.next-new-video-button,
+.previous-new-video-button {
+  top: 25%;
+}
+
+.next-new-video-button {
+  right: 0;
+  transform: translateX(30%);
+}
+
+.previous-new-video-button {
+  left: 0;
+  transform: translateX(-30%);
+}
+
+.right {
+  width: 15%;
+}
+
+.video-new {
+  transition: all 0.5s;
+  width: 25%;
+}
+
+.video-overview {
+  color: rgb(100, 100, 100);
+}
+
+.video-title-new {
+  font-size: 20;
+  font-weight: 400;
+}
+
+.video-title-popular {
+  font-size: 24;
+  font-weight: 500;
+}
+
+.video-thumbnail-new {
+  width: 98%;
+}
+
+.video-thumbnail-popular {
+  height: 160px;
+}

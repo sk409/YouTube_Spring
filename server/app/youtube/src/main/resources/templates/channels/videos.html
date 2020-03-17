@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Channel</title>
+</head>
+
+<body>
+    <div layout:fragment="navbar">
+        <navbar-search></navbar-search>
+    </div>
+    <div layout:fragment="content">
+        <div ref="channelJSON" hidden th:text="${channelJSON}"></div>
+        <div ref="videosJSON" hidden th:text="${videosJSON}"></div>
+        <div ref="userSubscriberJSON" hidden th:text="${userSubscriberJSON}"></div>
+        <guide-scaffold>
+            <template #content>
+                <div v-if="channel">
+                    <channel-header :channel="channel" :user-subscriber="userSubscriber"></channel-header>
+                    <div class="d-flex mt-3">
+                        <v-btn text>
+                            <span>アップロード済み</span>
+                            <v-icon right>mdi-menu-down</v-icon>
+                        </v-btn>
+                        <v-btn text class="ml-3">すべて再生</v-btn>
+                        <v-menu offset-y>
+                            <template #activator="{on}">
+                                <v-btn text v-on="on" class="ml-auto mr-3">
+                                    <v-icon left>mdi-sort-variant</v-icon>
+                                    <span>並べ替え</span>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="sortMenuItem in sortMenuItems" :key="sortMenuItem.title"
+                                    :href="sortMenuItem.route">
+                                    <v-list-item-title>{{sortMenuItem.title}}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                    <div class="d-grid grid-columns-5 mt-3">
+                        <div v-for="video in videos" :key="video.id">
+                            <video-thumbnail :video="video" class="mx-2 my-3"></video-thumbnail>
+                            <div>{{video.title | truncate(30)}}</div>
+                            <div class="caption mt-3">{{video.views}}回視聴・{{video.createdAt | dateAgo}}</div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </guide-scaffold>
+    </div>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/channels/videos.js}"></script>
+    </div>
+</body>
+
+</html>

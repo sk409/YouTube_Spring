@@ -28,6 +28,7 @@ import sk409.youtube.query.QueryComponents;
 import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.requests.ChannelStoreRequest;
 import sk409.youtube.requests.ChannelSubscriptionRequest;
+import sk409.youtube.requests.ChannelVideosRequest;
 import sk409.youtube.responses.ChannelResponse;
 import sk409.youtube.responses.SubscriberResponse;
 import sk409.youtube.responses.VideoResponse;
@@ -57,7 +58,7 @@ public class ChannelsController {
     }
 
     @GetMapping("/{channelUniqueId}")
-    public ModelAndView show(@PathVariable final String channelUniqueId, final Principal principal,
+    public ModelAndView home(@PathVariable final String channelUniqueId, final Principal principal,
             final ModelAndView mav) {
         final String username = principal.getName();
         final Optional<User> _user = userService.findByUsername(username);
@@ -98,25 +99,8 @@ public class ChannelsController {
         mav.addObject("newVideosJSON", _newVideoResponsesJSON.orElse(null));
         mav.addObject("popularVideosJSON", _popularVideoResponsesJSON.orElse(null));
         mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
-        mav.setViewName("channels/show");
+        mav.setViewName("channels/home");
         return mav;
-    }
-
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<Channel> store(@Validated @RequestBody final ChannelStoreRequest request,
-            final BindingResult bindingResult, final Principal principal) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        final String username = principal.getName();
-        final Optional<User> _user = userService.findByUsername(username);
-        if (!_user.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        final User user = _user.get();
-        final Channel channel = channelService.save(request.getName(), request.getUniqueId(), user.getId());
-        return new ResponseEntity<Channel>(channel, HttpStatus.OK);
     }
 
     @GetMapping("/last_selected")
@@ -135,6 +119,23 @@ public class ChannelsController {
         final Channel channel = _channel.get();
         final ChannelResponse response = new ChannelResponse(channel);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<Channel> store(@Validated @RequestBody final ChannelStoreRequest request,
+            final BindingResult bindingResult, final Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        final User user = _user.get();
+        final Channel channel = channelService.save(request.getName(), request.getUniqueId(), user.getId());
+        return new ResponseEntity<Channel>(channel, HttpStatus.OK);
     }
 
     @GetMapping("/subscription")
@@ -165,6 +166,55 @@ public class ChannelsController {
                 channels -> channels.stream().map(channel -> new ChannelResponse(channel)).collect(Collectors.toList()))
                 .orElse(new ArrayList<>());
         return new ResponseEntity<>(channelResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/{channelUniqueId}/videos")
+    public ModelAndView videos(@PathVariable final String channelUniqueId,
+            @Validated @ModelAttribute final ChannelVideosRequest request, final BindingResult bindingResult,
+            final Principal principal, final ModelAndView mav) {
+        if (bindingResult.hasErrors()) {
+            mav.setStatus(HttpStatus.BAD_REQUEST);
+            return mav;
+        }
+        final String username = principal.getName();
+        final Optional<User> _user = userService.findByUsername(username);
+        if (!_user.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return mav;
+        }
+        final User user = _user.get();
+        final Optional<Channel> _channel = channelService.findByUniqueId(channelUniqueId);
+        if (!_channel.isPresent()) {
+            mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return mav;
+        }
+        final Channel channel = _channel.get();
+        final ChannelResponse channelResponse = new ChannelResponse(channel);
+        final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
+        channelResponse.setSubscriberCount(subscriberCount);
+        final String channelResponseJSON = jsonService.toJSON(channelResponse);
+        final Integer limit = 30;
+        final Optional<List<Video>> _videos = request.getSort().equals("popular")
+                ? videoService.findPopularChannel(channel.getId(), limit)
+                : request.getSort().equals("old") ? videoService.findOldChannel(channel.getId(), limit)
+                        : videoService.findNewChannel(channel.getId(), limit);
+        final Optional<List<VideoResponse>> _videoResponses = _videos.map(newVideos -> newVideos.stream()
+                .map(newVideo -> new VideoResponse(newVideo)).collect(Collectors.toList()));
+        final Optional<String> _videoResponsesJSON = _videoResponses
+                .map(newVideoResponses -> jsonService.toJSON(newVideoResponses));
+        final SubscriberSpecifications userSubscriberSpecifications = new SubscriberSpecifications();
+        userSubscriberSpecifications.setChannelIdEqual(channel.getId());
+        userSubscriberSpecifications.setUserIdEqual(user.getId());
+        final Optional<Subscriber> _userSubscriber = subscriberService.findOne(userSubscriberSpecifications);
+        final Optional<SubscriberResponse> _userSubscriberResponse = _userSubscriber
+                .map(userSubscriber -> new SubscriberResponse(userSubscriber));
+        final Optional<String> _userSubscriberJSON = _userSubscriberResponse
+                .map(userSubscriber -> jsonService.toJSON(userSubscriber));
+        mav.addObject("channelJSON", channelResponseJSON);
+        mav.addObject("videosJSON", _videoResponsesJSON.orElse(null));
+        mav.addObject("userSubscriberJSON", _userSubscriberJSON.orElse(null));
+        mav.setViewName("channels/videos");
+        return mav;
     }
 
 }

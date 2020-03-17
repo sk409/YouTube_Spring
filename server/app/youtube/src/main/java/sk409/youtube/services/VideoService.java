@@ -53,11 +53,33 @@ public class VideoService extends QueryService<Video> {
         return findNewChannel(channelId, limit, null);
     }
 
-    public Optional<List<Video>> findNewChannel(final Long channelId, final Integer limit, final QueryComponents<Video> option) {
+    public Optional<List<Video>> findNewChannel(final Long channelId, final Integer limit,
+            final QueryComponents<Video> option) {
         final VideoSpecifications videoSepcifications = new VideoSpecifications();
         videoSepcifications.setChannelIdEqual(channelId);
         final VideoSorting videoSorting = new VideoSorting();
         videoSorting.sortByCreatedAtDesc();
+        final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
+        videoQueryComponents.setSpecifications(videoSepcifications);
+        videoQueryComponents.setSorting(videoSorting);
+        videoQueryComponents.setLimit(limit);
+        if (option != null) {
+            videoQueryComponents.assign(option);
+        }
+        final Optional<List<Video>> _videos = findAll(videoQueryComponents);
+        return _videos;
+    }
+
+    public Optional<List<Video>> findOldChannel(final Long channelId, final Integer limit) {
+        return findOldChannel(channelId, limit, null);
+    }
+
+    public Optional<List<Video>> findOldChannel(final Long channelId, final Integer limit,
+            final QueryComponents<Video> option) {
+        final VideoSpecifications videoSepcifications = new VideoSpecifications();
+        videoSepcifications.setChannelIdEqual(channelId);
+        final VideoSorting videoSorting = new VideoSorting();
+        videoSorting.sortByCreatedAtAsc();
         final QueryComponents<Video> videoQueryComponents = new QueryComponents<>();
         videoQueryComponents.setSpecifications(videoSepcifications);
         videoQueryComponents.setSorting(videoSorting);

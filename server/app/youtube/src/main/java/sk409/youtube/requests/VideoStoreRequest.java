@@ -29,6 +29,9 @@ public class VideoStoreRequest implements Serializable {
 	private String uniqueId;
 
 	@NotNull
+	private Long channelId;
+
+	@NotNull
 	private MultipartFile thumbnail;
 
 	@NotNull

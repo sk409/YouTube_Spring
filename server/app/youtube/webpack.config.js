@@ -10,7 +10,8 @@ module.exports = (env, args) => {
         devtool: devmode ? "source-map" : "none",
         entry: {
             app: jsSrcDir + "app.js",
-            "channels/show": jsSrcDir + "channels.show.js",
+            "channels/home": jsSrcDir + "channels.home.js",
+            "channels/videos": jsSrcDir + "channels.videos.js",
             "channels/videos/upload": jsSrcDir + "channels.videos.upload.js",
             index: jsSrcDir + "index.js",
             login: jsSrcDir + "login.js",
