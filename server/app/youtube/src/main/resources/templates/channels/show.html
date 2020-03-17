@@ -17,7 +17,7 @@
         <div ref="popularVideos" hidden th:text="${popularVideosJSON}"></div>
         <div ref="userSubscriber" hidden th:text="${userSubscriberJSON}"></div>
         <guide-scaffold v-if="channel">
-            <template #content>
+            <template #content="{scrollBottom}">
                 <div></div>
                 <div class="px-10 white">
                     <div class="d-flex">
@@ -48,6 +48,10 @@
                         <v-tab-item value="ホーム">
                             <channel-home :channel="channel" :new-videos="newVideos" :popular-videos="popularVideos">
                             </channel-home>
+                        </v-tab-item>
+                        <v-tab-item value="動画">
+                            <channel-videos :channel="channel" :fetching="scrollBottom">
+                            </channel-videos>
                         </v-tab-item>
                     </v-tabs-items>
                 </div>

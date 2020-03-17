@@ -2116,7 +2116,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       contentStyle: {},
-      menuStyle: {}
+      menuStyle: {},
+      scrollBottom: false
     };
   },
   mounted: function mounted() {
@@ -2127,6 +2128,12 @@ __webpack_require__.r(__webpack_exports__);
     this.menuStyle = {
       height: height
     };
+  },
+  methods: {
+    scroll: function scroll(e) {
+      var diff = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop);
+      this.scrollBottom = diff <= 0.5;
+    }
   }
 });
 
@@ -3631,8 +3638,12 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "content overflow-y-auto", style: _vm.contentStyle },
-        [_vm._t("content")],
+        {
+          staticClass: "content overflow-y-auto",
+          style: _vm.contentStyle,
+          on: { scroll: _vm.scroll }
+        },
+        [_vm._t("content", null, { scrollBottom: _vm.scrollBottom })],
         2
       )
     ],
@@ -58522,7 +58533,20 @@ new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
   },
   mounted: function mounted() {
     var recommendedVideosJSON = this.$refs.recommendedVideos.textContent;
-    this.recommendedVideos = recommendedVideosJSON ? JSON.parse(recommendedVideosJSON) : [];
+    this.recommendedVideos = recommendedVideosJSON ? JSON.parse(recommendedVideosJSON) : []; // //
+    // const path = this.$serverUrl("videos/video1.m3u8");
+    // var video = document.getElementById("v");
+    // if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    //   video.src = path;
+    //   return;
+    // }
+    // if (Hls.isSupported()) {
+    //   var hls = new Hls();
+    //   hls.loadSource(path);
+    //   hls.attachMedia(video);
+    // }
+    // return;
+    // //
   }
 });
 
@@ -58557,6 +58581,9 @@ var routes = {
     videos: {
       base: function base(channelId) {
         return "/channels/".concat(channelId, "/videos");
+      },
+      "new": function _new(channelId) {
+        return "/channels/".concat(channelId, "/videos/new");
       },
       upload: function upload(channelId) {
         return "/channels/".concat(channelId, "/videos/upload");

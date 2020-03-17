@@ -17,6 +17,30 @@ public class SubscriberSpecifications implements Specifications<Subscriber> {
     private List<Long> idNotIn;
     private Long userIdEqual;
 
+    @Override
+    public void assign(final Specifications<Subscriber> other) throws IllegalArgumentException {
+        if (!(other instanceof SubscriberSpecifications)) {
+            throw new IllegalArgumentException();
+        }
+        final SubscriberSpecifications subscriberSpecifications = (SubscriberSpecifications) other;
+        if (channelIdEqual == null) {
+            channelIdEqual = subscriberSpecifications.getChannelIdEqual();
+        }
+        if (channelIdNotIn == null) {
+            channelIdNotIn = subscriberSpecifications.getChannelIdNotIn();
+        }
+        if (idEqual == null) {
+            idEqual = subscriberSpecifications.getIdEqual();
+        }
+        if (idNotIn == null) {
+            idNotIn = subscriberSpecifications.getIdNotIn();
+        }
+        if (userIdEqual == null) {
+            userIdEqual = subscriberSpecifications.getUserIdEqual();
+        }
+    }
+
+    @Override
     public Specification<Subscriber> where() {
         return Specification.where(equalToChannelId()).and(equalToId()).and(equalToUserId()).and(notInChannelId())
                 .and(notInId());

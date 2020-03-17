@@ -18,6 +18,8 @@ public class QueryComponents<T> {
         }
         if (specifications == null) {
             specifications = other.getSpecifications();
+        } else {
+            specifications.assign(other.getSpecifications());
         }
         if (sorting == null) {
             sorting = other.getSorting();

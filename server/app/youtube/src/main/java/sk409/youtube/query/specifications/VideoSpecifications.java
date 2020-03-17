@@ -11,12 +11,34 @@ import sk409.youtube.models.Video_;
 @Data
 public class VideoSpecifications implements Specifications<Video> {
 
+    private Long idLessThan;
     private List<Long> idNotIn;
     private Long channelIdEqual;
     private String uniqueIdEqual;
 
+    @Override
+    public void assign(final Specifications<Video> other) throws IllegalArgumentException {
+        if (!(other instanceof VideoSpecifications)) {
+            throw new IllegalArgumentException();
+        }
+        final VideoSpecifications videoSpecifications = (VideoSpecifications) other;
+        if (idLessThan == null) {
+            idLessThan = videoSpecifications.getIdLessThan();
+        }
+        if (idNotIn == null) {
+            idNotIn = videoSpecifications.getIdNotIn();
+        }
+        if (channelIdEqual == null) {
+            channelIdEqual = videoSpecifications.getChannelIdEqual();
+        }
+        if (uniqueIdEqual == null) {
+            uniqueIdEqual = videoSpecifications.getUniqueIdEqual();
+        }
+    }
+
+    @Override
     public Specification<Video> where() {
-        return Specification.where(equalToChannelId()).and(equalToUniqueId()).and(notInId());
+        return Specification.where(equalToChannelId()).and(equalToUniqueId()).and(lessThanId()).and(notInId());
     }
 
     private Specification<Video> equalToChannelId() {
@@ -28,6 +50,12 @@ public class VideoSpecifications implements Specifications<Video> {
     private Specification<Video> equalToUniqueId() {
         return uniqueIdEqual == null ? null : (root, query, builder) -> {
             return builder.equal(root.get(Video_.UNIQUE_ID), uniqueIdEqual);
+        };
+    }
+
+    private Specification<Video> lessThanId() {
+        return idLessThan == null ? null : (root, query, builder) -> {
+            return builder.lessThan(root.get(Video_.ID), idLessThan);
         };
     }
 

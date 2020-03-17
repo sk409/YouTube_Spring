@@ -76,7 +76,7 @@ public class ChannelsController {
         final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
         channelResponse.setSubscriberCount(subscriberCount);
         final String channelResponseJSON = jsonService.toJSON(channelResponse);
-        final Optional<List<Video>> _newVideos = videoService.findNewVideosChannel(channel.getId(), 12);
+        final Optional<List<Video>> _newVideos = videoService.findNewChannel(channel.getId(), 12);
         final Optional<List<VideoResponse>> _newVideoResponses = _newVideos.map(newVideos -> newVideos.stream()
                 .map(newVideo -> new VideoResponse(newVideo)).collect(Collectors.toList()));
         final Optional<String> _newVideoResponsesJSON = _newVideoResponses

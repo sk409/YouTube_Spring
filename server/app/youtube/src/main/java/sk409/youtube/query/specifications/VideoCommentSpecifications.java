@@ -19,6 +19,39 @@ public class VideoCommentSpecifications implements Specifications<VideoComment> 
     private Long videoIdEqual;
     private List<Long> videoIdIn;
 
+    @Override
+    public void assign(final Specifications<VideoComment> other) throws IllegalArgumentException {
+        if (!(other instanceof VideoCommentSpecifications)) {
+            throw new IllegalArgumentException();
+        }
+        final VideoCommentSpecifications videoCommentSpecifications = (VideoCommentSpecifications) other;
+        if (idIn == null) {
+            idIn = videoCommentSpecifications.getIdIn();
+        }
+        if (idLessThan == null) {
+            idLessThan = videoCommentSpecifications.getIdLessThan();
+        }
+        if (idGreaterThan == null) {
+            idGreaterThan = videoCommentSpecifications.getIdGreaterThan();
+        }
+        if (idNotIn == null) {
+            idNotIn = videoCommentSpecifications.getIdNotIn();
+        }
+        if (parentIdEqual == null) {
+            parentIdEqual = videoCommentSpecifications.getParentIdEqual();
+        }
+        if (parentIdIsNull == null) {
+            parentIdIsNull = videoCommentSpecifications.getParentIdIsNull();
+        }
+        if (videoIdEqual == null) {
+            videoIdEqual = videoCommentSpecifications.getVideoIdEqual();
+        }
+        if (videoIdIn == null) {
+            videoIdIn = videoCommentSpecifications.getVideoIdIn();
+        }
+    }
+
+    @Override
     public Specification<VideoComment> where() {
         return Specification.where(equalToParentId()).and(equalToVideoId()).and(greaterThanId()).and(inId())
                 .and(inVideoId()).and(isNullParentId()).and(lessThanId()).and(notInId());

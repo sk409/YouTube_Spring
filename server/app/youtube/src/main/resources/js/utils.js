@@ -11,6 +11,7 @@ export const routes = {
         subscription: "/channels/subscription",
         videos: {
             base: channelId => `/channels/${channelId}/videos`,
+            new: channelId => `/channels/${channelId}/videos/new`,
             upload: channelId => `/channels/${channelId}/videos/upload`
         }
     },

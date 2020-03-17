@@ -56681,6 +56681,9 @@ var routes = {
       base: function base(channelId) {
         return "/channels/".concat(channelId, "/videos");
       },
+      "new": function _new(channelId) {
+        return "/channels/".concat(channelId, "/videos/new");
+      },
       upload: function upload(channelId) {
         return "/channels/".concat(channelId, "/videos/upload");
       }

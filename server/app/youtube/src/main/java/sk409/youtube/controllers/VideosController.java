@@ -38,6 +38,7 @@ import sk409.youtube.query.specifications.SubscriberSpecifications;
 import sk409.youtube.query.specifications.VideoCommentSpecifications;
 import sk409.youtube.query.specifications.VideoRatingSpecifications;
 import sk409.youtube.query.specifications.VideoSpecifications;
+import sk409.youtube.requests.VideoNewChannelRequest;
 import sk409.youtube.requests.VideoPopularChannelRequest;
 import sk409.youtube.requests.VideoRecommendationRequest;
 import sk409.youtube.requests.VideoStoreRequest;
@@ -226,15 +227,32 @@ public class VideosController {
         return mav;
     }
 
-    @GetMapping("/videos/popular_channel")
+    @GetMapping("/channels/{channelId}/videos/new")
     @ResponseBody
-    public ResponseEntity<List<VideoResponse>> popularChannel(
+    public ResponseEntity<List<VideoResponse>> newChannel(@PathVariable("channelId") final Long channelId,
+            @Validated @ModelAttribute final VideoNewChannelRequest request, final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final VideoSpecifications videoSpecifications = new VideoSpecifications();
+        videoSpecifications.setIdLessThan(request.getOldBeforeId());
+        final QueryComponents<Video> option = new QueryComponents<>();
+        option.setSpecifications(videoSpecifications);
+        final Optional<List<Video>> _videos = videoService.findNewChannel(channelId, request.getLimit(), option);
+        final Optional<List<VideoResponse>> _videoResponses = _videos
+                .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()));
+        final List<VideoResponse> videoResponses = _videoResponses.orElse(new ArrayList<>());
+        return new ResponseEntity<>(videoResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/channels/{channelId}/videos/popular")
+    @ResponseBody
+    public ResponseEntity<List<VideoResponse>> popularChannel(@PathVariable("channelId") final Long channelId,
             @Validated @ModelAttribute final VideoPopularChannelRequest request, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        final Optional<List<Video>> _videos = videoService.findPopularChannel(request.getChannelId(),
-                request.getLimit());
+        final Optional<List<Video>> _videos = videoService.findPopularChannel(channelId, request.getLimit());
         final List<VideoResponse> videoResponses = _videos
                 .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
                 .orElse(new ArrayList<>());

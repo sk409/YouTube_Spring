@@ -1,6 +1,7 @@
 import ajax from "./ajax.js";
 import ChannelHome from "./components/ChannelHome.vue";
 import ChannelUnsubscribeForm from "./components/ChannelUnsubscribeForm.vue";
+import ChannelVideos from "./components/ChannelVideos.vue";
 import GuideScaffold from "./components/GuideScaffold.vue";
 import NavbarSearch from "./components/NavbarSearch.vue";
 import SnackbarView from "./components/SnackbarView.vue";
@@ -14,6 +15,7 @@ new Vue({
     components: {
         ChannelHome,
         ChannelUnsubscribeForm,
+        ChannelVideos,
         GuideScaffold,
         NavbarSearch,
         SnackbarView

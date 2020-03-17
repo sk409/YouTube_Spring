@@ -97,7 +97,7 @@
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "[v-cloak] {\n  display: none; }\n\n.color-inherit {\n  color: inherit; }\n\n.cursor-pointer {\n  cursor: pointer; }\n\n.d-grid {\n  display: grid; }\n\n.grid-columns-4 {\n  grid-template-columns: repeat(4, 25%); }\n\n.w-100 {\n  width: 100%; }\n\n.h-100 {\n  height: 100%; }\n\n.p-relative {\n  position: relative; }\n\n.p-absolute {\n  position: absolute; }\n\n.word-break-all {\n  word-break: break-all; }\n", ""]);
+exports.push([module.i, "[v-cloak] {\n  display: none; }\n\n.color-inherit {\n  color: inherit; }\n\n.cursor-pointer {\n  cursor: pointer; }\n\n.d-grid {\n  display: grid; }\n\n.grid-columns-4 {\n  grid-template-columns: repeat(4, 25%); }\n\n.grid-columns-5 {\n  grid-template-columns: repeat(5, 20%); }\n\n.w-100 {\n  width: 100%; }\n\n.h-100 {\n  height: 100%; }\n\n.p-relative {\n  position: relative; }\n\n.p-absolute {\n  position: absolute; }\n\n.word-break-all {\n  word-break: break-all; }\n", ""]);
 // Exports
 module.exports = exports;
 

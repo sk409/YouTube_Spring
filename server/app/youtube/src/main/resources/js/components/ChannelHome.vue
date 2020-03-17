@@ -6,7 +6,7 @@
         v-for="popularVideo in showedPopularVideos"
         :key="popularVideo.id"
         class="d-flex mb-2"
-        @click="$transition($routes.watch(popularVideo.uniqueId))"
+        @click="$transition($routes.watch.base(popularVideo.uniqueId))"
       >
         <VideoThumbnail vertical :video="popularVideo" class="video-thumbnail-popular"></VideoThumbnail>
         <div class="ml-3">
@@ -30,6 +30,7 @@
             :key="newVideo.id"
             :style="newVideoStyle"
             class="video-new"
+            @click="$transition($routes.watch.base(newVideo.uniqueId))"
           >
             <VideoThumbnail
               ref="newVideoThumbnails"

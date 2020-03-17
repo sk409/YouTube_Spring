@@ -49,7 +49,11 @@ public class VideoService extends QueryService<Video> {
         return _video;
     }
 
-    public Optional<List<Video>> findNewVideosChannel(final Long channelId, final Integer limit) {
+    public Optional<List<Video>> findNewChannel(final Long channelId, final Integer limit) {
+        return findNewChannel(channelId, limit, null);
+    }
+
+    public Optional<List<Video>> findNewChannel(final Long channelId, final Integer limit, final QueryComponents<Video> option) {
         final VideoSpecifications videoSepcifications = new VideoSpecifications();
         videoSepcifications.setChannelIdEqual(channelId);
         final VideoSorting videoSorting = new VideoSorting();
@@ -58,6 +62,9 @@ public class VideoService extends QueryService<Video> {
         videoQueryComponents.setSpecifications(videoSepcifications);
         videoQueryComponents.setSorting(videoSorting);
         videoQueryComponents.setLimit(limit);
+        if (option != null) {
+            videoQueryComponents.assign(option);
+        }
         final Optional<List<Video>> _videos = findAll(videoQueryComponents);
         return _videos;
     }

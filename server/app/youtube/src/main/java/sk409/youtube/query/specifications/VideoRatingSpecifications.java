@@ -11,6 +11,21 @@ public class VideoRatingSpecifications implements Specifications<VideoRating> {
     private Long userIdEqual;
     private Long videoIdEqual;
 
+    @Override
+    public void assign(final Specifications<VideoRating> other) throws IllegalArgumentException {
+        if (!(other instanceof VideoRatingSpecifications)) {
+            throw new IllegalArgumentException();
+        }
+        final VideoRatingSpecifications videoRatingSpecifications = (VideoRatingSpecifications) other;
+        if (userIdEqual == null) {
+            userIdEqual = videoRatingSpecifications.getUserIdEqual();
+        }
+        if (videoIdEqual == null) {
+            videoIdEqual = videoRatingSpecifications.getVideoIdEqual();
+        }
+    }
+
+    @Override
     public Specification<VideoRating> where() {
         return Specification.where(equalToUserId()).and(equalToVideoId());
     }

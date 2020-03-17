@@ -1,33 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/app}">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Youtube</title>
-</head>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> -->
+  </head>
 
-<body>
+  <body>
     <div layout:fragment="navbar">
-        <navbar-search></navbar-search>
+      <navbar-search></navbar-search>
     </div>
     <div layout:fragment="content">
-        <div ref="recommendedVideos" hidden th:text="${recommendedVideosJSON}"></div>
-        <guide-scaffold class="h-100">
-            <template #content>
-                <v-container>
-                    <h3>あなたへのおすすめ</h3>
-                    <div class="d-grid grid-columns-4">
-                        <video-card v-for="video in recommendedVideos" :key="video.id" :video="video" class="ma-3">
-                        </video-card>
-                    </div>
-                </v-container>
-            </template>
-        </guide-scaffold>
+      <div
+        ref="recommendedVideos"
+        hidden
+        th:text="${recommendedVideosJSON}"
+      ></div>
+      <guide-scaffold class="h-100">
+        <template #content>
+          <v-container>
+            <!-- <video
+              id="v"
+              controls
+              preload="metadata"
+              width="854"
+              height="480"
+            ></video> -->
+            <h3>あなたへのおすすめ</h3>
+            <div class="d-grid grid-columns-4">
+              <video-card
+                v-for="video in recommendedVideos"
+                :key="video.id"
+                :video="video"
+                class="ma-3"
+              >
+              </video-card>
+            </div>
+          </v-container>
+        </template>
+      </guide-scaffold>
     </div>
     <div layout:fragment="scripts">
-        <script th:src="@{/js/index.js}"></script>
+      <script th:src="@{/js/index.js}"></script>
     </div>
-</body>
-
+  </body>
 </html>

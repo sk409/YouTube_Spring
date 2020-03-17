@@ -17,6 +17,30 @@ public class VideoCommentRatingSpecifications implements Specifications<VideoCom
     private Long videoCommentIdEqual;
     private List<Long> videoCommentIdIn;
 
+    @Override
+    public void assign(final Specifications<VideoCommentRating> other) throws IllegalArgumentException {
+        if (!(other instanceof VideoCommentRating)) {
+            throw new IllegalArgumentException();
+        }
+        final VideoCommentRatingSpecifications videoCommentRatingSpecifications = (VideoCommentRatingSpecifications) other;
+        if (idEqual == null) {
+            idEqual = videoCommentRatingSpecifications.getIdEqual();
+        }
+        if (userIdEqual == null) {
+            userIdEqual = videoCommentRatingSpecifications.getUserIdEqual();
+        }
+        if (userIdNotEqual == null) {
+            userIdNotEqual = videoCommentRatingSpecifications.getUserIdNotEqual();
+        }
+        if (videoCommentIdEqual == null) {
+            videoCommentIdEqual = videoCommentRatingSpecifications.getVideoCommentIdEqual();
+        }
+        if (videoCommentIdIn == null) {
+            videoCommentIdIn = videoCommentRatingSpecifications.getVideoCommentIdIn();
+        }
+    }
+
+    @Override
     public Specification<VideoCommentRating> where() {
         return Specification.where(equalToId()).and(equalToUserId()).and(equalToVideoCommentId())
                 .and(inVideoCommentId()).and(notEqualToUserId());

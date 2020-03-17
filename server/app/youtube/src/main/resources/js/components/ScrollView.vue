@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="scrollView">
     <slot></slot>
   </div>
 </template>

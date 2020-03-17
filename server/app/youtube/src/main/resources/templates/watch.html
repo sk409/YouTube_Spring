@@ -71,7 +71,9 @@
                             <div class="flex-fill ml-3">
                                 <div class="d-flex">
                                     <div>
-                                        <div class="title">{{video.channel.name}}</div>
+                                        <div class="cursor-pointer title"
+                                            @click="$transition($routes.channels.show(video.channel.uniqueId))">
+                                            {{video.channel.name}}</div>
                                         <div class="caption">チャンネル登録者<span
                                                 class="ml-1">{{video.channel.subscriberCount}}人</span></div>
                                     </div>

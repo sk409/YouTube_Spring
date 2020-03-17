@@ -19,6 +19,10 @@
     grid-template-columns: repeat(4, 25%);
 }
 
+.grid-columns-5 {
+    grid-template-columns: repeat(5, 20%);
+}
+
 .w-100 {
     width: 100%;
 }
