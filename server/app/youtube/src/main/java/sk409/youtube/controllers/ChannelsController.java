@@ -193,11 +193,11 @@ public class ChannelsController {
         final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
         channelResponse.setSubscriberCount(subscriberCount);
         final String channelResponseJSON = jsonService.toJSON(channelResponse);
-        final Integer limit = 30;
-        final Optional<List<Video>> _videos = request.getSort().equals("popular")
-                ? videoService.findPopularChannel(channel.getId(), limit)
-                : request.getSort().equals("old") ? videoService.findOldChannel(channel.getId(), limit)
-                        : videoService.findNewChannel(channel.getId(), limit);
+        final Integer limit = 3;
+        final Optional<List<Video>> _videos = request.getSort() == null
+                ? videoService.findNewChannel(channel.getId(), limit)
+                : request.getSort().equals("popular") ? videoService.findPopularChannel(channel.getId(), limit)
+                        : videoService.findOldChannel(channel.getId(), limit);
         final Optional<List<VideoResponse>> _videoResponses = _videos.map(newVideos -> newVideos.stream()
                 .map(newVideo -> new VideoResponse(newVideo)).collect(Collectors.toList()));
         final Optional<String> _videoResponsesJSON = _videoResponses

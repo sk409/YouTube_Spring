@@ -35,6 +35,9 @@ export default {
         e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop
       );
       this.scrollBottom = diff <= 0.5;
+      if (this.scrollBottom) {
+        this.$emit("scroll:bottom");
+      }
     }
   }
 };

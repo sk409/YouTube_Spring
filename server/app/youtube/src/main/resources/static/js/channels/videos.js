@@ -2310,6 +2310,10 @@ __webpack_require__.r(__webpack_exports__);
     scroll: function scroll(e) {
       var diff = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop);
       this.scrollBottom = diff <= 0.5;
+
+      if (this.scrollBottom) {
+        this.$emit("scroll:bottom");
+      }
     }
   }
 });
@@ -58090,6 +58094,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var fetchSize = 3;
 new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
   el: "#app",
   vuetify: _vuetify_js__WEBPACK_IMPORTED_MODULE_6__["default"],
@@ -58145,25 +58150,52 @@ new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
   },
   methods: {
     fetchVideos: function fetchVideos() {
-      this.fetchNewVideos();
+      var matches = location.href.match(/[?&]sort=(.*)[?&#]?/);
+
+      if (matches === null) {
+        this.fetchVideosNew();
+      } else {
+        var sort = matches[1];
+
+        if (sort === "popular") {
+          this.fetchVideosPopular();
+        } else if (sort === "old") {
+          this.fetchVideosOld();
+        }
+      }
     },
-    fetchNewVideos: function fetchNewVideos() {
+    fetchVideosNew: function fetchVideosNew() {
       var _this = this;
 
       var data = {
         channelId: this.channel.id,
-        limit: 30
+        limit: fetchSize
       };
 
       if (this.videos.length !== 0) {
         data.oldBeforeId = this.videos[this.videos.length - 1].id;
       }
 
-      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.channels.videos["new"](this.channel.id), data).then(function (response) {
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videos.newChannel, data).then(function (response) {
         _this.videos = _this.videos.concat(response.data);
       });
     },
-    fetchVideosOld: function fetchVideosOld() {},
+    fetchVideosOld: function fetchVideosOld() {
+      var _this2 = this;
+
+      var data = {
+        channelId: this.channel.id,
+        limit: fetchSize
+      };
+
+      if (this.videos.length !== 0) {
+        data.newAfter = this.videos[this.videos.length - 1].id;
+      }
+
+      _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.videos.oldChannel, data).then(function (response) {
+        _this2.videos = _this2.videos.concat(response.data);
+      });
+    },
     fetchVideosPopular: function fetchVideosPopular() {}
   }
 });
@@ -58988,7 +59020,10 @@ var routes = {
     base: "video_rating"
   },
   videos: {
-    base: "/videos"
+    base: "/videos",
+    newChannel: "/videos/new_channel",
+    oldChannel: "/videos/old_channel",
+    popularChannel: "/videos/popular_channel"
   },
   watch: {
     base: function base(videoUniqueId) {

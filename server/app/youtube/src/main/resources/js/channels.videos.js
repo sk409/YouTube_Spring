@@ -7,6 +7,8 @@ import Vue from "vue";
 import vuetify from "./vuetify.js";
 import "./common.js";
 
+const fetchSize = 3;
+
 new Vue({
     el: "#app",
     vuetify,
@@ -70,23 +72,46 @@ new Vue({
     },
     methods: {
         fetchVideos() {
-            this.fetchNewVideos();
+            const matches = location.href.match(/[?&]sort=(.*)[?&#]?/);
+            if (matches === null) {
+                this.fetchVideosNew();
+            } else {
+                const sort = matches[1];
+                if (sort === "popular") {
+                    this.fetchVideosPopular();
+                } else if (sort === "old") {
+                    this.fetchVideosOld();
+                }
+            }
         },
-        fetchNewVideos() {
+        fetchVideosNew() {
             const data = {
                 channelId: this.channel.id,
-                limit: 30
+                limit: fetchSize
             };
             if (this.videos.length !== 0) {
                 data.oldBeforeId = this.videos[this.videos.length - 1].id;
             }
             ajax
-                .get(this.$routes.channels.videos.new(this.channel.id), data)
+                .get(this.$routes.videos.newChannel, data)
                 .then(response => {
                     this.videos = this.videos.concat(response.data);
                 });
         },
-        fetchVideosOld() {},
+        fetchVideosOld() {
+            const data = {
+                channelId: this.channel.id,
+                limit: fetchSize
+            };
+            if (this.videos.length !== 0) {
+                data.newAfter = this.videos[this.videos.length - 1].id;
+            }
+            ajax
+                .get(this.$routes.videos.oldChannel, data)
+                .then(response => {
+                    this.videos = this.videos.concat(response.data);
+                });
+        },
         fetchVideosPopular() {}
     }
 });

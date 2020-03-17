@@ -56746,7 +56746,10 @@ var routes = {
     base: "video_rating"
   },
   videos: {
-    base: "/videos"
+    base: "/videos",
+    newChannel: "/videos/new_channel",
+    oldChannel: "/videos/old_channel",
+    popularChannel: "/videos/popular_channel"
   },
   watch: {
     base: function base(videoUniqueId) {

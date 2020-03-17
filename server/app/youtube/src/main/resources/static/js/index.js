@@ -2133,6 +2133,10 @@ __webpack_require__.r(__webpack_exports__);
     scroll: function scroll(e) {
       var diff = Math.abs(e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop);
       this.scrollBottom = diff <= 0.5;
+
+      if (this.scrollBottom) {
+        this.$emit("scroll:bottom");
+      }
     }
   }
 });
@@ -58630,7 +58634,10 @@ var routes = {
     base: "video_rating"
   },
   videos: {
-    base: "/videos"
+    base: "/videos",
+    newChannel: "/videos/new_channel",
+    oldChannel: "/videos/old_channel",
+    popularChannel: "/videos/popular_channel"
   },
   watch: {
     base: function base(videoUniqueId) {

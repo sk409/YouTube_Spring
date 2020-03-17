@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class VideoPopularChannelRequest {
 
+    @NotNull
+    private Long channelId;
+
     private Integer limit;
 
 }

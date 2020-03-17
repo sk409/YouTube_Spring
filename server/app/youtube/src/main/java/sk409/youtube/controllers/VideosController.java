@@ -39,6 +39,7 @@ import sk409.youtube.query.specifications.VideoCommentSpecifications;
 import sk409.youtube.query.specifications.VideoRatingSpecifications;
 import sk409.youtube.query.specifications.VideoSpecifications;
 import sk409.youtube.requests.VideoNewChannelRequest;
+import sk409.youtube.requests.VideoOldChannelRequest;
 import sk409.youtube.requests.VideoPopularChannelRequest;
 import sk409.youtube.requests.VideoRecommendationRequest;
 import sk409.youtube.requests.VideoStoreRequest;
@@ -210,9 +211,9 @@ public class VideosController {
         return mav;
     }
 
-    @GetMapping("/channels/{channelId}/videos/new")
+    @GetMapping("/videos/new_channel")
     @ResponseBody
-    public ResponseEntity<List<VideoResponse>> newChannel(@PathVariable("channelId") final Long channelId,
+    public ResponseEntity<List<VideoResponse>> newChannel(
             @Validated @ModelAttribute final VideoNewChannelRequest request, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -221,21 +222,42 @@ public class VideosController {
         videoSpecifications.setIdLessThan(request.getOldBeforeId());
         final QueryComponents<Video> option = new QueryComponents<>();
         option.setSpecifications(videoSpecifications);
-        final Optional<List<Video>> _videos = videoService.findNewChannel(channelId, request.getLimit(), option);
+        final Optional<List<Video>> _videos = videoService.findNewChannel(request.getChannelId(), request.getLimit(),
+                option);
         final Optional<List<VideoResponse>> _videoResponses = _videos
                 .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()));
         final List<VideoResponse> videoResponses = _videoResponses.orElse(new ArrayList<>());
         return new ResponseEntity<>(videoResponses, HttpStatus.OK);
     }
 
-    @GetMapping("/channels/{channelId}/videos/popular")
+    @GetMapping("/videos/old_channel")
     @ResponseBody
-    public ResponseEntity<List<VideoResponse>> popularChannel(@PathVariable("channelId") final Long channelId,
+    public ResponseEntity<List<VideoResponse>> oldChannel(
+            @Validated @ModelAttribute final VideoOldChannelRequest request, final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        final VideoSpecifications videoSpecifications = new VideoSpecifications();
+        videoSpecifications.setIdGreaterThan(request.getNewAfter());
+        final QueryComponents<Video> option = new QueryComponents<>();
+        option.setSpecifications(videoSpecifications);
+        final Optional<List<Video>> _videos = videoService.findOldChannel(request.getChannelId(), request.getLimit(),
+                option);
+        final Optional<List<VideoResponse>> _videoResponses = _videos
+                .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()));
+        final List<VideoResponse> videoResponses = _videoResponses.orElse(new ArrayList<>());
+        return new ResponseEntity<>(videoResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/videos/popular_channel")
+    @ResponseBody
+    public ResponseEntity<List<VideoResponse>> popularChannel(
             @Validated @ModelAttribute final VideoPopularChannelRequest request, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        final Optional<List<Video>> _videos = videoService.findPopularChannel(channelId, request.getLimit());
+        final Optional<List<Video>> _videos = videoService.findPopularChannel(request.getChannelId(),
+                request.getLimit());
         final List<VideoResponse> videoResponses = _videos
                 .map(videos -> videos.stream().map(video -> new VideoResponse(video)).collect(Collectors.toList()))
                 .orElse(new ArrayList<>());

@@ -5,13 +5,11 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class VideoNewChannelRequest {
-
+public class VideoOldChannelRequest {
     @NotNull
     private Long channelId;
 
     private Integer limit;
 
-    private Long oldBeforeId;
-
+    private Long newAfter;
 }

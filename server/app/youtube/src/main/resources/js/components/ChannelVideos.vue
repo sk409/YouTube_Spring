@@ -53,11 +53,9 @@ export default {
       if (this.videos.length !== 0) {
         data.oldBeforeId = this.videos[this.videos.length - 1].id;
       }
-      ajax
-        .get(this.$routes.channels.videos.new(this.channel.id), data)
-        .then(response => {
-          this.videos = this.videos.concat(response.data);
-        });
+      ajax.get(this.$routes.videos.newChannel, data).then(response => {
+        this.videos = this.videos.concat(response.data);
+      });
     },
     fetchVideosOld() {},
     fetchVideosPopular() {}
