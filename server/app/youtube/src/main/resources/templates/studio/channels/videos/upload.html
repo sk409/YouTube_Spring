@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Videos</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
     </div>
     <div layout:fragment="content" class="h-100">
         <div ref="channel" hidden th:text="${channelJSON}"></div>
-        <channel-scaffold :channel="channel">
+        <studio-scaffold :channel="channel">
             <template #content>
                 <h3 class="ml-4 mt-4">このチャンネルの動画</h3>
                 <v-tabs v-model="tabs" color="success">
@@ -43,7 +43,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="video in channel.videos" class="video-table-row">
+                                    <tr v-for="video in channel.videos" class="video-table-row"
+                                        @click="$transition($routes.studio.videos.edit(video.uniqueId))">
                                         <td class="video-checkbox">
                                             <div class="d-flex align-start h-100">
                                                 <v-checkbox></v-checkbox>
@@ -107,10 +108,10 @@
                     </v-tab-item>
                 </v-tabs-items>
             </template>
-        </channel-scaffold>
+        </studio-scaffold>
     </div>
     <div layout:fragment="scripts">
-        <script th:src="@{/js/channels/videos/upload.js}"></script>
+        <script th:src="@{/js/studio/channels/videos/upload.js}"></script>
     </div>
 </body>
 

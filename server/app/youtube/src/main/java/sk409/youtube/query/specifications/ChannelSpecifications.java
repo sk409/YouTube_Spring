@@ -18,6 +18,9 @@ public class ChannelSpecifications implements Specifications<Channel> {
 
     @Override
     public void assign(final Specifications<Channel> other) throws IllegalArgumentException {
+        if (other == null) {
+            return;
+        }
         if (!(other instanceof ChannelSpecifications)) {
             throw new IllegalArgumentException();
         }

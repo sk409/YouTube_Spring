@@ -13,6 +13,9 @@ public class UserSpecifications implements Specifications<User> {
     private String usernameEqual;
 
     public void assign(final Specifications<User> other) throws IllegalArgumentException {
+        if (other == null) {
+            return;
+        }
         if (!(other instanceof UserSpecifications)) {
             throw new IllegalArgumentException();
         }

@@ -7,7 +7,7 @@ import Vue from "vue";
 import vuetify from "./vuetify.js";
 import "./common.js";
 
-const fetchSize = 3;
+const fetchSize = 30;
 
 new Vue({
     el: "#app",

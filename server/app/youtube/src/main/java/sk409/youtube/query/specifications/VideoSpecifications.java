@@ -19,6 +19,9 @@ public class VideoSpecifications implements Specifications<Video> {
 
     @Override
     public void assign(final Specifications<Video> other) throws IllegalArgumentException {
+        if (other == null) {
+            return;
+        }
         if (!(other instanceof VideoSpecifications)) {
             throw new IllegalArgumentException();
         }

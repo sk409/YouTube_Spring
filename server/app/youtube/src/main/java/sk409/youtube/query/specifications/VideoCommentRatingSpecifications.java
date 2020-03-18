@@ -19,6 +19,9 @@ public class VideoCommentRatingSpecifications implements Specifications<VideoCom
 
     @Override
     public void assign(final Specifications<VideoCommentRating> other) throws IllegalArgumentException {
+        if (other == null) {
+            return;
+        }
         if (!(other instanceof VideoCommentRating)) {
             throw new IllegalArgumentException();
         }

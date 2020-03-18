@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div ref="channelJSON" hidden th:text="${channelJSON}"></div>
+        <studio-scaffold :channel="channel">
+            <template #content>
+                <div v-if="channel">
+                    <v-container class="mt-4">
+                        <div class="d-flex align-center">
+                            <span>再生リスト</span>
+                            <span></span>
+                            <v-btn color="success" text class="ml-auto" @click="dialogPlaylist=true">
+                                <v-icon left>mdi-plus</v-icon>新しい再生リスト
+                            </v-btn>
+                            <div class="d-flex ml-2" style="border:1px solid lightgray">
+                                <input type="text" placeholder="再生リストを検索">
+                                <div small class="pa-1" style="background:rgb(241,241,241)">
+                                    <v-icon>mdi-magnify</v-icon>
+                                </div>
+                            </div>
+                        </div>
+                        <v-divider></v-divider>
+                        <div>
+                            <div v-for="playlist in channel.playlists" :key="playlist.id">
+                                {{playlist.name}}
+                            </div>
+                        </div>
+                    </v-container>
+                    <v-dialog v-model="dialogPlaylist" width="50%">
+                        <playlist-form :channel-id="channel.id" @created="createdPlaylist"></playlist-form>
+                    </v-dialog>
+                    <snackbar-view :message="notification" :visible.sync="snackbar"></snackbar-view>
+                </div>
+            </template>
+        </studio-scaffold>
+    </div>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/studio/channels/playlists.js}"></script>
+    </div>
+</body>
+
+</html>

@@ -25,6 +25,9 @@ public class ChannelResponse {
     @JsonManagedReference("channel")
     private List<VideoResponse> videos;
 
+    @JsonManagedReference("channel")
+    private List<PlaylistResponse> playlists;
+
     public ChannelResponse(final Channel channel) {
         id = channel.getId();
         name = channel.getName();

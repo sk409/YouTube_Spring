@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/app}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+</head>
+
+<body>
+    <div layout:fragment="navbar">
+        <v-app-bar>
+
+        </v-app-bar>
+    </div>
+    <div layout:fragment="content">
+        <div ref="videoJSON" hidden th:text="${videoJSON}"></div>
+        <div v-if="video" class="d-flex">
+            <div class="menu">
+                <div>
+                    <v-btn text>
+                        <v-icon left>mdi-arrow-left</v-icon>
+                        <span>このチャンネルの動画</span>
+                    </v-btn>
+                </div>
+            </div>
+            <div class="content">
+
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="scripts">
+        <script th:src="@{/js/studio/videos/edit.js}"></script>
+    </div>
+</body>
+
+</html>

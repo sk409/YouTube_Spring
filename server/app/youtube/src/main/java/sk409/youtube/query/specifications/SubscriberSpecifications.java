@@ -19,6 +19,9 @@ public class SubscriberSpecifications implements Specifications<Subscriber> {
 
     @Override
     public void assign(final Specifications<Subscriber> other) throws IllegalArgumentException {
+        if (other == null) {
+            return;
+        }
         if (!(other instanceof SubscriberSpecifications)) {
             throw new IllegalArgumentException();
         }

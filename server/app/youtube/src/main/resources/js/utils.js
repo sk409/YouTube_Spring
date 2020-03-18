@@ -17,18 +17,31 @@ export const routes = {
                     return `/channels/${channelUniqueId}/videos`;
                 }
             },
-            new: channelId => `/channels/${channelId}/videos/new`,
-            upload: channelId => `/channels/${channelId}/videos/upload`
+            new: channelId => `/channels/${channelId}/videos/new`
         }
     },
     login: {
         base: "/login"
+    },
+    playlists: {
+        base: "/playlists"
     },
     register: {
         base: "/register"
     },
     root: {
         base: "/"
+    },
+    studio: {
+        channels: {
+            playlists: channelUniqueId => `/studio/channels/${channelUniqueId}/playlists`,
+            videos: {
+                upload: channelUniqueId => `/studio/channels/${channelUniqueId}/videos/upload`,
+            }
+        },
+        videos: {
+            edit: videoUniqueId => `/studio/videos/${videoUniqueId}/edit`
+        }
     },
     subscribers: {
         base: "/subscribers",

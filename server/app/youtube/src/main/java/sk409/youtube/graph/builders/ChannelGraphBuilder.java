@@ -7,7 +7,7 @@ import sk409.youtube.models.Channel_;
 
 public class ChannelGraphBuilder {
 
-    public static final EntityGraphBuilder<Channel> owner = EntityGraphBuilder.load(entityManager -> {
+    public static final EntityGraphBuilder<Channel> user = EntityGraphBuilder.load(entityManager -> {
         final EntityGraph<Channel> channelGraph = entityManager.createEntityGraph(Channel.class);
         channelGraph.addAttributeNodes(Channel_.USER);
         return channelGraph;

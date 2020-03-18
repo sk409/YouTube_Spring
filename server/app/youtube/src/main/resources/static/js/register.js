@@ -56704,20 +56704,37 @@ var routes = {
       },
       "new": function _new(channelId) {
         return "/channels/".concat(channelId, "/videos/new");
-      },
-      upload: function upload(channelId) {
-        return "/channels/".concat(channelId, "/videos/upload");
       }
     }
   },
   login: {
     base: "/login"
   },
+  playlists: {
+    base: "/playlists"
+  },
   register: {
     base: "/register"
   },
   root: {
     base: "/"
+  },
+  studio: {
+    channels: {
+      playlists: function playlists(channelUniqueId) {
+        return "/studio/channels/".concat(channelUniqueId, "/playlists");
+      },
+      videos: {
+        upload: function upload(channelUniqueId) {
+          return "/studio/channels/".concat(channelUniqueId, "/videos/upload");
+        }
+      }
+    },
+    videos: {
+      edit: function edit(videoUniqueId) {
+        return "/studio/videos/".concat(videoUniqueId, "/edit");
+      }
+    }
   },
   subscribers: {
     base: "/subscribers",

@@ -1,15 +1,19 @@
 <template>
   <div v-if="channel">
-    <div>
+    <div class="text-center">
+      <v-avatar size="128">
+        <v-img :src="$serverUrl(channel.profileImagePath)"></v-img>
+      </v-avatar>
       <div class="subtitle-1">{{channel.name}}</div>
-      <div class="caption"></div>
+      <div class="caption">{{channel.user.username}}</div>
     </div>
     <div>
       <div
         v-for="scrollMenuItem in scrollMenuItems"
         :key="scrollMenuItem.title"
         :class="scrollMenuItemClass(scrollMenuItem)"
-        class="pa-3 scroll-menu-item"
+        class="cursor-pointer pa-3 scroll-menu-item"
+        @click="$transition(scrollMenuItem.route)"
       >
         <v-icon style="color:inherit;">{{scrollMenuItem.icon}}</v-icon>
         <span class="ml-4">{{scrollMenuItem.title}}</span>
@@ -35,19 +39,24 @@ export default {
         {
           icon: "mdi-view-dashboard",
           title: "ダッシュボード",
-          path: ""
+          route: ""
         },
         {
           icon: "mdi-library-video",
           title: "動画",
-          path: this.$routes.channels.videos.upload(this.channel.id)
+          route: this.$routes.studio.channels.videos.upload(this.channel.uniqueId)
+        },
+        {
+          icon: "mdi-playlist-play",
+          title: "再生リスト",
+          route: this.$routes.studio.channels.playlists(this.channel.uniqueId)
         }
       ];
     }
   },
   methods: {
     scrollMenuItemClass(scrollMenuItem) {
-      if (location.pathname === scrollMenuItem.path) {
+      if (location.pathname === scrollMenuItem.route) {
         return ["scroll-menu-item-active"];
       }
       return ["grey--text"];

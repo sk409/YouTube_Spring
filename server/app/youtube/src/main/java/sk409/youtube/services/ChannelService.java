@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 
+import sk409.youtube.graph.builders.EntityGraphBuilder;
 import sk409.youtube.models.Channel;
 import sk409.youtube.models.Subscriber;
 import sk409.youtube.query.QueryComponents;
@@ -53,10 +54,24 @@ public class ChannelService extends QueryService<Channel> {
     }
 
     public Optional<Channel> findByUniqueId(final String uniqueId) {
+        return findByUniqueId(uniqueId, (QueryComponents<Channel>) null);
+    }
+
+    public Optional<Channel> findByUniqueId(final String uniqueId,
+            final EntityGraphBuilder<Channel> channelGraphBuilder) {
+        final QueryComponents<Channel> options = new QueryComponents<Channel>();
+        options.setEntityGraphBuilder(channelGraphBuilder);
+        return findByUniqueId(uniqueId, options);
+    }
+
+    public Optional<Channel> findByUniqueId(final String uniqueId, final QueryComponents<Channel> options) {
         final ChannelSpecifications channelSpecifications = new ChannelSpecifications();
         channelSpecifications.setUniqueIdEqual(uniqueId);
         final QueryComponents<Channel> channelQueryComponents = new QueryComponents<>();
         channelQueryComponents.setSpecifications(channelSpecifications);
+        if (options != null) {
+            channelQueryComponents.assign(options);
+        }
         final Optional<Channel> _channel = findOne(channelQueryComponents);
         return _channel;
     }

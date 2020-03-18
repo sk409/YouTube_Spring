@@ -30,17 +30,13 @@ import sk409.youtube.services.VideoService;
 @RequestMapping("/")
 public class RootController {
 
-    private final ChannelService channelService;
     private final JSONService jsonService;
-    private final SubscriberService subscriberService;
     private final UserService userService;
     private final VideoService videoService;
 
-    public RootController(final ChannelService channelService, final JSONService jsonService,
-            final SubscriberService subscriberService, final UserService userService, final VideoService videoService) {
-        this.channelService = channelService;
+    public RootController(final JSONService jsonService, final UserService userService,
+            final VideoService videoService) {
         this.jsonService = jsonService;
-        this.subscriberService = subscriberService;
         this.userService = userService;
         this.videoService = videoService;
     }

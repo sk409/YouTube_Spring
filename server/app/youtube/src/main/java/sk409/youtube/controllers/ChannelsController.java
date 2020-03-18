@@ -193,7 +193,7 @@ public class ChannelsController {
         final Long subscriberCount = subscriberService.countByChannelId(channel.getId());
         channelResponse.setSubscriberCount(subscriberCount);
         final String channelResponseJSON = jsonService.toJSON(channelResponse);
-        final Integer limit = 3;
+        final Integer limit = 30;
         final Optional<List<Video>> _videos = request.getSort() == null
                 ? videoService.findNewChannel(channel.getId(), limit)
                 : request.getSort().equals("popular") ? videoService.findPopularChannel(channel.getId(), limit)

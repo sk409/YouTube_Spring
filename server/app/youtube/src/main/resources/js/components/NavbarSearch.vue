@@ -38,7 +38,9 @@ export default {
   methods: {
     clickVideoPlus() {
       ajax.get(this.$routes.channels.lastSelected).then(response => {
-        location.href = this.$routes.channels.videos.upload(response.data.id);
+        location.href = this.$routes.studio.channels.videos.upload(
+          response.data.uniqueId
+        );
       });
     },
     createdChannel(channel) {

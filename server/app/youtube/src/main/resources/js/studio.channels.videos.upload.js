@@ -1,4 +1,4 @@
-import ChannelScaffold from "./components/ChannelScaffold.vue";
+import StudioScaffold from "./components/StudioScaffold.vue";
 import NavbarChannel from "./components/NavbarChannel.vue";
 import Vue from "vue";
 import vuetify from "./vuetify.js";
@@ -9,7 +9,7 @@ new Vue({
     el: "#app",
     vuetify,
     components: {
-        ChannelScaffold,
+        StudioScaffold,
         NavbarChannel
     },
     data: {

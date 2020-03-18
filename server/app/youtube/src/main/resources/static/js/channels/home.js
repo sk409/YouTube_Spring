@@ -2373,7 +2373,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       _ajax_js__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.$routes.channels.lastSelected).then(function (response) {
-        location.href = _this.$routes.channels.videos.upload(response.data.id);
+        location.href = _this.$routes.studio.channels.videos.upload(response.data.uniqueId);
       });
     },
     createdChannel: function createdChannel(channel) {
@@ -2395,6 +2395,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -4117,7 +4119,7 @@ var render = function() {
     "v-snackbar",
     {
       staticClass: "white--text",
-      attrs: { timeout: _vm.timeout },
+      attrs: { timeout: _vm.timeout, top: "" },
       model: {
         value: _vm.snackbar,
         callback: function($$v) {
@@ -58971,20 +58973,37 @@ var routes = {
       },
       "new": function _new(channelId) {
         return "/channels/".concat(channelId, "/videos/new");
-      },
-      upload: function upload(channelId) {
-        return "/channels/".concat(channelId, "/videos/upload");
       }
     }
   },
   login: {
     base: "/login"
   },
+  playlists: {
+    base: "/playlists"
+  },
   register: {
     base: "/register"
   },
   root: {
     base: "/"
+  },
+  studio: {
+    channels: {
+      playlists: function playlists(channelUniqueId) {
+        return "/studio/channels/".concat(channelUniqueId, "/playlists");
+      },
+      videos: {
+        upload: function upload(channelUniqueId) {
+          return "/studio/channels/".concat(channelUniqueId, "/videos/upload");
+        }
+      }
+    },
+    videos: {
+      edit: function edit(videoUniqueId) {
+        return "/studio/videos/".concat(videoUniqueId, "/edit");
+      }
+    }
   },
   subscribers: {
     base: "/subscribers",

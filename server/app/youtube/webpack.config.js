@@ -12,10 +12,12 @@ module.exports = (env, args) => {
             app: jsSrcDir + "app.js",
             "channels/home": jsSrcDir + "channels.home.js",
             "channels/videos": jsSrcDir + "channels.videos.js",
-            "channels/videos/upload": jsSrcDir + "channels.videos.upload.js",
             index: jsSrcDir + "index.js",
             login: jsSrcDir + "login.js",
             register: jsSrcDir + "register.js",
+            "studio/channels/playlists": jsSrcDir + "studio.channels.playlists",
+            "studio/channels/videos/upload": jsSrcDir + "studio.channels.videos.upload.js",
+            "studio/videos/edit": jsSrcDir + "studio.videos.edit.js",
             watch: jsSrcDir + "watch.js"
         },
         module: {
